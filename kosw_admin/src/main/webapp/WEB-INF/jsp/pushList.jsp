@@ -403,7 +403,7 @@
 	                    		</fieldset>
 							</c:if>
 							
-							<fieldset>
+							<%-- <fieldset>
 	                    		<div class="form-group">
 	                    			<label class="col-sm-2 control-label">건물 선택</label>
 	                    			<div class="col-sm-10">
@@ -415,7 +415,7 @@
 				                    	</select>
 	                    			</div>
 	                    		</div>
-                    		</fieldset>
+                    		</fieldset> --%>
 	                    		
                     		
                     		

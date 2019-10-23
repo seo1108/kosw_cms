@@ -112,6 +112,22 @@
 <c:set var="title" value="Cafe 카테고리 통계" /></c:if>
 
 
+
+<c:url var="statCafeForAdminURL" value="/statCafeList">
+	<c:param name="cafeseq" value=""/>
+	<c:param name="type" value="individual"/>
+</c:url>
+<c:if test="${fn:indexOf(path, '/statCafeList') != -1}" />
+
+<c:url var="statCafeCategoryForAdminURL" value="/statCafeList">
+	<c:param name="cafeseq" value=""/>
+	<c:param name="type" value="category"/>
+</c:url>
+<c:if test="${fn:indexOf(path, '/statCafeList') != -1}" />
+
+
+
+
 <c:url var="beaconListURL" value="/beaconList" >
 	<c:param name="cSeq" value="${customer.custSeq }"/>
 </c:url>
@@ -267,7 +283,7 @@
 					<p class="menu-name">우리 회사 설정</p>
 				</a>
 			</li>
-			<c:if test="${user.superAdmin eq 'true'}">
+			<%-- <c:if test="${user.superAdmin eq 'true'}">
 			<li class="menu">
 				<a href="${buildingURL }">
 					<i class="fa fa-building"></i>
@@ -280,7 +296,7 @@
 					<p class="menu-name">건물 리스트</p>
 				</a>
 			</li>
-			</c:if>
+			</c:if> --%>
 			
 			<li class="menu">
 				<a href="${userListURL }">
@@ -320,19 +336,40 @@
 							</a>
 						</li>
 						
-						<li class="menu">
-							<a href="${statCafeURL }">
-								<span class="sidebar-mini">&nbsp;</span>
-								<span class="sidebar-normal menu-name">Cafe 개별 통계</span>
-							</a>
-						</li>
 						
-						<li class="menu">
-							<a href="${statCafeCategoryURL }">
-								<span class="sidebar-mini">&nbsp;</span>
-								<span class="sidebar-normal menu-name">Cafe 카테고리 통계</span>
-							</a>
-						</li>
+						
+						<c:choose>
+							<c:when test="${user.superAdmin eq 'true'}">
+								<li class="menu">
+									<a href="${statCafeForAdminURL }">
+										<span class="sidebar-mini">&nbsp;</span>
+										<span class="sidebar-normal menu-name">Cafe 개별 통계</span>
+									</a>
+								</li>
+								
+								<li class="menu">
+									<a href="${statCafeCategoryForAdminURL }">
+										<span class="sidebar-mini">&nbsp;</span>
+										<span class="sidebar-normal menu-name">Cafe 카테고리 통계</span>
+									</a>
+								</li>
+							</c:when>
+							<c:otherwise>
+								<li class="menu">
+									<a href="${statCafeURL }">
+										<span class="sidebar-mini">&nbsp;</span>
+										<span class="sidebar-normal menu-name">Cafe 개별 통계</span>
+									</a>
+								</li>
+								
+								<li class="menu">
+									<a href="${statCafeCategoryURL }">
+										<span class="sidebar-mini">&nbsp;</span>
+										<span class="sidebar-normal menu-name">Cafe 카테고리 통계</span>
+									</a>
+								</li>
+							</c:otherwise>
+						</c:choose>
 					</ul>
 				</div>
 			</li>

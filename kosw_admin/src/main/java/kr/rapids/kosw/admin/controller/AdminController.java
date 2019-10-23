@@ -4495,11 +4495,15 @@ public class AdminController {
 //		}
 //		
 		User user = adminService.selectUserByEmail(currentAdmin().getEmail());
-		cafe.setAdminseq(user.getUserSeq());
-		
-		List<Cafe> cafeList = adminService.selectCafeOfMineAllList(cafe);
-		
-		modelAndView.addObject("cafeList", cafeList);
+		if (null != user) {
+			cafe.setAdminseq(user.getUserSeq());
+			
+			List<Cafe> cafeList = adminService.selectCafeOfMineAllList(cafe);
+			
+			modelAndView.addObject("cafeList", cafeList);
+		} else {
+			modelAndView.addObject("cafeList", null);
+		}
 		
 		if ("".equals(cafeseq)) {
 			modelAndView.addObject("cafeSelected", false);
@@ -4597,11 +4601,16 @@ public class AdminController {
 		}
 		
 		User user = adminService.selectUserByEmail(currentAdmin().getEmail());
-		cafe.setAdminseq(user.getUserSeq());
+		if (null != user) {
+			cafe.setAdminseq(user.getUserSeq());
+			
+			List<Cafe> cafeList = adminService.selectCafeOfMineAllList(cafe);
+			
+			modelAndView.addObject("cafeList", cafeList);
+		} else {
+			modelAndView.addObject("cafeList", null);
+		}
 		
-		List<Cafe> cafeList = adminService.selectCafeOfMineAllList(cafe);
-		
-		modelAndView.addObject("cafeList", cafeList);
 		
 		if ("".equals(cafeseq)) {
 			modelAndView.addObject("cafeSelected", false);
@@ -4637,6 +4646,60 @@ public class AdminController {
 //			modelAndView.addObject("companyRanks", companyRanks);
 //			modelAndView.addObject("rank", rank);
 		}
+		
+		return modelAndView;
+	}
+	
+	/**
+	 * AUTH - SUPER
+	 * 고객사 리스트 페이지 
+	 * @param redirectAttributes
+	 * @param page
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	@PreAuthorize("hasRole('ROLE_SUPER')")
+	@RequestMapping(path="statCafeList", method = RequestMethod.GET)
+	public ModelAndView statCafeList(
+			@ModelAttribute Cafe cafe,
+			@RequestParam(name="p", defaultValue="1") String page,
+			/*@RequestParam(name="sort", defaultValue="") String sort,*/
+			@RequestParam(name="type", defaultValue="") String type,
+			@RequestParam(name="startDate", defaultValue="") String startDate,
+			@RequestParam(name="endDate", defaultValue="") String endDate
+	){
+		
+		ModelAndView modelAndView = new ModelAndView("statCafeList");
+		modelAndView.addObject("admin", currentAdmin());
+		
+		if (startDate == null || startDate.length() != 8){
+			startDate = DateUtils.getDateTextByAddMonths("yyyyMMdd", DateUtils.currentDate("yyyyMMdd"), -1);
+			cafe.setStartDate(startDate);
+		}
+		
+		if (endDate == null || endDate.length() != 8){
+			endDate = DateUtils.currentDate("yyyyMMdd");
+			cafe.setEndDate(endDate);
+		}
+		
+//		@SuppressWarnings("rawtypes")
+//		List sortList = new ArrayList<Sort>() ;
+//		sortList.add(new Sort(0,"카페명","cafename")) ;
+//		sortList.add(new Sort(1,"등록일시","opendate desc")) ;
+//		modelAndView.addObject("sortList", sortList) ;
+//		cafe.setSort(sort);
+		
+		PagePair selectCafeList = adminService.selectCafeList(Integer.valueOf(page), cafe);
+		
+		List<Cafe> cafeList = (List<Cafe>) selectCafeList.getList();
+		modelAndView.addObject("cafeList", cafeList);
+		
+		PageNavigation pageNavigation = selectCafeList.getPageNavigation();
+		modelAndView.addObject("pageNavigation", pageNavigation);
+		
+		modelAndView.addObject("startDate", startDate);
+		modelAndView.addObject("endDate", endDate);
+		modelAndView.addObject("type", type);
 		
 		return modelAndView;
 	}
