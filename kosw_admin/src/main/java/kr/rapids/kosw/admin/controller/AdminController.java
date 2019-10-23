@@ -3445,6 +3445,7 @@ public class AdminController {
 	 * @param page
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	@RequestMapping(path="pushList", method = RequestMethod.GET)
 	public ModelAndView pushList(
 			@ModelAttribute Push push,
@@ -3463,10 +3464,26 @@ public class AdminController {
 		}
 		push.setCustSeq(custSeq);
 		
+		// 내 카페 리스트 획득하기
+		User user = adminService.selectUserByEmail(currentAdmin.getEmail());
+		if (null != user) {
+			
+			cafe.setAdminseq(user.getUserSeq());
+			
+			List<Cafe> cafeList = adminService.selectCafeOfMineAllList(cafe);
+			modelAndView.addObject("cafeList", cafeList);
+		} else {
+			modelAndView.addObject("cafeList", null);
+		}
+		
+		
+		
 		if (custSeq == null){
 			// 전체 고객 리스트
-			List<Customer> customerAll = adminService.customerAll();
-			modelAndView.addObject("customerAll", customerAll);
+			//List<Customer> customerAll = adminService.customerAll();
+			//modelAndView.addObject("customerAll", customerAll);
+			List<Cafe> cafeAllList = adminService.selectCafeAllList(cafe);
+			modelAndView.addObject("cafeAll", cafeAllList);
 		} else {
 			Customer customer = adminService.getCustomerBySeq(custSeq);
 			// 건물 리스트

@@ -54,6 +54,8 @@ public interface DbMapper {
 	
 	List<Cafe> selectCafeList(Cafe cafe);
 	
+	List<Cafe> selectCafeAllList(Cafe cafe);
+	
 	List<Cafe> selectCafeOfMineList(Cafe cafe);
 	
 	List<Cafe> selectCafeOfMineAllList(Cafe cafe);

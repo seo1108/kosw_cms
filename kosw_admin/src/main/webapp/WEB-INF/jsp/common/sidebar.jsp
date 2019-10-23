@@ -232,18 +232,30 @@
 			<li>
 				<a data-toggle="collapse" href="#myCafeList">
                     <i class="pe-7s-id"></i>
-                    <p>내 Cafe
+                    <p>Cafe
                        <b class="caret"></b>
                     </p>
                 </a>
 				<div class="collapse" id="myCafeList">
 					<ul class="nav">
-						<li class="menu">
-							<a href="${cafeOfMineListURL }">
-								<span class="sidebar-mini">&nbsp;</span>
-								<span class="sidebar-normal menu-name">내 Cafe 리스트</span>
-							</a>
-						</li>
+						<c:choose>
+							<c:when test="${user.superAdmin eq 'true'}">
+								<li class="menu">
+									<a href="${cafeListURL }">
+										<span class="sidebar-mini">&nbsp;</span>
+										<span class="sidebar-normal menu-name">Cafe 리스트</span>
+									</a>
+								</li>
+							</c:when>
+							<c:otherwise>
+								<li class="menu">
+									<a href="${cafeOfMineListURL }">
+										<span class="sidebar-mini">&nbsp;</span>
+										<span class="sidebar-normal menu-name">내 Cafe 리스트</span>
+									</a>
+								</li>
+							</c:otherwise>
+						</c:choose>	
 					</ul>
 				</div>
 			</li>
@@ -373,12 +385,7 @@
 									<span class="sidebar-normal menu-name">고객사 리스트</span>
 								</a>
 							</li>
-							<li class="menu">
-								<a href="${cafeListURL }">
-									<span class="sidebar-mini">&nbsp;</span>
-									<span class="sidebar-normal menu-name">Cafe 리스트</span>
-								</a>
-							</li>
+							
 							<!-- 
 							<li class="menu">
 								<a href="${customerAddURL }">

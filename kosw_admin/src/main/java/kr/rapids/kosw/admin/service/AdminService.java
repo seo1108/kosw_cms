@@ -431,6 +431,11 @@ public class AdminService {
 		return new PagePair(selectCafeList, pageNavigation);
 	}
 	
+	public List<Cafe> selectCafeAllList(Cafe cafe) {
+		List<Cafe> selectCafeList = mapper.selectCafeAllList(cafe);
+		return selectCafeList;
+	}
+	
 	public PagePair selectCafeOfMineList(int page, Cafe cafe) {
 		int totalCount = mapper.selectCafeOfMineTotalCount(cafe);
 		PageNavigation pageNavigation = new PageNavigation(page, totalCount);

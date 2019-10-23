@@ -354,6 +354,39 @@
                     	
                     	<form name="pushAdd" method="POST" action="<c:url value="pushAdd" />" class="form-horizontal">
 							<input type="hidden" name="pushType" value="N">
+							<c:if test="${not empty cafeList }">
+								<fieldset>
+		                    		<div class="form-group">
+		                    			<label class="col-sm-2 control-label">Cafe 선택</label>
+		                    			<div class="col-sm-10">
+		                    				<select name="custSeq" class="selectpicker" data-title="" data-style="btn-default btn-block" data-menu-style="dropdown-blue">
+		                    					<c:forEach var="a" items="${cafeList }">
+				                    				<option value="${a.cafeseq }">${a.cafename }</option>
+				                    			</c:forEach>
+					                    	</select>
+		                    			</div>
+		                    		</div>
+		                    		
+	                    		</fieldset>
+							</c:if>
+							
+							<c:if test="${not empty cafeAll }">
+								<fieldset>
+		                    		<div class="form-group">
+		                    			<label class="col-sm-2 control-label">Cafe 선택</label>
+		                    			<div class="col-sm-10">
+		                    				<select name="custSeq" class="selectpicker" data-title="" data-style="btn-default btn-block" data-menu-style="dropdown-blue">
+		                    					<option value="">전체 카페 대상</option>
+		                    					<c:forEach var="a" items="${cafeAll }">
+				                    				<option value="${a.cafeseq }">${a.cafename }</option>
+				                    			</c:forEach>
+					                    	</select>
+		                    			</div>
+		                    		</div>
+	                    		</fieldset>
+							</c:if>
+							
+							
 							<c:if test="${not empty customerAll }">
 								<fieldset>
 		                    		<div class="form-group">

@@ -340,6 +340,26 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		</if>
 	</select>
 	
+	<select id="selectCafeAllList" parameterType="kr.rapids.kosw.admin.model.Cafe" resultMap="cafeMap">
+		SELECT CAST(pnum AS SIGNED) AS rowNum ,
+			B.*, (select count(distinct(C.user_seq))  
+				 	    from t_cafe_user C 
+				 	    where C.cafeseq = B.cafeseq  AND C.status = '1') usercount,
+				 (select user_name 
+						from u_user D 
+						where D.user_seq = B.adminseq) adminname				 	    
+	     FROM (
+				SELECT @ROWNUM:=@ROWNUM -1 AS pnum , A.* FROM (
+					
+					SELECT C.*
+					FROM t_cafe C
+					ORDER BY C.cafeseq DESC
+					
+				) A , (SELECT @ROWNUM:=#{totalCount}+1) R 
+		) B 
+		order by B.cafename
+	</select>
+	
 	<select id="selectCafeOfMineList" parameterType="kr.rapids.kosw.admin.model.Cafe" resultMap="cafeMap">
 		SELECT CAST(pnum AS SIGNED) AS rowNum ,
 			B.*, (select count(distinct(C.user_seq))  
