@@ -151,6 +151,8 @@ public class AdminController {
 		Admin admin = SpringSecurityUser.getAdmin();
 		return admin;
 	}
+	
+	
 
 	/**
 	 * 부서 추가 처리
@@ -4709,6 +4711,23 @@ public class AdminController {
 		return modelAndView;
 	}
 	
+	
+	@RequestMapping(path="init", method = RequestMethod.GET)
+	public ModelAndView init(
+	){
+		Admin admin = currentAdmin();
+		
+		ModelAndView modelAndView = new ModelAndView("init");
+		
+		
+		if (!admin.isSuperAdmin()){
+			modelAndView.addObject("isSuper", false);
+		} else {
+			modelAndView.addObject("isSuper", true);		
+		}
+		
+		return modelAndView;
+	}
 }
 
 

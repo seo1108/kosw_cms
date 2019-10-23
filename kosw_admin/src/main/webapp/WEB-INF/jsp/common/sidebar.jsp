@@ -407,7 +407,7 @@
 					</div>
 				</li>
 				-->		
-				<li>
+				<%-- <li>
 					<a data-toggle="collapse" href="#customerList">
 	                    <i class="fa fa-list-alt"></i>
 	                    <p>Cafe
@@ -422,18 +422,9 @@
 									<span class="sidebar-normal menu-name">고객사 리스트</span>
 								</a>
 							</li>
-							
-							<!-- 
-							<li class="menu">
-								<a href="${customerAddURL }">
-									<span class="sidebar-mini">&nbsp;</span>
-									<span class="sidebar-normal menu-name">Cafe 등록</span>
-								</a>
-							</li>
-							 -->
 						</ul>
 					</div>
-				</li>
+				</li> --%>
 				
 				<li>
 					<a data-toggle="collapse" href="#characterList">
