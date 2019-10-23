@@ -158,6 +158,9 @@
                     
                      
 				</c:if>
+				<c:if test="${empty cafeList }">
+					<p class="text-danger">내가 개설한 카페가 없습니다.</p>
+				</c:if>
 				<!-- 
 				<div class="text-center">
 					<a href='<c:url value="customerAdd" />' class="btn btn-primary btn-fill" >신규 고객사 등록</a>

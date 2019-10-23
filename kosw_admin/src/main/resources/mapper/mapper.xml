@@ -200,9 +200,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		SELECT COUNT(1)
 		FROM t_cafe
 		WHERE 1=1
-		<if test="startDate != null and startDate != ''">
+		<!-- <if test="startDate != null and startDate != ''">
 			AND DATE(opendate) between #{startDate} AND #{endDate}
-		</if>
+		</if> -->
 		<if test="search != null and search !=''">
 			AND ( 
 				cafename LIKE CONCAT('%',#{search},'%')
@@ -323,10 +323,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 					
 				) A , (SELECT @ROWNUM:=#{totalCount}+1) R 
 		) B 
-		 <if test="startDate != null and startDate != ''">
-			WHERE DATE(opendate) between #{startDate} AND #{endDate}
+		WHERE 1=1
+		 <!-- <if test="startDate != null and startDate != ''">
+			AND DATE(opendate) between #{startDate} AND #{endDate}
 		</if>
-		<!-- <if test="sort != null and sort != ''">
+		<if test="sort != null and sort != ''">
 			order by ${sort}
 		</if> -->
 		<if test="search != null and search != ''">
@@ -537,7 +538,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	
 	<select id="cafeUserList" parameterType="kr.rapids.kosw.admin.model.Cafe" resultMap="userMap">
 		SELECT
-			u.user_seq, u.user_email, u.user_name, cu.isAdmin, cu.status
+			u.user_seq, u.user_email, u.user_name, cu.isAdmin, cu.status, u.nickname
+			,ifnull((select sum(act_amt) from s_activity_user_daily where user_seq = u.user_seq), 0) s_act_amt
+            ,ifnull((select sum(walk_count) from u_user_walk where user_seq = u.user_seq), 0) walkcount
 		FROM u_user u, t_cafe_user cu 
 		WHERE u.user_seq = cu.user_seq
 			AND cafeseq = #{cafeseq}
@@ -1080,6 +1083,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="sActAmt" column="s_act_amt" />
 		<result property="cafeseq" column="cafeseq" />
 		<result property="isAdmin" column="isAdmin" />
+		<result property="walkcount" column="walkcount" />
 	</resultMap>
 	
 	<select id="selectUserBySeq" parameterType="java.lang.String" resultMap="userMap">

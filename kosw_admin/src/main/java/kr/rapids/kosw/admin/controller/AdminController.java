@@ -905,18 +905,26 @@ public class AdminController {
 	){
 		
 		ModelAndView modelAndView = new ModelAndView("cafeOfMineList");
-		modelAndView.addObject("admin", currentAdmin());
+		Admin admin = currentAdmin(modelAndView);
 		
-		User user = adminService.selectUserByEmail(currentAdmin().getEmail());
-		cafe.setAdminseq(user.getUserSeq());
+		//modelAndView.addObject("admin", currentAdmin());
 		
-		PagePair selectCafeList = adminService.selectCafeOfMineList(Integer.valueOf(page), cafe);
+		User user = adminService.selectUserByEmail(admin.getEmail());
 		
-		List<Cafe> cafeList = (List<Cafe>) selectCafeList.getList();
-		modelAndView.addObject("cafeList", cafeList);
+		if (null != user) {
 		
-		PageNavigation pageNavigation = selectCafeList.getPageNavigation();
-		modelAndView.addObject("pageNavigation", pageNavigation);
+			cafe.setAdminseq(user.getUserSeq());
+			
+			PagePair selectCafeList = adminService.selectCafeOfMineList(Integer.valueOf(page), cafe);
+			
+			List<Cafe> cafeList = (List<Cafe>) selectCafeList.getList();
+			modelAndView.addObject("cafeList", cafeList);
+			
+			PageNavigation pageNavigation = selectCafeList.getPageNavigation();
+			modelAndView.addObject("pageNavigation", pageNavigation);
+		} else {
+			modelAndView.addObject("cafeList", null);
+		}
 		
 		return modelAndView;
 	}
@@ -3440,6 +3448,7 @@ public class AdminController {
 	@RequestMapping(path="pushList", method = RequestMethod.GET)
 	public ModelAndView pushList(
 			@ModelAttribute Push push,
+			@ModelAttribute Cafe cafe,
 			@RequestParam(name="p", defaultValue="1") String page
 	){
 		

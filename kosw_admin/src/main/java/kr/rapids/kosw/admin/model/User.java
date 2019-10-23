@@ -35,6 +35,7 @@ public class User extends Page implements Serializable, InputFormModel {
 	private String isAdmin;
 	private String regdate;
 	private String status;
+	private int walkcount;
 	
 
 	
@@ -293,6 +294,18 @@ public class User extends Page implements Serializable, InputFormModel {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+
+
+	public int getWalkcount() {
+		return walkcount;
+	}
+
+
+
+	public void setWalkcount(int walkcount) {
+		this.walkcount = walkcount;
 	}
 
 

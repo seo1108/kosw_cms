@@ -2,7 +2,7 @@
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <c:set var="title" value="내 Cafe 리스트 [${cafe.cafename }]" />
 
@@ -358,13 +358,17 @@
 									<table class="table">
 										<tr>
 											<th>사용자명</th>
-											<th>이메일</th>
+											<th>닉네임</th>
+											<th>오른층수</th>
+											<th>걸음수</th>
 											<th>관리자여부</th>
 										</tr>
 										<c:forEach var="a" items="${cafeUserList }">
 											<tr>
 												<td>${a.userName }</td>
-												<td>${a.userEmail }</td>
+												<td>${a.nickName }</td>
+												<td><fmt:formatNumber value="${a.sActAmt }" pattern="#,###" /></td>
+												<td><fmt:formatNumber value="${a.walkcount }" pattern="#,###" /></td>
 												<td>${a.isAdmin }</td>
 											</tr>
 										</c:forEach>
