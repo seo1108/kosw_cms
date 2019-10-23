@@ -319,9 +319,9 @@
 												
 												<div class="col-sm-3 text-right">
 													<input type="submit" style="float:right;" class="btn btn-fill btn-primary" value="조회">
-													<c:if test="${not empty ranks }">
+													<%-- <c:if test="${not empty ranks }">
 													<button type="submit" style="float:left;margin-left:10px;" class="btn btn-fill btn-success" onclick="individualRankDownload();">파일 DOWN</button>
-													</c:if>
+													</c:if> --%>
 												</div>
 											</div>
 										</div>
