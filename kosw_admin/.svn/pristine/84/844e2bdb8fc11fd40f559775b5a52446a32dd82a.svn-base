@@ -1,0 +1,2019 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+
+<!-- application.properties 의 mybatis.mapper-locations 의 설정에 따라 정의  -->
+<mapper namespace="kr.rapids.kosw.admin.mapper.DbMapper">
+
+	
+	
+	<resultMap id="adminMap" type="kr.rapids.kosw.admin.model.Admin">
+		<id property="adminSeq" column="admin_seq" />
+		<result property="custSeq" column="cust_seq" />
+		<result property="email" column="email" />
+		<result property="passwd" column="passwd" />
+		<result property="adminName" column="admin_name" />
+		<result property="adminPhone" column="admin_phone" />
+		<result property="activeFlag" column="active_flag" />
+		<result property="adminRegTime" column="admin_reg_time" />
+		<result property="custName" column="cust_name" />
+	</resultMap>
+	
+	
+	<select id="adminLogin" parameterType="kr.rapids.kosw.admin.model.Admin" resultMap="adminMap">
+		SELECT A.*, C.cust_name FROM a_admin A
+		LEFT OUTER JOIN c_customer C
+		ON A.cust_seq = C.cust_seq
+		WHERE A.email = #{email}
+		AND A.passwd = #{passwd}
+	</select>
+	
+	<select id="getRoles" parameterType="kr.rapids.kosw.admin.model.Admin" resultType="java.lang.String">
+		SELECT auth_code FROM a_admin_auth
+		WHERE admin_seq = #{adminSeq} 
+	</select>
+	
+	<insert id="adminAdd" parameterType="kr.rapids.kosw.admin.model.Admin" useGeneratedKeys="true" keyProperty="adminSeq" keyColumn="admin_seq">
+		INSERT INTO a_admin (
+			cust_seq,
+			email,
+			passwd,
+			admin_name,
+			admin_phone,
+			active_flag,
+			admin_reg_time
+		) VALUES (
+			#{custSeq},
+			#{email},
+			#{passwd},
+			#{adminName},
+			REPLACE(#{adminPhone}, '-', ''),
+			#{activeFlag},
+			DATE_FORMAT(NOW(), "%Y%m%d%H%i%s")
+		)
+	</insert>
+	
+	<select id="adminEmailCheck" parameterType="kr.rapids.kosw.admin.model.Admin" resultMap="adminMap">
+		SELECT * 
+		FROM a_admin
+		WHERE email = #{email}
+	</select>
+	
+	<update id="adminEdit" parameterType="kr.rapids.kosw.admin.model.Admin" >
+		UPDATE a_admin SET  
+			admin_name = #{adminName},
+			admin_phone = #{adminPhone},
+			<if test="passwd != null and passwd !=''">
+			passwd = #{passwd},
+			</if>
+			admin_reg_time = DATE_FORMAT(NOW(), "%Y%m%d%H%i%s"),
+			active_flag = #{activeFlag}
+		WHERE cust_seq = #{custSeq}
+		AND admin_seq = #{adminSeq}
+	</update>
+	
+	<select id="lastAdminExcept" parameterType="kr.rapids.kosw.admin.model.Admin" resultMap="adminMap">
+		SELECT *
+		FROM a_admin
+		WHERE 
+		cust_seq = #{custSeq}
+		AND active_flag = 'Y'
+		AND admin_seq != #{adminSeq}
+	</select>
+	
+	<insert id="updateAdminBySeq" parameterType="kr.rapids.kosw.admin.model.Admin" useGeneratedKeys="true" keyProperty="adminSeq" keyColumn="admin_seq">
+		UPDATE a_admin SET 
+			passwd = #{passwd},
+			admin_name = #{adminName},
+			admin_phone = #{adminPhone},
+			active_flag = #{activeFlag}
+		WHERE
+			admin_seq = #{adminSeq}
+	</insert>
+	
+	
+	
+	<select id="selectAdminBySeq" parameterType="java.lang.String" resultMap="adminMap">
+		SELECT * FROM a_admin
+		WHERE admin_seq = #{adminSeq}
+	</select>
+	
+<!-- 	<select id="selectAdminList" parameterType="page" resultMap="adminMap">
+		SELECT CAST(pnum AS SIGNED) AS rowNum ,
+			B.* FROM (
+				SELECT @ROWNUM:=@ROWNUM -1 AS pnum , A.* FROM (
+					SELECT * FROM a_admin
+			) A , (SELECT @ROWNUM:=#{totalCount}+1) R 
+		) B 
+		LIMIT #{startList}, #{pageViewCnt}
+	</select> -->
+	
+	<select id="selectAdminTotalCount" resultType="java.lang.Integer">
+		SELECT COUNT(1) FROM a_admin
+	</select>
+	
+	<insert id="customerAdd" parameterType="kr.rapids.kosw.admin.model.Customer" useGeneratedKeys="true" keyProperty="custSeq" keyColumn="cust_seq">
+		INSERT INTO c_customer (
+			cust_code,
+			cust_name,
+			post_name,
+			post_email,
+			post_phone,
+			cust_remarks,
+			user_auto_confirm_flag,
+			cust_reg_time
+		) VALUES (
+			#{custCode},
+			#{custName},
+			#{postName},
+			#{postEmail},
+			#{postPhone},
+			#{custRemarks},
+			#{userAutoConfirmFlag},
+			DATE_FORMAT(NOW(), "%Y%m%d%H%i%s")
+		)
+	</insert>
+	
+	<insert id="addDefaultDepart" parameterType="kr.rapids.kosw.admin.model.Customer">
+		INSERT INTO c_cust_depart (
+			admin_seq,
+		    cust_seq,
+		    dept_reg_time,
+		    show_yn
+		) VALUES (
+			#{adminSeq},
+			#{custSeq},
+			DATE_FORMAT(NOW(), "%Y%m%d%H%i%s"),
+			'N'
+		)
+	</insert>
+	
+	<update id="customerEdit" parameterType="kr.rapids.kosw.admin.model.Customer" >
+		UPDATE c_customer SET
+			cust_name = #{custName},
+			post_name = #{postName},
+			post_email = #{postEmail},
+			post_phone = #{postPhone},
+			<if test="custRemarks != null and custRemarks !=''">
+			cust_remarks = #{custRemarks},
+			</if>
+			shared = #{shared},
+			user_auto_confirm_flag = #{userAutoConfirmFlag}
+		WHERE cust_seq = #{custSeq}
+	</update>
+	
+	<select id="custCodeCheck" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT cust_code
+		FROM c_customer
+		WHERE cust_code = #{custCode}
+	</select>
+	
+	<select id="buildCodeCheck" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT build_code
+		FROM c_building
+		WHERE build_code = #{buildCode}
+	</select>
+	
+	
+	
+	
+	<select id="selectCustomerTotalCount" parameterType="kr.rapids.kosw.admin.model.Customer" resultType="java.lang.Integer">
+		SELECT COUNT(1)
+		FROM c_customer
+		WHERE 1=1
+		<if test="search != null and search !=''">
+			AND ( 
+				cust_name LIKE #{search}
+				OR
+				post_name LIKE #{search}
+			)
+		</if>
+	</select>
+
+	<select id="selectBuildingTotalCount" parameterType="kr.rapids.kosw.admin.model.Building" resultType="java.lang.Integer">
+		SELECT COUNT(1)
+		FROM c_building
+		WHERE 1=1
+		<if test="search != null and search !=''">
+			AND ( 
+				build_name LIKE #{search}
+				OR
+				build_addr LIKE #{search}
+			)
+		</if>
+	</select>
+
+	
+	<resultMap id="customerMap" type="kr.rapids.kosw.admin.model.Customer">
+		<id property="custSeq" column="cust_seq" />
+		<result property="custCode" column="cust_code" />
+		<result property="custName" column="cust_name" />
+		<result property="postName" column="post_name" />
+		<result property="postEmail" column="post_email" />
+		<result property="postPhone" column="post_phone" />
+		<result property="custRemarks" column="cust_remarks" />
+		<result property="custRegTime" column="cust_reg_time" />
+		<result property="adminCount" column="admin_count" javaType="java.lang.Integer" jdbcType="NUMERIC"/>
+		<result property="userAutoConfirmFlag" column="user_auto_confirm_flag" />
+		<result property="shared" column="shared" />
+		<result property="userCount" column="user_count" />
+	</resultMap>
+	
+	<select id="customerAll" resultMap="customerMap">
+		SELECT *
+		FROM c_customer
+		ORDER BY cust_name
+	</select>
+	
+	<select id="selectCustomerList" parameterType="kr.rapids.kosw.admin.model.Customer" resultMap="customerMap">
+		SELECT CAST(pnum AS SIGNED) AS rowNum ,
+			B.*, (select count(distinct(C.user_seq))  
+				 	    from u_user_building_map C 
+				 	    where C.cust_seq = B.cust_seq  AND C.delete_yn = 'N') user_count
+	     FROM (
+				SELECT @ROWNUM:=@ROWNUM -1 AS pnum , A.* FROM (
+					
+					SELECT C.*, count(A.admin_seq) AS 'admin_count'
+					FROM c_customer C
+					LEFT OUTER JOIN a_admin A
+					ON C.cust_seq = A.cust_seq
+					WHERE 1=1
+					<if test="search != null and search != ''">
+						AND ( 
+							C.cust_name LIKE concat ('%', #{search} ,'%') 
+							OR
+							C.post_name LIKE concat ('%', #{search} ,'%')
+						)
+					</if>
+					GROUP BY C.cust_seq
+					ORDER BY C.cust_seq DESC
+					
+				) A , (SELECT @ROWNUM:=#{totalCount}+1) R 
+		) B 
+		<if test="sort != null and sort != ''">
+		     order by ${sort}
+		</if>
+		LIMIT #{startList}, #{pageViewCnt}
+	</select>
+
+	<select id="selectCustomerListOfBuildSeq" parameterType="String" resultMap="buildingMap">
+		SELECT CAST(pnum AS SIGNED) AS rowNum ,
+			B.* FROM (
+				SELECT @ROWNUM:=@ROWNUM -1 AS pnum , A.* FROM (
+					
+					SELECT C.*, 0 AS 'admin_count'
+					FROM c_customer C
+					WHERE 1=1
+					AND C.build_seq = ${buildSeq}
+					ORDER BY C.build_seq DESC
+					
+				) A , (SELECT @ROWNUM:=#{totalCount}+1) R 
+		) B 
+		LIMIT #{startList}, #{pageViewCnt}
+	</select>
+
+
+
+	<select id="selectBuildingList" parameterType="kr.rapids.kosw.admin.model.Building" resultMap="buildingMap">
+		SELECT CAST(pnum AS SIGNED) AS rowNum ,
+			B.*,C.s_act_amt,C.s_act_date FROM (
+				SELECT @ROWNUM:=@ROWNUM -1 AS pnum , A.* FROM (
+					
+					SELECT C.*, 0 AS 'admin_count'
+					FROM c_building C
+					WHERE 1=1
+					<if test="search != null and search != ''">
+						AND ( 
+							C.build_name LIKE concat('%',#{search},'%')
+							OR
+							C.build_addr LIKE concat('%',#{search},'%')
+						)
+					</if>
+					ORDER BY C.build_seq DESC
+				) A , (SELECT @ROWNUM:=#{totalCount}+1) R 
+		) B  left outer join 
+		( select c.build_seq,sum(c.act_amt) s_act_amt ,max(insert_date)  s_act_date
+		     from s_activity_user_daily c
+             group by c.build_seq) C 
+         on B.build_seq = C.build_seq
+		<if test="sort != null and sort != ''">
+			order by ${sort}
+		</if>
+		LIMIT #{startList}, #{pageViewCnt}
+	</select>
+
+
+	<select id="selectBuildingListCount" parameterType="kr.rapids.kosw.admin.model.Building" resultType="java.lang.Integer">
+		SELECT COUNT(1)
+		FROM c_building
+		WHERE 1=1
+		<if test="search != null and search != ''">
+			AND ( 
+				build_name LIKE concat('%',#{search},'%')
+				OR
+				build_addr LIKE concat('%',#{search},'%')
+			)
+		</if>
+	</select>
+
+
+	<delete id="deleteAdminBbs" parameterType="kr.rapids.kosw.admin.model.Admin">
+		DELETE FROM b_bbs 
+		WHERE admin_seq = #{adminSeq}
+	</delete>
+	
+	<delete id="deleteAllAdminOfCustomer" parameterType="kr.rapids.kosw.admin.model.Customer">
+		DELETE FROM a_admin 
+		WHERE cust_seq = #{custSeq}
+	</delete>
+
+	<delete id="deleteCustomer" parameterType="kr.rapids.kosw.admin.model.Customer">
+		DELETE FROM c_customer 
+		WHERE cust_seq = #{custSeq}
+	</delete>
+
+	
+	<delete id="deleteAllAdminOfCustomerStep2" parameterType="kr.rapids.kosw.admin.model.Customer">
+		Delete from u_user_building_map
+		WHERE cust_seq = #{custSeq}
+	</delete>
+	
+	
+	<select id="selectCustomerBySeq" parameterType="java.lang.String" resultMap="customerMap">
+		SELECT * 
+		FROM c_customer
+		WHERE cust_seq = #{custSeq}
+	</select>
+	
+	<select id="adminListOfCustomer" parameterType="kr.rapids.kosw.admin.model.Customer" resultMap="adminMap">
+		SELECT * FROM a_admin
+		WHERE cust_seq = #{custSeq} 
+	</select>
+	
+	
+	<resultMap id="departmentMap" type="kr.rapids.kosw.admin.model.Department">
+		<id property="deptSeq" column="dept_seq" />
+		<result property="adminSeq" column="admin_seq" />
+		<result property="custSeq" column="cust_seq" />
+		<result property="deptName" column="dept_name" />
+		<result property="deptRegTime" column="dept_reg_time" />
+		<result property="adminName" column="admin_name" />
+	</resultMap>
+	
+	
+	<select id="departmentListOfCustomer" parameterType="kr.rapids.kosw.admin.model.Customer" resultMap="departmentMap">
+		SELECT D.*, A.admin_name 
+		FROM c_cust_depart D
+		LEFT OUTER JOIN a_admin A
+		ON D.admin_seq = A.admin_seq
+		WHERE D.cust_seq = #{custSeq}
+		AND D.show_yn = 'Y'
+	</select>
+	
+	<select id="getAdminName" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT adminName FROM a_admin
+		WHERE admin_seq = #{adminSeq}
+	</select>
+	
+	<resultMap id="buildingMap" type="kr.rapids.kosw.admin.model.Building">
+		<id property="buildSeq" column="build_seq" />
+		<result property="custSeq" column="cust_seq" />
+		<result property="adminSeq" column="admin_seq" />
+		<result property="buildCode" column="build_code" />
+		<result property="buildName" column="build_name" />
+		<result property="buildFloorAmt" column="build_floor_amt" />
+		<result property="buildStairAmt" column="build_stair_amt" />
+		<result property="buildAddr" column="build_addr" />
+		<result property="latitude" column="latitude" />
+		<result property="longitude" column="longitude" />
+		<result property="buildRegTime" column="build_reg_time" />
+		<result property="placeId" column="place_id" />
+		<result property="adminName" column="admin_name" />
+		<result property="sActAmt" column="s_act_amt" />
+		<result property="sActDate" column="s_act_date" />
+	</resultMap>
+	
+	<select id="selectBuildingOfStair" parameterType="kr.rapids.kosw.admin.model.BuildingStair" resultMap="buildingMap">
+		SELECT *
+		FROM c_building
+		WHERE build_seq = #{buildSeq}
+		AND cust_seq = #{custSeq} 
+	</select>
+	
+	<select id="buildingListOfCustomer" parameterType="kr.rapids.kosw.admin.model.Customer" resultMap="buildingMap">
+	    <!-- 
+		SELECT B.*, A.admin_name FROM c_building B
+		LEFT OUTER JOIN a_admin A
+		ON B.admin_seq = A.admin_seq
+		WHERE B.cust_seq = #{custSeq}
+		 -->
+		SELECT B.*, (select C.admin_name from a_admin C where C.admin_seq = A.admin_seq limit 1   )  admin_name FROM c_building B
+		LEFT OUTER JOIN c_customer A
+		ON B.build_seq = A.build_seq
+		WHERE A.cust_seq =  #{custSeq} 
+	</select>
+
+	<select id="buildingListOfBuildSeq" parameterType="kr.rapids.kosw.admin.model.Customer" resultMap="buildingMap">
+	    <!-- 
+		SELECT B.*, A.admin_name FROM c_building B
+		LEFT OUTER JOIN a_admin A
+		ON B.admin_seq = A.admin_seq
+		WHERE B.cust_seq = #{custSeq}
+		 -->
+		SELECT B.*, ""  admin_name FROM c_building B
+		WHERE B.build_seq =  #{buildSeq} 
+	</select>
+	
+	<select id="customerListOfBuildSeq" parameterType="kr.rapids.kosw.admin.model.Customer" resultMap="customerMap">
+	    <!-- 
+		SELECT B.*, A.admin_name FROM c_building B
+		LEFT OUTER JOIN a_admin A
+		ON B.admin_seq = A.admin_seq
+		WHERE B.cust_seq = #{custSeq}
+		 -->
+		SELECT B.*, ""  admin_name FROM c_customer B
+		WHERE B.build_seq =  #{buildSeq} 
+	</select>
+	
+	
+	<insert id="departmentAdd" parameterType="kr.rapids.kosw.admin.model.Department" useGeneratedKeys="true" keyProperty="deptSeq" keyColumn="dept_seq">
+		INSERT INTO c_cust_depart (
+			admin_seq,
+			cust_seq,
+			dept_name,
+			dept_reg_time		
+		) VALUES (
+			#{adminSeq},
+			#{custSeq},
+			#{deptName},
+			DATE_FORMAT(NOW(), "%Y%m%d%H%i%s")
+		)
+	</insert>
+	
+	<update id="departmentEdit" parameterType="kr.rapids.kosw.admin.model.Department" >
+		UPDATE c_cust_depart
+		SET
+			admin_seq = #{adminSeq},
+			dept_name = #{deptName},
+			dept_reg_time = DATE_FORMAT(NOW(), "%Y%m%d%H%i%s")
+		WHERE dept_seq = #{deptSeq}
+		AND cust_seq = #{custSeq} 
+	</update>
+	
+	<update id="departmentDelete" parameterType="kr.rapids.kosw.admin.model.Department" >
+		DELETE FROM c_cust_depart
+		WHERE dept_seq = #{deptSeq}
+		AND cust_seq = #{custSeq} 
+	</update>
+	
+	<update id="departmentDeleteStep2" parameterType="kr.rapids.kosw.admin.model.Department" >
+		UPDATE u_user_building_map 
+		SET dept_seq = 0
+		WHERE depte_seq = #{deptSeq}
+	</update>
+	
+	
+	<insert id="buildingAdd" parameterType="kr.rapids.kosw.admin.model.Building" useGeneratedKeys="true" keyProperty="buildSeq" keyColumn="build_seq">
+		INSERT INTO c_building (
+			cust_seq,
+			admin_seq,
+			build_code,
+			build_name,
+			build_floor_amt,
+			build_stair_amt,
+			build_addr,
+			latitude,
+			longitude,
+			build_reg_time,
+			place_id		
+		) VALUES (
+			#{custSeq},
+			#{adminSeq},
+			#{buildCode},
+			#{buildName},
+			#{buildFloorAmt},
+			#{buildStairAmt},
+			#{buildAddr},
+			#{latitude},
+			#{longitude},
+			#{placeId},
+			DATE_FORMAT(NOW(), "%Y%m%d%H%i%s")
+		)
+	</insert>
+	
+	
+	<update id="buildingEdit" parameterType="kr.rapids.kosw.admin.model.Building">
+		UPDATE c_building 
+		SET
+			admin_seq = #{adminSeq},
+			build_name = #{buildName},
+			build_floor_amt = #{buildFloorAmt},
+			build_stair_amt = #{buildStairAmt},
+			build_addr = #{buildAddr},
+			latitude = #{latitude},
+			longitude = #{longitude},
+			place_id = #{placeId},
+			build_reg_time = DATE_FORMAT(NOW(), "%Y%m%d%H%i%s")
+		WHERE 
+			build_seq = #{buildSeq}
+	</update>
+    <!-- 		AND cust_seq = #{custSeq} -->	
+	
+	<delete id="buildingDelete" parameterType="kr.rapids.kosw.admin.model.Building">
+		DELETE FROM c_building 
+		WHERE 
+			build_seq = #{buildSeq}
+	</delete>
+	<!-- 	AND cust_seq = #{custSeq} -->	
+	
+	<resultMap id="buildingStairMap" type="kr.rapids.kosw.admin.model.BuildingStair">
+		<id property="stairSeq" column="stair_seq" />
+		<result property="adminSeq" column="admin_seq" />
+		<result property="custSeq" column="cust_seq" />
+		<result property="adminName" column="admin_name" />
+		<result property="buildSeq" column="build_seq" />
+		<result property="buildCode" column="build_code" />
+		<result property="buildName" column="build_name" />
+		<result property="buildFloorAmt" column="build_floor_amt" />
+		<result property="stairName" column="stair_name" />
+		<result property="stairRegTime" column="stair_reg_time" />
+	</resultMap>
+	
+	<select id="selectBuildingStairBySeq" parameterType="kr.rapids.kosw.admin.model.BuildingStair" resultMap="buildingStairMap">
+		SELECT S.*, B.build_code, B.build_name , B.build_floor_amt
+		FROM c_building_stair S
+		JOIN c_building B
+		ON S.build_seq = B.build_seq
+		WHERE B.cust_seq = #{custSeq}
+		AND S.stair_seq = #{stairSeq}
+	</select>
+	
+	<delete id="buildingStairDelete" parameterType="kr.rapids.kosw.admin.model.BuildingStair">
+		DELETE FROM c_building_stair
+		WHERE cust_seq = #{custSeq}
+		AND stair_seq = #{stairSeq}
+	</delete>
+	
+	<select id="selectStairOfBuilding" parameterType="kr.rapids.kosw.admin.model.Building" resultMap="buildingStairMap">
+		SELECT S.*, B.build_code, B.build_name , B.build_floor_amt
+		FROM c_building_stair S
+		JOIN c_building B
+		ON S.build_seq = B.build_seq
+		WHERE B.cust_seq = #{custSeq}
+		<if test="buildSeq != null and buildSeq !=''">
+			AND S.build_seq = #{buildSeq}
+		</if>
+	</select>
+	
+	
+	<insert id="buildingStairAdd" parameterType="kr.rapids.kosw.admin.model.BuildingStair">
+		INSERT INTO c_building_stair (
+			admin_seq,
+			build_seq,
+			cust_seq,
+			stair_name,
+			stair_reg_time
+		) VALUES (
+			#{adminSeq},
+			#{buildSeq},
+			#{custSeq},
+			#{stairName},
+			DATE_FORMAT(NOW(), "%Y%m%d%H%i%s")
+		)
+	</insert>
+	
+	<update id="buildingStairEdit" parameterType="kr.rapids.kosw.admin.model.BuildingStair">
+		UPDATE c_building_stair SET 
+			admin_seq = #{adminSeq},
+			build_seq = #{buildSeq},
+			stair_name = #{stairName},
+			stair_reg_time = DATE_FORMAT(NOW(), "%Y%m%d%H%i%s")
+		WHERE stair_seq = #{stairSeq}
+		AND cust_seq = #{custSeq} 
+	</update>
+	
+	
+	<select id="selectBuildingBySeq" parameterType="java.lang.String" resultMap="buildingMap">
+		SELECT B.*, A.admin_name FROM c_building B
+		LEFT OUTER JOIN a_admin A
+		ON B.admin_seq = A.admin_seq
+		WHERE B.build_seq = #{buildSeq} 
+	</select>
+	
+	
+	
+	<select id="addSuperUserCheck" parameterType="kr.rapids.kosw.admin.model.Admin" resultMap="adminMap">
+		SELECT * FROM a_admin
+		WHERE cust_seq = #{custSeq}
+		AND email = #{email}
+	</select>
+	
+	<insert id="addSuperUser" parameterType="kr.rapids.kosw.admin.model.Admin" useGeneratedKeys="true" keyProperty="adminSeq" keyColumn="admin_seq">
+		INSERT INTO a_admin (cust_seq, email, passwd, admin_name, admin_phone, active_flag, admin_reg_time) VALUES (
+			#{custSeq},
+			#{email},
+			#{passwd},
+			#{adminName},
+			#{adminPhone},
+			'Y',
+			DATE_FORMAT(NOW(), "%Y%m%d%H%i%s")
+		)
+	</insert>
+	
+	<insert id="addSuperUserAuth" parameterType="kr.rapids.kosw.admin.model.AdminAuth">
+		INSERT INTO a_admin_auth ( admin_seq, auth_code, auth_reg_time ) VALUES (
+			#{adminSeq},
+			#{authCode},
+			DATE_FORMAT(NOW(), "%Y%m%d%H%i%s")
+		)
+	</insert>
+	
+	<insert id="adminAddAuth" parameterType="kr.rapids.kosw.admin.model.AdminAuth">
+		INSERT INTO a_admin_auth ( admin_seq, auth_code, auth_reg_time ) 
+		SELECT #{adminSeq}, #{authCode}, DATE_FORMAT(NOW(), "%Y%m%d%H%i%s") FROM DUAL
+		WHERE NOT EXISTS (
+			SELECT auth_seq 
+			FROM a_admin_auth 
+			WHERE admin_seq = #{adminSeq} 
+			AND auth_code = #{authCode}
+		)
+	</insert>
+	
+	<select id="addSuperCustomerCheck" resultMap="customerMap">
+		SELECT *
+		FROM c_customer
+		WHERE  cust_code = '10000'
+	</select>
+	
+	<insert id="addSuperCustomer" parameterType="kr.rapids.kosw.admin.model.Customer" useGeneratedKeys="true" keyProperty="custSeq" keyColumn="cust_seq">
+		INSERT INTO c_customer (
+			cust_code,
+			cust_name,
+			post_name,
+			post_email,
+			post_phone,
+			cust_remarks,
+			cust_reg_time
+		) VALUES (
+			#{custCode},
+			#{custName},
+			#{postName},
+			#{postEmail},
+			#{postPhone},
+			#{custRemarks},
+			DATE_FORMAT(NOW(), "%Y%m%d%H%i%s")
+		)
+	</insert>
+	
+	
+	<resultMap id="logoMap" type="kr.rapids.kosw.admin.model.Logo">
+		<id property="logoSeq" column="logo_seq" />
+		<result property="adminSeq" column="admin_seq" />
+		<result property="custSeq" column="cust_seq" />
+		<result property="logoImageFile" column="logo_image_file" />
+		<result property="logoColor" column="logo_color" />
+		<result property="logoRegTime" column="logo_reg_time" />
+	</resultMap>
+	
+	<select id="selectLogo" parameterType="kr.rapids.kosw.admin.model.Logo" resultMap="logoMap">
+		SELECT * 
+		FROM c_cust_logo
+		WHERE cust_seq = #{custSeq}
+	</select>
+	
+	<insert id="insertLogo" parameterType="kr.rapids.kosw.admin.model.Logo">
+		INSERT INTO c_cust_logo (
+			admin_seq,
+			cust_seq,
+			<if test="logoImageFile != null and logoImageFile !=''">
+				logo_image_file,
+			</if>
+			logo_color,
+			logo_reg_time
+		) VALUES (
+			#{adminSeq},
+			#{custSeq},
+			<if test="logoImageFile != null and logoImageFile !=''">
+				#{logoImageFile},
+			</if>
+			#{logoColor},
+			DATE_FORMAT(NOW(), "%Y%m%d%H%i%s")
+		)
+	</insert>
+	
+	<update id="updateLogo" parameterType="kr.rapids.kosw.admin.model.Logo">
+		UPDATE c_cust_logo
+		SET
+		<if test="logoImageFile != null and logoImageFile !=''">
+			logo_image_file = #{logoImageFile},
+		</if>
+		<if test="logoColor != null and logoColor !=''">
+			logo_color = #{logoColor},
+		</if>
+		admin_seq = #{adminSeq},
+		logo_reg_time = DATE_FORMAT(NOW(), "%Y%m%d%H%i%s")
+		WHERE cust_seq = #{custSeq}
+	</update>
+	
+	<select id="getLogoImageFile" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT logo_image_file
+		FROM c_cust_logo
+		WHERE cust_seq = #{custSeq}
+	</select>
+	
+	<select id="getLogo" parameterType="kr.rapids.kosw.admin.model.Logo" resultMap="logoMap">
+		SELECT *
+		FROM c_cust_logo
+		WHERE cust_seq = #{custSeq}
+	</select>
+	
+	
+	<resultMap id="characterMap" type="kr.rapids.kosw.admin.model.Character">
+		<id property="charSeq" column="char_seq" />
+		<result property="adminSeq" column="admin_seq" />
+		<result property="adminName" column="admin_name" />
+		<result property="charName" column="char_name" />
+		<result property="charActiveFlag" column="char_active_flag" />
+		<result property="charRegTime" column="char_reg_time" />
+		<result property="charImageFile" column="char_image_file" />
+		<result property="charBodyType" column="char_body_type" />
+		<result property="charJerseyType" column="char_jersey_type" />
+		<result property="charGender" column="char_gender" />
+		<result property="charStairYn" column="char_stair_yn" />
+		<result property="charCode" column="char_code" />
+		<result property="charDefaultYn" column="char_default_yn" />
+		<result property="useCount" column="use_count" javaType="java.lang.String" jdbcType="NUMERIC"/> <!-- 사용 통계 -->
+	</resultMap>
+	
+	
+	<insert id="addCharacter" parameterType="kr.rapids.kosw.admin.model.Character">
+		INSERT INTO u_character (
+			admin_seq,
+			char_code,
+			char_name,
+			char_active_flag,
+			char_stair_yn,
+			char_bust_yn,
+			char_image_file,
+			char_body_type,
+			char_jersey_type,
+			char_gender,
+			char_default_yn,
+			char_reg_time
+		) VALUES (
+			#{adminSeq},
+			#{charCode},
+			#{charName},
+			#{charActiveFlag},
+			#{charStairYn},
+			#{charBustYn},
+			#{charImageFile},
+			#{charBodyType},
+			#{charJerseyType},
+			#{charGender},
+			#{charDefaultYn},
+			DATE_FORMAT(NOW(), "%Y%m%d%H%i%s")
+		)
+	</insert>
+	
+	<delete id="characterDelete" parameterType="kr.rapids.kosw.admin.model.Character">
+		DELETE FROM u_character
+		WHERE char_code = #{charCode}
+		AND char_default_yn = 'N'
+	</delete>
+	
+	<select id="selectCharacterAll" resultMap="characterMap">
+		SELECT * 
+		FROM u_character
+		WHERE char_body_type = '0'
+		AND char_jersey_type = 'default'
+		AND char_stair_yn = 'N'
+		GROUP BY char_code
+	</select>
+	
+	<select id="characterNameCheck" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT char_name FROM u_character
+		WHERE char_name = #{name}
+		LIMIT 1
+	</select>
+	
+	<select id="characterCodeLast" resultType="java.lang.String">
+		SELECT MAX(CONVERT(char_code, UNSIGNED)) FROM u_character
+	</select>
+	
+	
+	
+	
+	<select id="selectCharecterByCode" parameterType="java.lang.String" resultMap="characterMap">
+		SELECT * 
+		FROM u_character
+		WHERE char_code = #{charCode}
+		
+		ORDER BY 
+		CASE char_bust_yn
+		WHEN 'Y' THEN 0
+		ELSE 1 END,
+		
+		CASE char_stair_yn
+		WHEN 'N' THEN 0
+		ELSE 1 END,
+		
+		CASE char_jersey_type
+		WHEN 'default' THEN 0
+		WHEN 'gold' THEN 1
+		WHEN 'green' THEN 2
+		WHEN 'red' THEN 3
+		ELSE 4 END,
+		
+		CASE char_body_type
+		WHEN '-2' THEN 0
+		WHEN '-1' THEN 1
+		WHEN '0' THEN 2
+		WHEN '+1' THEN 3
+		WHEN '+2' THEN 4
+		ELSE 5 END
+	</select>
+	
+	<select id="getCharacterImageFile" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT char_image_file
+		FROM u_character
+		WHERE char_seq = #{charSeq}
+	</select>
+	
+	<update id="characterNameGenderEdit" parameterType="kr.rapids.kosw.admin.model.Character">
+		UPDATE u_character 
+		SET
+		admin_seq = #{adminSeq},
+		char_name = #{charName},
+		char_gender = #{charGender},
+		char_active_flag = #{charActiveFlag},
+		char_reg_time = DATE_FORMAT(NOW(), "%Y%m%d%H%i%s")
+		WHERE char_code = #{charCode}
+	</update>
+	
+	<update id="editCharacterImage" parameterType="kr.rapids.kosw.admin.model.Character">
+		UPDATE u_character 
+		SET
+		admin_seq = #{adminSeq},
+		char_reg_time = DATE_FORMAT(NOW(), "%Y%m%d%H%i%s"),
+		char_image_file = #{charImageFile}
+		WHERE char_seq = #{charSeq}
+	</update>
+	
+	<select id="selectCharacterList" resultMap="characterMap">
+		SELECT 
+			C.*, 
+			A.admin_name, 
+			COUNT(U.user_seq) as use_count 
+		FROM u_character C
+		LEFT OUTER JOIN a_admin A
+			ON C.admin_seq = A.admin_seq
+		LEFT OUTER JOIN u_user U
+			ON C.char_code = U.char_code
+		WHERE char_body_type = '0'
+			AND char_jersey_type = 'default'
+			AND char_stair_yn = 'N'
+		GROUP BY C.char_code
+		ORDER BY char_code
+	</select>
+	
+	<resultMap id="userMap" type="kr.rapids.kosw.admin.model.User">
+		<id property="userSeq" column="user_seq" />
+		<result property="adminSeq" column="admin_seq" />
+		<result property="deptSeq" column="dept_seq" />
+		<result property="custSeq" column="cust_seq" />
+		<result property="userEmail" column="user_email" />
+		<result property="userPwd" column="user_pwd" />
+		<result property="userName" column="user_name" />
+		<result property="nickName" column="nickname" />
+		<result property="userRegTime" column="user_reg_time" />
+		<result property="approvalFlag" column="approval_flag" />
+		<result property="approvalTime" column="approval_time" />
+		<result property="deviceType" column="device_type" />
+		<result property="fcmToken" column="fcm_token" />
+		<result property="emailAuthCode" column="email_auth_code" />
+		<result property="authFinishFlag" column="auth_finish_flag" />
+		<result property="buildCnt" column="buildCnt" />
+		<result property="sActAmt" column="s_act_amt" />
+	</resultMap>
+	
+	<select id="selectUserBySeq" parameterType="java.lang.String" resultMap="userMap">
+		SELECT * 
+		FROM u_user
+		WHERE user_seq = #{userSeq}
+	</select>
+
+	<select id="selectUserByEmail" parameterType="java.lang.String" resultMap="userMap">
+		SELECT * 
+		FROM u_user
+		WHERE user_email = #{userEmail}
+	</select>
+	
+	<select id="selectUserLTotalCount" parameterType="kr.rapids.kosw.admin.model.User" resultType="java.lang.Integer">
+		SELECT COUNT(1)
+		FROM (
+			SELECT 
+				U.user_seq
+			FROM u_user U
+			JOIN u_user_building_map M
+			ON U.user_seq = M.user_seq
+			WHERE 1=1
+			<if test="custSeq != null and custSeq !=''">
+			AND M.cust_seq = #{custSeq}
+			</if>
+			<if test="search != null and search !=''">
+			AND ( 
+				U.user_email LIKE  concat ('%', #{search} ,'%') 
+				OR
+				U.user_name LIKE  concat ('%', #{search} ,'%') 
+				OR
+				U.nickname LIKE  concat ('%', #{search} ,'%') 
+			)
+			</if>
+			GROUP BY U.user_seq
+		) ZZ
+	</select>
+
+	<select id="selectUserAllTotalCount" parameterType="kr.rapids.kosw.admin.model.User" resultType="java.lang.Integer">
+		SELECT COUNT(1)
+		FROM (
+			SELECT 
+				U.user_seq
+			FROM u_user U
+			WHERE 1=1
+			<if test="search != null and search !=''">
+			AND ( 
+					U.user_email LIKE  concat ('%', #{search} ,'%') 
+					OR
+					U.user_name LIKE  concat ('%', #{search} ,'%') 
+					OR
+					U.nickname LIKE  concat ('%', #{search} ,'%') 
+			)
+			</if>
+			GROUP BY U.user_seq
+		) ZZ
+	</select>
+	
+	<select id="selectUserList" parameterType="kr.rapids.kosw.admin.model.User" resultMap="userMap">
+	
+		SELECT CAST(pnum AS SIGNED) AS rowNum ,
+		B.* FROM (
+			SELECT @ROWNUM:=@ROWNUM -1 AS pnum , A.* FROM (
+				
+				SELECT 
+					U.user_seq,
+				    MAX(U.char_seq) AS char_seq,
+				    MAX(U.user_email) AS user_email,
+				    MAX(U.user_name) AS user_name,
+				    MAX(U.nickname) AS nickname,
+				    MAX(U.user_reg_time) AS user_reg_time,
+				    MAX(U.auth_finish_flag) AS auth_finish_flag,
+				    MAX(M.approval_flag) AS approval_flag
+				FROM u_user U
+				JOIN u_user_building_map M
+				ON (U.user_seq = M.user_seq AND M.delete_yn = 'N')
+				WHERE 1=1
+					AND M.delete_yn = 'N'
+				<if test="custSeq != null and custSeq !=''">
+					AND M.cust_seq = #{custSeq}
+				</if>
+				<if test="search != null and search !=''">
+					AND ( 
+						U.user_email LIKE  concat ('%', #{search} ,'%') 
+						OR
+						U.user_name LIKE  concat ('%', #{search} ,'%') 
+						OR
+						U.nickname LIKE  concat ('%', #{search} ,'%') 
+					)
+				</if>
+				GROUP BY U.user_seq
+				
+			) A , (SELECT @ROWNUM:=#{totalCount}+1) R 
+		) B 
+		LIMIT #{startList}, #{pageViewCnt}
+	</select>
+
+	<select id="selectUserAllList" parameterType="kr.rapids.kosw.admin.model.User" resultMap="userMap">
+	
+		SELECT CAST(pnum AS SIGNED) AS rowNum ,
+		B.* FROM (
+			SELECT @ROWNUM:=@ROWNUM -1 AS pnum , A.* FROM (
+				
+				SELECT 
+					U.user_seq,
+				    U.char_seq AS char_seq,
+				    U.user_email AS user_email,
+				    U.user_name AS user_name,
+				    U.nickname AS nickname,
+				    U.user_reg_time AS user_reg_time,
+				    U.auth_finish_flag AS auth_finish_flag,
+				    U.approval_flag AS approval_flag,
+				    (select  count( distinct  build_seq)  from u_user_building_map A where A.user_seq = U.user_seq  and  A.approval_flag = 'Y') as buildCnt,
+					(SELECT sum(C.act_amt) 
+					FROM s_activity_user_daily C
+					where  C.user_seq  = U.User_seq ) as s_act_amt
+				FROM u_user U
+				WHERE 1=1
+				<if test="search != null and search !=''">
+					AND ( 
+						U.user_email LIKE  concat ('%', #{search} ,'%') 
+						OR
+						U.user_name LIKE  concat ('%', #{search} ,'%') 
+						OR
+						U.nickname LIKE  concat ('%', #{search} ,'%') 
+					)
+				</if>
+				order BY U.user_seq desc
+			) A , (SELECT @ROWNUM:=#{totalCount}+1) R 
+		) B 
+		<if test="sort != null and sort !=''">
+			order by ${sort}
+		</if>
+		LIMIT #{startList}, #{pageViewCnt}
+	</select>
+	
+	<select id="selectMapCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT 
+			COUNT(map_cnt) AS map_cnt
+		FROM (
+			SELECT
+				COUNT(map_seq) AS map_cnt, map_seq, cust_seq
+			FROM u_user_building_map
+			WHERE user_seq=#{userSeq}
+			GROUP BY user_seq, cust_seq
+		) X
+	</select>
+	
+	<delete id="deleteUser" parameterType="kr.rapids.kosw.admin.model.BeaconManufac">
+		DELETE FROM u_user WHERE user_seq=#{userSeq}
+	</delete>
+	
+	<update id="deleteUserMapping" parameterType="java.util.Map">
+		UPDATE u_user_building_map
+		SET approval_flag = 'N', delete_yn = 'Y'
+		WHERE user_seq = #{userSeq}
+		AND cust_seq = #{custSeq}
+	</update>
+	
+	<update id="updateUserApprovalFlag" parameterType="kr.rapids.kosw.admin.model.User">
+		UPDATE u_user_building_map SET
+			approval_flag = #{approvalFlag},
+			approval_time = DATE_FORMAT(NOW(), "%Y%m%d%H%i%s")
+		WHERE user_seq = #{userSeq}
+		AND cust_seq = #{custSeq}
+	</update>
+	
+	<update id="updateUserApprovalFlagOnUser" parameterType="kr.rapids.kosw.admin.model.User">
+		UPDATE u_user 
+		SET
+			approval_flag = #{approvalFlag},
+			approval_time = DATE_FORMAT(NOW(), "%Y%m%d%H%i%s")
+		WHERE user_seq = #{userSeq}
+	</update>
+
+	<update id="updateCustomerApprovalFlag" parameterType="kr.rapids.kosw.admin.model.Customer">
+		UPDATE c_customer 
+		SET
+			approval_flag = #{approval_flag}
+		WHERE cust_seq = #{custSeq}
+	</update>
+
+	
+	<select id="selectBeaconManufacTotalCount" parameterType="kr.rapids.kosw.admin.model.BeaconManufac" resultType="java.lang.Integer">
+		SELECT COUNT(1)
+		FROM d_beacon_manufac
+		WHERE 1=1
+		<if test="search != null and search !=''">
+			AND ( 
+				manufac_name LIKE #{search}
+				OR
+				manufac_post_name LIKE #{search}
+			)
+		</if>
+	</select>
+	
+	<resultMap id="beaconManufacMap" type="kr.rapids.kosw.admin.model.BeaconManufac">
+		<id property="manufacSeq" column="manufac_seq" />
+		<result property="adminSeq" column="admin_seq" />
+		<result property="manufacName" column="manufac_name" />
+		<result property="manufacPostName" column="manufac_post_name" />
+		<result property="manufacPostEmail" column="manufac_post_email" />
+		<result property="manufacPostPhone" column="manufac_post_phone" />
+		<result property="manufacRemarks" column="manufac_remarks" />
+		<result property="manufacRegTime" column="manufac_reg_time" />
+	</resultMap>
+	
+	<insert id="beaconeManufacAdd" parameterType="kr.rapids.kosw.admin.model.BeaconManufac">
+		INSERT INTO d_beacon_manufac (
+			admin_seq,
+			manufac_name,
+			manufac_post_name,
+			manufac_post_email,
+			manufac_post_phone,
+			manufac_remarks,
+			manufac_reg_time
+		) VALUES (
+			#{adminSeq },
+			#{manufacName },
+			#{manufacPostName },
+			#{manufacPostEmail },
+			#{manufacPostPhone },
+			#{manufacRemarks },
+			DATE_FORMAT(NOW(), "%Y%m%d%H%i%s")
+		)
+	</insert>
+	
+	<update id="beaconeManufacEdit" parameterType="kr.rapids.kosw.admin.model.BeaconManufac">
+		UPDATE d_beacon_manufac SET
+		admin_seq = #{adminSeq},
+		manufac_name = #{manufacName},
+		manufac_post_name = #{manufacPostName},
+		manufac_post_email = #{manufacPostEmail},
+		manufac_post_phone = #{manufacPostPhone},
+		manufac_remarks = #{manufacRemarks},
+		manufac_reg_time = DATE_FORMAT(NOW(), "%Y%m%d%H%i%s") 
+		WHERE manufac_seq = #{manufacSeq}
+	</update>
+	
+	<select id="selectBeaconManufacList" parameterType="kr.rapids.kosw.admin.model.BeaconManufac" resultMap="beaconManufacMap">
+		SELECT CAST(pnum AS SIGNED) AS rowNum ,
+		B.* FROM (
+			SELECT @ROWNUM:=@ROWNUM -1 AS pnum , A.* FROM (
+				
+				SELECT *
+				FROM d_beacon_manufac
+				WHERE 1=1
+				<if test="search != null and search !=''">
+					AND ( 
+						manufac_name LIKE #{search}
+						OR
+						manufac_post_name LIKE #{search}
+					)
+				</if>
+				
+			) A , (SELECT @ROWNUM:=#{totalCount}+1) R 
+		) B 
+		LIMIT #{startList}, #{pageViewCnt}
+		
+		
+		
+	</select>
+	
+	<select id="selectBeaconManufacBySeq" parameterType="kr.rapids.kosw.admin.model.BeaconManufac" resultMap="beaconManufacMap">
+		SELECT *
+		FROM d_beacon_manufac
+		WHERE manufac_seq = #{manufacSeq}
+	</select>
+	
+	<delete id="beaconeManufacDelete" parameterType="kr.rapids.kosw.admin.model.BeaconManufac">
+		DELETE FROM d_beacon_manufac
+		WHERE manufac_seq = #{manufacSeq}
+	</delete>
+	
+	
+	<resultMap id="beaconMap" type="kr.rapids.kosw.admin.model.Beacon">
+		<id property="beaconSeq" column="beacon_seq" />
+		<result property="stairSeq" column="stair_seq" />
+		<result property="stairName" column="stair_name" />
+		<result property="godo" column="godo" />
+		<result property="custSeq" column="cust_seq" />
+		<result property="custName" column="cust_name" />
+		<result property="buildSeq" column="build_seq" />
+		<result property="buildName" column="build_name" />
+		<result property="adminSeq" column="admin_seq" />
+		<result property="manufacSeq" column="manufac_seq" />
+		<result property="manufacName" column="manufac_name" />
+		<result property="modelName" column="model_name" />
+		<result property="serialOne" column="serial_one" />
+		<result property="serialTwo" column="serial_two" />
+		<result property="beaconUUID" column="beacon_uuid" />
+		<result property="majorValue" column="major_value" />
+		<result property="minorValue" column="minor_value" />
+		<result property="installFloor" column="install_floor" />
+		<result property="enabled" column="enabled" />
+		<result property="beaconRegTime" column="beacon_reg_time" />
+	</resultMap>
+	
+	<insert id="beaconAdd" parameterType="kr.rapids.kosw.admin.model.Beacon">
+		INSERT INTO d_beacon (
+			admin_seq,
+			cust_seq,
+			stair_seq,
+			install_floor,
+			manufac_seq,
+			model_name,
+			serial_one,
+			serial_two,
+			beacon_uuid,
+			major_value,
+			minor_value,
+			godo,
+			beacon_reg_time
+		) VALUES (
+			#{adminSeq},
+			#{custSeq},
+			#{stairSeq},
+			#{installFloor},
+			#{manufacSeq},
+			#{modelName},
+			#{serialOne},
+			#{serialTwo},
+			#{beaconUUID},
+			#{majorValue},
+			#{minorValue},
+			#{godo},
+			DATE_FORMAT(NOW(), "%Y%m%d%H%i%s")
+		)
+	</insert>
+	
+	<update id="godoEdit" parameterType="kr.rapids.kosw.admin.model.Beacon">
+		UPDATE d_beacon
+		SET godo = #{godo}
+		WHERE beacon_seq = #{beaconSeq}
+	</update>
+	
+	<update id="beaconEdit" parameterType="kr.rapids.kosw.admin.model.Beacon">
+		UPDATE d_beacon 
+		SET
+			admin_seq = #{adminSeq},
+			install_floor = #{installFloor},
+			manufac_seq = #{manufacSeq},
+			model_name = #{modelName},
+			serial_one = #{serialOne},
+			serial_two = #{serialTwo},
+			beacon_uuid = #{beaconUUID},
+			major_value = #{majorValue},
+			minor_value = #{minorValue},
+			godo = #{godo},
+			beacon_reg_time = DATE_FORMAT(NOW(), "%Y%m%d%H%i%s")
+		WHERE
+			cust_seq = #{custSeq}
+			AND stair_seq = #{stairSeq}
+			AND beacon_seq = #{beaconSeq}
+	</update>
+
+	<delete id="beaconDelete" parameterType="kr.rapids.kosw.admin.model.Beacon">
+		DELETE FROM d_beacon 
+		WHERE
+			cust_seq = #{custSeq}
+			AND stair_seq = #{stairSeq}
+			AND beacon_seq = #{beaconSeq}
+	</delete>
+	
+	<select id="beaconUuidCheck" parameterType="kr.rapids.kosw.admin.model.Beacon" resultMap="beaconMap">
+		SELECT *
+		FROM d_beacon
+		WHERE beacon_uuid = #{beaconUUID}
+		LIMIT 1
+	</select>
+	
+	<select id="beaconFloorCheck" parameterType="kr.rapids.kosw.admin.model.Beacon" resultMap="beaconMap">
+		SELECT *
+		FROM d_beacon
+		WHERE
+		stair_seq = #{stairSeq}
+		AND beacon_uuid = #{beaconUUID}
+		AND (install_floor = #{installFloor} OR minor_value = #{minorValue})
+		<if test="beaconSeq != null and beaconSeq !=''">
+		<![CDATA[
+		AND beacon_seq <> #{beaconSeq}
+		]]>
+		</if>
+		LIMIT 1
+	</select>
+	
+	<select id="beaconSearchList" parameterType="kr.rapids.kosw.admin.model.Beacon" resultMap="beaconMap">
+		SELECT B.*, BS.stair_name, C.cust_name, BF.manufac_name
+		FROM d_beacon B
+		JOIN c_building_stair BS
+			ON B.stair_seq = BS.stair_seq
+		JOIN c_customer C
+			ON B.cust_seq = C.cust_seq
+		JOIN d_beacon_manufac BF
+			ON B.manufac_seq = BF.manufac_seq
+		WHERE 1=1
+		<if test="custSeq != null and custSeq !=''">
+			AND B.cust_seq = #{custSeq}
+		</if>
+		<if test="stairSeq != null and stairSeq !=''">
+			AND B.stair_seq = #{stairSeq}
+		</if>
+		<if test="installFloor != null and installFloor !=''">
+			AND B.install_floor = #{installFloor}
+		</if>
+		<if test="manufacSeq != null and manufacSeq !=''">
+			AND B.manufac_seq = #{manufacSeq}
+		</if>
+		<if test="modelName != null and modelName !=''">
+			AND B.model_name LIKE #{modelName}
+		</if>
+		<if test="serialOne != null and serialOne !=''">
+			AND B.serial_one LIKE #{serialOne}
+		</if>
+		<if test="serialTwo != null and serialTwo !=''">
+			AND B.serial_two LIKE #{serialTwo}
+		</if>
+		<if test="beaconUUID != null and beaconUUID !=''">
+			AND B.beacon_uuid LIKE #{beaconUUID}
+		</if>
+		<if test="majorValue != null and majorValue !=''">
+			AND B.major_value LIKE #{majorValue}
+		</if>
+		<if test="minorValue != null and minorValue !=''">
+			AND B.minor_value LIKE #{minorValue}
+		</if>
+		
+	</select>
+	
+	
+	<select id="selectBeaconAllOfCustomer" parameterType="kr.rapids.kosw.admin.model.Customer" resultMap="beaconMap">
+		SELECT 
+			BC.*, BS.stair_name, B.build_name
+		FROM d_beacon BC
+		JOIN c_building_stair BS
+			ON BC.stair_seq = BS.stair_seq
+		JOIN c_building B
+			ON BS.build_seq = B.build_seq
+		WHERE 
+			BC.cust_seq = #{custSeq}
+		ORDER BY
+			BC.stair_seq DESC, 
+			BC.install_floor DESC
+	</select>
+	
+	<select id="selectBeaconTotalCount" parameterType="kr.rapids.kosw.admin.model.Beacon" resultType="java.lang.Integer">
+		SELECT COUNT(1)
+		FROM d_beacon
+		WHERE 1=1
+		<if test="stairSeq != null and stairSeq !=''">
+			AND stair_seq = #{stairSeq} 
+		</if>
+		<if test="custSeq != null and custSeq !=''">
+			AND cust_seq = #{custSeq} 
+		</if>
+	</select>
+	
+	
+	<select id="selectBeaconListAll" parameterType="kr.rapids.kosw.admin.model.Beacon" resultMap="beaconMap">
+		SELECT B.*, M.manufac_name, S.stair_name
+		FROM d_beacon B
+		JOIN d_beacon_manufac M
+		ON B.manufac_seq = M.manufac_seq
+		JOIN c_building_stair S
+		ON B.stair_seq = S.stair_seq
+		<if test="buildSeq != null and buildSeq !=''">
+		JOIN c_building BD
+		ON S.build_seq = BD.build_seq
+		</if>
+		WHERE 1=1
+		<if test="stairSeq != null and stairSeq !=''">
+			AND B.stair_seq = #{stairSeq} 
+		</if>
+		<if test="custSeq != null and custSeq !=''">
+			AND B.cust_seq = #{custSeq} 
+		</if>
+		<if test="buildSeq != null and buildSeq !=''">
+			AND BD.build_seq = #{buildSeq}
+		</if>
+	</select>
+	
+	<update id="beaconEnable" parameterType="kr.rapids.kosw.admin.model.Beacon" >
+		UPDATE d_beacon
+		SET enabled = #{enabled}
+		WHERE beacon_seq = #{beaconSeq}
+	</update>
+	
+	
+	
+	<select id="selectBeaconList" parameterType="kr.rapids.kosw.admin.model.Beacon" resultMap="beaconMap">
+		SELECT CAST(pnum AS SIGNED) AS rowNum ,
+		B.* FROM (
+			SELECT @ROWNUM:=@ROWNUM -1 AS pnum , A.* FROM (
+				SELECT B.*, M.manufac_name, S.stair_name
+				FROM d_beacon B
+				JOIN d_beacon_manufac M
+				ON B.manufac_seq = M.manufac_seq
+				JOIN c_building_stair S
+				ON B.stair_seq = S.stair_seq
+				<if test="buildSeq != null and buildSeq !=''">
+				JOIN c_building BD
+				ON S.build_seq = BD.build_seq
+				</if>
+				WHERE 1=1
+				<if test="stairSeq != null and stairSeq !=''">
+					AND B.stair_seq = #{stairSeq} 
+				</if>
+				<if test="custSeq != null and custSeq !=''">
+					AND B.cust_seq = #{custSeq} 
+				</if>
+				<if test="buildSeq != null and buildSeq !=''">
+					AND BD.build_seq = #{buildSeq}
+				</if>
+			) A , (SELECT @ROWNUM:=#{totalCount}+1) R 
+		) B 
+		LIMIT #{startList}, #{pageViewCnt}
+	</select>
+	
+	<select id="selectBuildingStairsOfAdmin" parameterType="kr.rapids.kosw.admin.model.Admin" resultMap="buildingStairMap">
+		SELECT S.* 
+		FROM c_building_stair S
+		JOIN c_building B
+		ON S.build_seq = B.build_seq
+		WHERE B.cust_seq = #{custSeq}
+	</select>
+	
+	<select id="selectBuildingStairListOfCustomer" parameterType="kr.rapids.kosw.admin.model.Customer" resultMap="buildingStairMap">
+		SELECT BS.*, B.build_name, B.build_code, B.build_floor_amt
+		FROM c_building_stair BS
+		JOIN c_building B
+		ON BS.build_seq = B.build_seq
+		WHERE B.cust_seq = #{custSeq}
+	</select>
+	
+	<select id="selectBuildingStairListOfBuilding" parameterType="kr.rapids.kosw.admin.model.Building" resultMap="buildingStairMap">
+		SELECT BS.*, B.build_name, B.build_code, B.build_floor_amt
+		FROM c_building_stair BS
+		JOIN c_building B
+		ON BS.build_seq = B.build_seq
+		WHERE
+		1 = 1
+		<if test="custSeq != null and custSeq !=''">
+			AND B.cust_seq = #{custSeq}
+		</if> 
+		<if test="buildSeq != null and buildSeq !=''">
+			AND B.build_seq = ${buildSeq}
+		</if>
+	</select>
+	
+	
+	<select id="selectBeaconManuListFacAll" resultMap="beaconManufacMap">
+		SELECT *
+		FROM d_beacon_manufac 
+	</select>
+	
+	
+	
+	<resultMap id="bbsMap" type="kr.rapids.kosw.admin.model.Bbs">
+		<id property="bbsSeq" column="bbs_seq" />
+		<result property="adminSeq" column="admin_seq" />
+		<result property="custSeq" column="cust_seq" />
+		<result property="custName" column="cust_name" />
+		
+		<result property="buildSeq" column="build_seq" />
+		<result property="buildName" column="build_name" />
+		
+		<result property="stairSeq" column="stair_seq" />
+		<result property="adminName" column="admin_name" />
+		<result property="bbsType" column="bbs_type" />
+		<result property="pushFlag" column="push_flag" />
+		<result property="title" column="title" />
+		<result property="content" column="content" />
+		<result property="expireDate" column="expire_date" />
+		<result property="bbsRegTime" column="bbs_reg_time" />
+	</resultMap>
+	
+	
+	
+	<select id="selectBbsTotalCount" parameterType="kr.rapids.kosw.admin.model.Bbs" resultType="java.lang.Integer">
+		SELECT COUNT(1)
+		FROM b_bbs
+		WHERE 1=1
+		<if test="custSeq != null and custSeq != ''">
+			AND cust_seq = #{custSeq}
+		</if>
+		<if test="buildSeq != null and buildSeq != ''">
+			AND build_seq = #{buildSeq}
+		</if>
+		<if test="stairSeq != null and stairSeq != ''">
+			AND stair_seq = #{stairSeq}
+		</if>
+		<if test="search != null and search != ''">
+		AND (
+			title LIKE  '%${search}%'
+			OR 
+			content LIKE '%${search}%'
+		)
+		</if>
+	</select>
+	
+	
+	<select id="selectBbsList" parameterType="kr.rapids.kosw.admin.model.Bbs" resultMap="bbsMap">
+		SELECT CAST(pnum AS SIGNED) AS rowNum ,
+			B.* FROM (
+				SELECT @ROWNUM:=@ROWNUM -1 AS pnum , A.* FROM (
+					SELECT B.*, A.admin_name, C.cust_name, BD.build_name
+					FROM b_bbs B
+					JOIN a_admin A
+						ON B.admin_seq = A.admin_seq
+					LEFT OUTER JOIN c_customer C
+						ON B.cust_seq = C.cust_seq
+					LEFT OUTER JOIN c_building BD
+						ON B.build_seq = BD.build_seq
+					WHERE 1=1
+					<if test="custSeq != null and custSeq != ''">
+						AND B.cust_seq = #{custSeq}
+					</if>
+					<if test="buildSeq != null and buildSeq != ''">
+						AND B.build_seq = #{buildSeq}
+					</if>
+					<if test="stairSeq != null and stairSeq != ''">
+						AND B.stair_seq = #{stairSeq}
+					</if>
+					<if test="search != null and search != ''">
+					AND (
+						B.title LIKE  '%${search}%'
+						OR 
+						B.content LIKE '%${search}%'
+					)
+					</if>
+					ORDER BY bbs_reg_time DESC
+					
+			) A , (SELECT @ROWNUM:=#{totalCount}+1) R 
+		) B 
+		LIMIT #{startList}, #{pageViewCnt}
+	</select>
+	
+	<insert id="bbsAdd" parameterType="kr.rapids.kosw.admin.model.Bbs"
+		useGeneratedKeys="true" 
+     	keyColumn="bbs_seq" 
+     	statementType="PREPARED"
+     	keyProperty="bbsSeq">
+		INSERT INTO b_bbs (
+			admin_seq, 
+			bbs_type,
+			push_flag,
+			title,
+			content,
+			expire_date,
+			cust_seq,
+			build_seq,
+			stair_seq,
+			bbs_reg_time
+		) VALUES (
+			#{adminSeq},
+			#{bbsType},
+			#{pushFlag},
+			#{title},
+			#{content},
+			#{expireDate},
+			#{custSeq},
+			#{buildSeq},
+			#{stairSeq},
+			DATE_FORMAT(NOW(), "%Y%m%d%H%i%s")
+		)
+	</insert>
+	
+	<insert id="bbsEdit" parameterType="kr.rapids.kosw.admin.model.Bbs">
+		UPDATE b_bbs 
+		SET
+			admin_seq = #{adminSeq},
+			bbs_type = #{bbsType},
+			push_flag = #{pushFlag},
+			title = #{title},
+			content = #{content},
+			expire_date = #{expireDate},
+			bbs_reg_time = DATE_FORMAT(NOW(), "%Y%m%d%H%i%s")
+		WHERE
+			bbs_seq = #{bbsSeq}
+	</insert>
+	
+	<insert id="bbsDelete" parameterType="kr.rapids.kosw.admin.model.Bbs">
+		DELETE FROM b_bbs 
+		WHERE
+			bbs_seq = #{bbsSeq}
+	</insert>
+	
+	<select id="selectBbsBySeq" parameterType="kr.rapids.kosw.admin.model.Bbs" resultMap="bbsMap">
+		SELECT * 
+		FROM b_bbs
+		WHERE 
+			bbs_seq = #{bbsSeq}
+		<if test="custSeq != null and custSeq != ''">
+			AND cust_seq = #{custSeq}
+		</if>
+	</select>
+	
+	<!-- 활성상태 전체 회원의 FCM token -->
+	<select id="selectFcmTokenOfAllUser" parameterType="string" resultType="string">
+		SELECT
+			fcm_token
+		FROM u_user 
+		WHERE approval_flag='Y'AND fcm_token IS NOT NULL
+	</select>
+	
+	<!-- 고객사에 속한 회원의 FCM 토큰 획득 -->
+	<select id="selectFcmTokenOfCustomer" parameterType="string" resultType="string">
+		SELECT
+			fcm_token
+		FROM u_user AS A
+			LEFT JOIN (
+				SELECT
+					DISTINCT user_seq
+				FROM u_user_building_map 
+				WHERE cust_seq=${value}
+			)AS B ON (A.user_seq=B.user_seq)
+		WHERE approval_flag='Y'AND fcm_token IS NOT NULL
+	</select>
+	
+	
+	<resultMap id="pushMap" type="kr.rapids.kosw.admin.model.Push">
+		<id property="pushSeq" column="push_seq" />
+		<result property="adminSeq" column="admin_seq" />
+		<result property="custSeq" column="cust_seq" />
+		<result property="custName" column="cust_name" />
+		
+		<result property="buildSeq" column="build_seq" />
+		<result property="buildName" column="build_name" />
+		
+		<result property="stairSeq" column="stair_seq" />
+		<result property="adminName" column="admin_name" />
+		<result property="pushType" column="push_type" />
+		<result property="sentFlag" column="sent_flag" />
+		<result property="pushTitle" column="push_title" />
+		<result property="pushContent" column="push_content" />
+		<result property="reserveTime" column="reserve_time" />
+		<result property="pushRegTime" column="push_reg_time" />
+	</resultMap>
+	
+	<select id="scheduledPushList" resultMap="pushMap">
+		<![CDATA[
+		SELECT * FROM b_push
+		WHERE 
+		sent_flag = 'N'
+		AND reserve_time > DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -20 MINUTE), '%Y%m%d%H%i')
+		AND reserve_time <= DATE_FORMAT(DATE_ADD(NOW(), INTERVAL +10 MINUTE), '%Y%m%d%H%i')
+		]]>
+	</select>
+	
+	<select id="pushTargetTokens" parameterType="kr.rapids.kosw.admin.model.Push" resultType="java.lang.String">
+		<![CDATA[
+		SELECT U.fcm_token 
+		FROM u_user U
+		JOIN u_user_building_map M
+		ON U.user_seq = M.user_seq
+		WHERE U.push_flag = 'Y'
+		AND U.fcm_token is not null
+		AND U.withdrawal_flag <> 'N'
+		]]>
+		AND M.default_flag = 'Y'
+		<if test="buildSeq != null and buildSeq != ''">
+		AND M.build_seq = #{buildSeq} 
+		</if>
+		<if test="custSeq != null and custSeq != ''">
+		AND M.cust_seq = #{custSeq}
+		</if>
+		GROUP BY U.fcm_token
+	</select>
+	
+	<select id="selectPushList" parameterType="kr.rapids.kosw.admin.model.Push" resultMap="pushMap">
+		SELECT CAST(pnum AS SIGNED) AS rowNum ,
+			B.* FROM (
+				SELECT @ROWNUM:=@ROWNUM -1 AS pnum , A.* FROM (
+					SELECT B.*, A.admin_name, C.cust_name , BD.build_name
+					FROM b_push B
+					JOIN a_admin A
+						ON B.admin_seq = A.admin_seq
+					LEFT OUTER JOIN c_customer C
+						ON B.cust_seq = C.cust_seq
+					LEFT OUTER JOIN c_building BD
+						ON B.build_seq = BD.build_seq
+					WHERE 1=1
+					<if test="custSeq != null and custSeq != ''">
+						AND B.cust_seq = #{custSeq}
+					</if>
+					<if test="buildSeq != null and buildSeq != ''">
+						AND B.build_seq = #{buildSeq}
+					</if>
+					<if test="stairSeq != null and stairSeq != ''">
+						AND B.stair_seq = #{stairSeq}
+					</if>
+					<if test="search != null and search != ''">
+					AND (
+						B.push_title LIKE  '%${search}%'
+						OR 
+						B.push_content LIKE '%${search}%'
+					)
+					</if>
+					ORDER BY push_reg_time DESC
+					
+			) A , (SELECT @ROWNUM:=#{totalCount}+1) R 
+		) B 
+		LIMIT #{startList}, #{pageViewCnt}
+	</select>
+	
+	<select id="selectPushTotalCount" parameterType="kr.rapids.kosw.admin.model.Push" resultType="java.lang.Integer">
+		SELECT COUNT(1)
+		FROM b_push
+		WHERE 1=1
+		<if test="custSeq != null and custSeq != ''">
+			AND cust_seq = #{custSeq}
+		</if>
+		<if test="buildSeq != null and buildSeq != ''">
+			AND build_seq = #{buildSeq}
+		</if>
+		<if test="stairSeq != null and stairSeq != ''">
+			AND stair_seq = #{stairSeq}
+		</if>
+		<if test="search != null and search != ''">
+		AND (
+			push_title LIKE  '%${search}%'
+			OR 
+			push_content LIKE '%${search}%'
+		)
+		</if>
+	</select>
+	
+	<insert id="pushAdd" parameterType="kr.rapids.kosw.admin.model.Push"
+		useGeneratedKeys="true" 
+     	keyColumn="push_seq" 
+     	statementType="PREPARED"
+     	keyProperty="pushSeq">
+		INSERT INTO b_push (
+			admin_seq, 
+			push_type,
+			push_title,
+			push_content,
+			reserve_time,
+			cust_seq,
+			build_seq,
+			stair_seq,
+			push_reg_time
+		) VALUES (
+			#{adminSeq},
+			#{pushType},
+			#{pushTitle},
+			#{pushContent},
+			#{reserveTime},
+			#{custSeq},
+			#{buildSeq},
+			#{stairSeq},
+			DATE_FORMAT(NOW(), "%Y%m%d%H%i%s")
+		)
+	</insert>
+	
+	<update id="pushEdit" parameterType="kr.rapids.kosw.admin.model.Push">
+		UPDATE b_push 
+		SET
+			admin_seq = #{adminSeq},
+			push_type = #{pushType},
+			push_title = #{pushTitle},
+			push_content = #{pushContent},
+			cust_seq = #{custSeq},
+			build_seq = #{buildSeq},
+			reserve_time = #{reserveTime},
+			push_reg_time = DATE_FORMAT(NOW(), "%Y%m%d%H%i%s")
+		WHERE
+			push_seq = #{pushSeq}
+	</update>
+	
+	<insert id="pushDelete" parameterType="kr.rapids.kosw.admin.model.Push">
+		DELETE FROM b_push 
+		WHERE
+			push_seq = #{pushSeq}
+	</insert>
+	
+	
+	<select id="pushTargets" parameterType="kr.rapids.kosw.admin.model.Push" resultType="string">
+		SELECT fcm_token FROM u_user U
+		LEFT OUTER JOIN u_user_building_map M
+		ON U.user_seq = M.user_seq
+		WHERE 
+		M.default_flag = 'Y'
+		AND U.approval_flag = 'Y'
+		AND U.push_flag = 'Y' 
+		AND U.fcm_token IS NOT NULL
+		<if test="custSeq != null and custSeq != ''">
+		AND (U.cust_seq = #{custSeq} OR M.cust_seq = #{custSeq})
+		</if>
+		<if test="buildSeq != null and buildSeq != ''">
+		AND M.build_seq = #{buildSeq}
+		</if>
+		GROUP BY fcm_token
+	</select>
+	
+	
+	<update id="pushSent" parameterType="kr.rapids.kosw.admin.model.Push">
+		UPDATE b_push SET sent_flag = 'Y'
+		WHERE push_seq = #{pushSeq}
+	</update>
+	
+	
+	<select id="getPushBySeq" parameterType="kr.rapids.kosw.admin.model.Push" resultMap="pushMap">
+		SELECT
+			*
+		FROM b_push
+		WHERE push_seq = #{pushSeq}
+	</select>
+	
+	
+	<resultMap id="verMap" type="kr.rapids.kosw.admin.model.AppVersion">
+		<id property="verSeq" column="ver_seq" />
+		<result property="adminSeq" column="admin_seq" />
+		<result property="adminName" column="admin_name" />
+		<result property="appType" column="app_type" />
+		<result property="appVersion" column="app_version" />
+		<result property="forceKill" column="force_kill" />
+		<result property="updateDesc" column="update_desc" />
+		<result property="verRegTime" column="ver_reg_time" />
+	</resultMap>
+	
+	
+	<select id="getAppVersion" parameterType="kr.rapids.kosw.admin.model.AppVersion" resultMap="verMap">
+		SELECT A1.*, AD.admin_name
+		FROM a_version A1
+		JOIN (
+			SELECT app_type, MAX(ver_reg_time) AS last_reg_time 
+			FROM a_version
+			GROUP BY app_type
+		) A2
+			ON A1.app_type = A2.app_type AND A1.ver_reg_time = A2.last_reg_time
+		JOIN a_admin AD
+			ON A1.admin_seq = AD.admin_seq
+	</select>
+	
+	
+	<insert id="addVersion" parameterType="kr.rapids.kosw.admin.model.AppVersion"
+		useGeneratedKeys="true" 
+     	keyColumn="ver_seq" 
+     	statementType="PREPARED"
+     	keyProperty="verSeq">
+		INSERT INTO a_version (
+			admin_seq, 
+			app_type,
+			app_version,
+			force_kill,
+			update_desc,
+			ver_reg_time
+		) VALUES (
+			#{adminSeq},
+			#{appType},
+			#{appVersion},
+			#{forceKill},
+			#{updateDesc},
+			DATE_FORMAT(NOW(), "%Y%m%d%H%i%s")
+		)
+	</insert>
+	
+	
+	<resultMap id="rankMap" type="kr.rapids.kosw.admin.model.Ranking">
+		<result property="userSeq" column="user_seq" />
+		<result property="userName" column="user_name" />
+		<result property="nickName" column="nick_name" />
+		<result property="deptName" column="dept_name" />
+		<result property="custName" column="cust_name" />
+		<result property="custSeq" column="cust_seq" />
+		<result property="deptSeq" column="dept_seq" />
+		<result property="recordAmount" column="record_amount" />
+		<result property="ranking" column="ranking" />
+		<result property="actDate" column="act_date" />
+	</resultMap>
+	
+	<!-- 소속 회사의 개인별 통계 -->
+	<select id="getRankingIndividual" parameterType="kr.rapids.kosw.admin.model.Ranking" resultMap="rankMap">
+		-- getRankingIndividual
+		SELECT 
+			 ZZ.*,
+		     LEFT(U.user_name,8) AS user_name,
+		     D.dept_name,
+		     (SELECT cust_name FROM c_customer WHERE cust_seq = #{custSeq}) AS cust_name,
+		     IF (ZZ.user_seq = #{userSeq}, 'Y', 'N') AS is_me,
+		     if (( select shared from c_customer where cust_seq = #{custSeq} ) = 'Y',U.nickname,'비공개')  AS nick_name
+		FROM (
+			 	SELECT SUB.*,@vRank := @vRank +1 AS ranking  FROM (
+			 		SELECT 
+						P.user_seq, 
+						IFNULL(SUM(act_amt), 0) AS record_amount
+					FROM s_activity_user_daily AS P
+					WHERE 
+							P.act_date BETWEEN #{startDate} AND #{endDate}
+							<if test="custSeq != null and custSeq != 0 and custSeq != ''"><!-- 0은 전체 -->
+								AND P.cust_seq = #{custSeq}
+							</if>
+							<if test="deptSeq != null and deptSeq != 0 and deptSeq != ''"><!-- 0은 전체 -->
+								AND P.dept_seq = #{deptSeq}
+							</if>
+					GROUP BY P.user_seq
+					ORDER BY record_amount DESC
+			 	) SUB
+			 	,(SELECT @vRank := 0) AS R
+			 	
+		) ZZ
+		JOIN u_user U
+			ON ZZ.user_seq = U.user_seq
+		JOIN (
+				SELECT user_seq, MAX(dept_seq) AS dept_seq FROM u_user_building_map
+				WHERE cust_seq = #{custSeq}
+				GROUP BY user_seq
+		) M ON U.user_seq = M.user_seq
+		JOIN c_cust_depart D
+			ON M.dept_seq = D.dept_seq
+		ORDER BY ranking
+	</select>
+	
+	<!-- 개인의 기록 조회 -->
+	<select id="getRecordIndividual" parameterType="kr.rapids.kosw.admin.model.Ranking" resultMap="rankMap">
+		-- getRecordIndividual
+		SELECT 
+			RIGHT(D.base_date,2) AS act_date ,
+			IFNULL(ZZ.record_amount, 0) as record_amount,
+		    (select user_name from u_user where user_seq = #{userSeq} ) as user_name
+		FROM t_date D
+		LEFT OUTER JOIN (
+			SELECT 
+				A.act_date AS  act_date,
+				SUM(A.act_amt) AS record_amount
+			FROM s_activity_user_daily A
+			WHERE A.user_seq = #{userSeq}
+			AND A.act_date BETWEEN #{startDate} AND #{endDate}
+			GROUP BY A.act_date
+			ORDER BY A.act_date
+		) ZZ
+		ON D.base_date = ZZ.act_date
+		WHERE D.base_date BETWEEN #{startDate} AND #{endDate}
+				
+	</select>
+	
+	<!-- 부서별 랭킹 : 회사 한정시 custSeq 입력 -->
+	<select id="selectGroupRankingByDepart" parameterType="kr.rapids.kosw.admin.model.Ranking" resultMap="rankMap">
+		-- selectGroupRankingByDepart
+		SELECT 
+			ZZ.*,
+		    LEFT(C.cust_name, 8) AS cust_name,
+		    if (C.shared  = 'Y',LEFT(D.dept_name, 8),'비공개')   AS dept_name,
+		    C.cust_seq
+		FROM
+		(
+			SELECT SUB.*,@vRank := @vRank +1 AS ranking  FROM (
+				SELECT 
+					P.dept_seq, 
+					IFNULL(SUM(act_amt), 0) AS record_amount
+				FROM s_activity_user_daily AS P
+				WHERE 
+					P.act_date BETWEEN #{startDate} AND #{endDate}
+					<if test="custSeq != null and custSeq != 0 and custSeq != ''"><!-- 0은 전체 -->
+					AND P.cust_seq = #{custSeq}
+					</if>
+				GROUP BY P.dept_seq
+				ORDER BY record_amount DESC
+			) SUB
+			,(SELECT @vRank := 0) AS R
+			
+		) ZZ
+		JOIN c_cust_depart D
+		ON ZZ.dept_seq = D.dept_seq
+		JOIN c_customer C
+		ON D.cust_seq = C.cust_seq
+		ORDER BY ranking
+	</select>
+	
+	<!-- 
+					AND P.build_seq IN (SELECT build_seq FROM c_building where cust_seq = #{custSeq})
+					AND P.dept_seq IN (SELECT dept_seq FROM c_cust_depart WHERE cust_seq = #{custSeq})				
+	 -->
+	
+	<select id="selectGroupRankingByCompany" parameterType="kr.rapids.kosw.admin.model.Ranking" resultMap="rankMap">
+		
+		SELECT 
+			ZZ.*,
+			LEFT(C.cust_name, 8) AS cust_name
+		FROM
+		(
+			SELECT SUB.*,@vRank := @vRank +1 AS ranking  FROM (
+			
+				SELECT 
+					A.cust_seq ,
+					IFNULL(SUM(A.act_amt), 0) AS record_amount
+				FROM s_activity_user_daily A
+				WHERE
+				    A.act_date BETWEEN #{startDate} AND #{endDate}
+					<if test="custSeq != null and custSeq != 0 and custSeq != ''"><!-- 0은 전체 -->
+				    AND A.cust_seq = #{custSeq}
+				    </if>
+				GROUP BY A.cust_seq
+				ORDER BY record_amount DESC
+				
+			) SUB
+			,(SELECT @vRank := 0) AS R
+		
+		) ZZ
+		JOIN c_customer C
+		ON ZZ.cust_seq = C.cust_seq
+		
+	</select>
+	
+	<!-- 			SELECT SUB.*,@vRank := @vRank +1 AS ranking  FROM (
+			
+				SELECT 
+					B.cust_seq ,
+					IFNULL(SUM(A.act_amt), 0) AS record_amount
+				FROM s_activity_user_daily A
+				JOIN c_building B
+				ON A.build_seq = B.build_seq
+				WHERE
+					A.act_date BETWEEN #{startDate} AND #{endDate}
+				GROUP BY B.cust_seq
+				ORDER BY record_amount DESC
+	 -->
+</mapper>

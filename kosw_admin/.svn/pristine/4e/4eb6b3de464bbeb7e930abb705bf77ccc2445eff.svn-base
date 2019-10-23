@@ -1,0 +1,94 @@
+# https://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
+
+
+#db.address=103.60.127.32:3306
+db.address=182.162.141.243:3306
+#db.address=localhost:3306
+
+# catalina.home base : /Users/kangnamgyu/JOB/STAIRWAY/apache-tomcat-8.0.46
+file.upload.logo=/global/logo
+file.upload.character=/global/character
+
+
+# JDBC URL of the database. (com.mysql.jdbc.Driver , net.sf.log4jdbc.sql.jdbcapi.DriverSpy - jdbc:log4jdbc:mysql)
+spring.datasource.driver-class-name=net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+spring.datasource.url=jdbc:log4jdbc:mysql://${db.address}/kosw2?useUnicode=true&charaterEncoding=utf-8
+#spring.datasource.driver-class-name=com.mysql.jdbc.Driver
+#spring.datasource.url=jdbc:mysql://${server.address}/kosw?useUnicode=true&charaterEncoding=utf-8
+
+# POOL SIZE
+spring.datasource.hikari.maximum-pool-size=20
+# TIMEOUT 60 SEC
+spring.datasource.hikari.connection-timeout=60000
+spring.datasource.hikari.minimum-idle=10
+
+spring.jmx.default-domain:admin2
+spring.datasource.hikari.pool-name=poll-admin2
+spring.datasource.hikari.register-mbeans=false
+
+# Login username of the database.
+spring.datasource.username=kosw
+# Login password of the database.
+spring.datasource.password=kosw!3@4
+
+spring.datasource.generate-unique-name=true
+
+mybatis.type-aliases-package=kr.rapids.kosw.admin.model
+mybatis.mapper-locations=classpath:/mapper/*.xml
+
+# SESSION TIMEOUT SECCOND
+server.servlet.session.timeout=86400
+server.servlet.session.cookie.max-age=86400
+
+# RUN schema.sql
+spring.datasource.initialization-mode=always
+
+# To do not return key of empty value For json response.
+spring.jackson.default-property-inclusion=NON_NULL
+
+
+# Spring MVC view prefix.
+spring.mvc.view.prefix= /WEB-INF/jsp/
+# Spring MVC view suffix.
+spring.mvc.view.suffix=.jsp
+# Path pattern used for static resources. WILL MAP classpath:/static/js/jquery.min.js TO /[static]/js/jquery.min.js 
+spring.mvc.static-path-pattern=/**
+
+
+ # Enable support of multi-part uploads.
+spring.servlet.multipart.enabled=true
+# Threshold after which files will be written to disk. Values can use the suffixed "MB" or "KB" to indicate a Megabyte or Kilobyte size.
+spring.servlet.multipart.file-size-threshold=0
+# Intermediate location of uploaded files. 
+#spring.http.multipart.location= 
+ # Max file size. Values can use the suffixed "MB" or "KB" to indicate a Megabyte or Kilobyte size.
+spring.servlet.multipart.max-file-size=5MB
+# Max request size. Values can use the suffixed "MB" or "KB" to indicate a Megabyte or Kilobyte size.
+spring.servlet.multipart.max-request-size=50MB
+# Whether to resolve the multipart request lazily at the time of file or parameter access. 
+spring.servlet.multipart.resolve-lazily=false
+
+
+# Whether to enable the default error page displayed in browsers in case of a server error.
+server.error.whitelabel.enabled=false
+# When to include a "stacktrace" attribute.
+server.error.include-stacktrace=always
+
+firebase.url=https://fcm.googleapis.com/fcm/send
+firebase.key=AAAAcZd9rm4:APA91bFKiBb0EetPyxT4vel__5w1wTkjWyIArmaMq5kqJZkfosA-I-zRuoestcjudJDmFCi2V4gT-ihBLItGAXjZlSz_WlGu0UDCyksDkZMS9G_WIeabzlXruiQrKqBWBQaCk2vAokcG
+
+
+# Email (MailProperties)
+spring.mail.default-encoding=UTF-8
+spring.mail.host=smtp.gmail.com
+# Login user of the SMTP server.
+spring.mail.username=chsong97@gmail.com
+# Login password of the SMTP server.
+spring.mail.password=Keepcalm01!
+# SMTP server port.
+spring.mail.port=587
+# Whether to test that the mail server is available on startup.
+spring.mail.test-connection=false 
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+

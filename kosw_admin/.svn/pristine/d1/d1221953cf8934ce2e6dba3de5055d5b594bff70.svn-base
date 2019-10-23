@@ -1,0 +1,228 @@
+package kr.rapids.kosw.admin.model;
+
+import java.io.Serializable;
+
+import org.apache.ibatis.type.Alias;
+import org.springframework.util.StringUtils;
+
+import kr.rapids.kosw.admin.AppConstants;
+import kr.rapids.kosw.admin.utils.DateFormatUtil;
+import kr.rapids.kosw.admin.utils.ModelValidation;
+
+/*
+ * 고객사
+ */
+@Alias("customer")
+public class Customer extends Page implements Serializable, InputFormModel {
+	
+	@Override
+	public String toString() {
+		return "Customer [custSeq=" + custSeq + ", custCode=" + custCode + ", custName=" + custName + ", postName="
+				+ postName + ", postEmail=" + postEmail + ", postPhone=" + postPhone + ", custRemarks=" + custRemarks
+				+ "]";
+	}
+
+	private static final long serialVersionUID = 1L;
+	
+	private String custSeq;			// ID
+	private String custCode;		// 회사코드
+	private String custName;		// 고객사명
+	private String postName;		// 담당자명
+	private String postEmail;		// 담당자 이메일
+	private String postPhone;		// 담당자 전화번호
+	private String custRemarks;		// 비고
+	private String custRegTime;		// 등록일시 (yyyyMMddHHmmss)
+	private String userAutoConfirmFlag = "N";  // 사용자 자동 승인 여부
+
+	private String shared ;  // 사용자 자동 승인 여부
+
+	private String message;
+	
+	private String adminSeq;
+
+	private String buildSeq;
+	
+	private String approval_flag;
+	private String permit_other_building = "N"; //타건물 집계 승인여부
+	
+	public String getPermit_other_building() {
+		return permit_other_building;
+	}
+
+	public void setPermit_other_building(String permit_other_building) {
+		this.permit_other_building = permit_other_building;
+	}
+
+	private Integer adminCount = 0;
+	private Integer userCount = 0;
+	
+	private String startDate;  		// 조회 시작 일자 yyyyMMdd
+	private String endDate;			// 조회 종료 일자 yyyyMMdd
+	private String reqType;			// excel 다운로드시 사용
+	
+	public Integer getUserCount() {
+		return userCount;
+	}
+
+	public void setUserCount(Integer userCount) {
+		this.userCount = userCount;
+	}
+
+	public String getShared() {
+		return shared;
+	}
+
+	public void setShared(String shared) {
+		this.shared = shared;
+	}
+
+	public String getBuildSeq() {
+		return buildSeq;
+	}
+
+	public void setBuildSeq(String buildSeq) {
+		this.buildSeq = buildSeq;
+	}
+
+	public String getApproval_flag() {
+		return approval_flag;
+	}
+
+	public void setApproval_flag(String approval_flag) {
+		this.approval_flag = approval_flag;
+	}
+
+	public Integer getAdminCount() {
+		return adminCount;
+	}
+
+	public void setAdminCount(Integer adminCount) {
+		this.adminCount = adminCount;
+	}
+
+	public String getUserAutoConfirmFlag() {
+		return userAutoConfirmFlag;
+	}
+	
+	public void setUserAutoConfirmFlag(String userAutoConfirmFlag) {
+		if (userAutoConfirmFlag != null && userAutoConfirmFlag.equals("Y")){
+			this.userAutoConfirmFlag = "Y";
+		}else{
+			this.userAutoConfirmFlag = "N";
+		}
+	}
+	public String getAdminSeq() {
+		return adminSeq;
+	}
+	public void setAdminSeq(String adminSeq) {
+		this.adminSeq = adminSeq;
+	}
+	public String getMessage() {
+		return message;
+	}
+	public void setMessage(String message) {
+		this.message = message;
+	}
+	public String getCustSeq() {
+		return custSeq;
+	}
+	public void setCustSeq(String custSeq) {
+		this.custSeq = custSeq;
+	}
+	public String getCustCode() {
+		return custCode;
+	}
+	public void setCustCode(String custCode) {
+		this.custCode = custCode;
+	}
+	public String getCustName() {
+		return custName;
+	}
+	public void setCustName(String custName) {
+		this.custName = custName;
+	}
+	public String getPostName() {
+		return postName;
+	}
+	public void setPostName(String postName) {
+		this.postName = postName;
+	}
+	public String getPostEmail() {
+		return postEmail;
+	}
+	public void setPostEmail(String postEmail) {
+		this.postEmail = postEmail;
+	}
+	public String getPostPhone() {
+		return postPhone;
+	}
+	public void setPostPhone(String postPhone) {
+		this.postPhone = postPhone.replaceAll("[\\D]", "");
+	}
+	public String getCustRemarks() {
+		return custRemarks;
+	}
+	public void setCustRemarks(String custRemarks) {
+		this.custRemarks = custRemarks;
+	}
+	public String getCustRegTime() {
+		return custRegTime;
+	}
+	
+	public String getCustRegTimeFormat() {
+		return DateFormatUtil.fromFormat2Format(custRegTime, "yyyyMMddHHmmss", AppConstants.DATE_DISPLAY_FORMAT);
+	}
+	
+	public void setCustRegTime(String custRegTime) {
+		this.custRegTime = custRegTime;
+	}
+	
+	@Override
+	public String inputValidateErrroMessage() {
+		if (StringUtils.isEmpty(this.custName)){
+			return "고객사명을 입력해주세요.";
+		}
+		if (StringUtils.isEmpty(this.postName)){
+			return "담당자명을 입력해주세요.";
+		}
+		if (StringUtils.isEmpty(this.postEmail)){
+			return "담당자 이메일을 입력해주세요.";
+		}
+		if (StringUtils.isEmpty(this.postPhone)){
+			return "담당자 전화번호를 입력해주세요.";
+		}
+		/*
+		if (!ModelValidation.isPhoneNumber(this.postPhone)){
+			return "담당자 전화번호의 형식을 확인해주세요.";
+		}
+		*/
+		return null;
+	}
+
+	public String getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(String startDate) {
+		this.startDate = startDate;
+	}
+
+	public String getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(String endDate) {
+		this.endDate = endDate;
+	}
+
+	public String getReqType() {
+		return reqType;
+	}
+
+	public void setReqType(String reqType) {
+		this.reqType = reqType;
+	}
+	
+}
+
+

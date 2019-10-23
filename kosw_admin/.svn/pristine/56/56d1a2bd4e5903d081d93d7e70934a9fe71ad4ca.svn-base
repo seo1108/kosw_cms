@@ -1,0 +1,22 @@
+{
+  "hints": [],
+  "groups": [
+    {
+      "sourceType": "kr.rapids.kosw.admin.FileUploadPathProperty",
+      "name": "file.upload",
+      "type": "kr.rapids.kosw.admin.FileUploadPathProperty"
+    }
+  ],
+  "properties": [
+    {
+      "sourceType": "kr.rapids.kosw.admin.FileUploadPathProperty",
+      "name": "file.upload.character",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "kr.rapids.kosw.admin.FileUploadPathProperty",
+      "name": "file.upload.logo",
+      "type": "java.lang.String"
+    }
+  ]
+}
