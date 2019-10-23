@@ -304,15 +304,7 @@
 											</c:otherwise>
 										</c:choose>	
 									
-										<%-- <label class="col-sm-1 control-label">내 Cafe</label>
-		                    			<div class="col-sm-2">
-		                    				<select name="selectCafe" class="selectpicker" data-title="" data-style="btn-default btn-block" data-menu-style="dropdown-blue">
-		                    					<option value="">Cafe를 선택해주세요.</option>
-				                    			<c:forEach var="a" items="${cafeList }">
-													<option value="${a.cafeseq }" <c:if test="${cafeseq eq a.cafeseq}">selected</c:if> > ${a.cafename }</option>
-												</c:forEach>
-					                    	</select>
-		                    			</div> --%>
+										
 	                    			
 										<label class="col-sm-1 control-label">날짜 선택</label>
 										<div class="col-sm-7">
