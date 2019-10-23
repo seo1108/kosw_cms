@@ -131,7 +131,17 @@
 										<tr>
 											<td>${a.cafeseq }</td>
 											<td>
-												<a href="<c:url value="/customerOne" />?cSeq=${a.cafeseq }">${a.cafename }</a>
+												<c:choose>
+													<c:when test="${type eq 'category'}">
+														<a href="<c:url value="/statCafeCategory" />?cafeseq=${a.cafeseq }&type=category">
+														${a.cafename }</a>
+													</c:when>
+													<c:otherwise>
+														<a href="<c:url value="/statCafeUser" />?cafeseq=${a.cafeseq }&type=individual">
+														${a.cafename }</a>
+													</c:otherwise>
+												</c:choose>	
+												
 											</td>
 											<td>${a.adminname }</td>
 											<td>${a.usercount }</td>

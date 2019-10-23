@@ -4465,6 +4465,7 @@ public class AdminController {
 			@ModelAttribute(name="rank")  Ranking rank,
 			@ModelAttribute Cafe cafe,
 			@RequestParam(name="cafeseq", required=false) String cafeseq,
+			@RequestParam(name="type", defaultValue="") String type,
 			RedirectAttributes redirectAttributes
 			){
 		
@@ -4550,6 +4551,7 @@ public class AdminController {
 			
 		}
 		
+		modelAndView.addObject("type", type);
 		
 		return modelAndView;
 	}
@@ -4568,6 +4570,7 @@ public class AdminController {
 			@ModelAttribute(name="rank")  Ranking rank,
 			@ModelAttribute Cafe cafe,
 			@RequestParam(name="cafeseq", required=false) String cafeseq,
+			@RequestParam(name="type", defaultValue="") String type,
 			RedirectAttributes redirectAttributes
 			){
 		
@@ -4646,6 +4649,8 @@ public class AdminController {
 //			modelAndView.addObject("companyRanks", companyRanks);
 //			modelAndView.addObject("rank", rank);
 		}
+		
+		modelAndView.addObject("type", type);
 		
 		return modelAndView;
 	}
