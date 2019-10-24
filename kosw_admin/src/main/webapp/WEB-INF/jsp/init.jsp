@@ -14,8 +14,5 @@
 			<c:otherwise>
 				<%  response.sendRedirect("cafeOfMineList"); %>
 			</c:otherwise>
-		</c:choose>	
-	    
-    
+		</c:choose>
 </html>
-
