@@ -114,7 +114,7 @@
 										<th>카페명</th>
 										<th>담당자명</th>
 										<th>회원 수</th>
-										<th>가입시 승인여부</th>
+										<th>공개여부</th>
 										<th>카페오픈일</th>
 										<th></th>
 									</tr>
@@ -126,14 +126,11 @@
 											</td>
 											<td>${a.adminname }</td>
 											<td>${a.usercount }</td>
-											<td>	
-												<form name="custApprovalEdit" action="<c:url value="/custApprovalEdit"/>" method="post">
-													<input name="cSeq" type="hidden" value="${a.cafeseq }">
-													<div class="form-group checkboax">
-														<input id="aaa" name="approvalFlag" value="Y" type="checkbox" <c:if test="${a.confirm eq 'Y' }">checked</c:if> data-toggle="switch" data-on-color="info" data-off-color="info" data-on-text="ON" data-off-text="OFF"/>
-														<span class="toggle"></span>
-													</div>
-												</form>
+											<td>
+												<c:choose>
+												<c:when test="${a.confirm eq 'Y' }">비공개</c:when>
+												<c:otherwise>공개</c:otherwise>
+												</c:choose>
 											</td>
 											<td>${a.opendate }</td>
 											

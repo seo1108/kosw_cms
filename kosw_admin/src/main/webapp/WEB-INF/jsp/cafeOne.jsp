@@ -343,7 +343,12 @@
 												<td>${a.catename }</td>
 												<td><fmt:formatNumber value="${a.sActAmt }" pattern="#,###" /></td>
 												<td><fmt:formatNumber value="${a.walkcount }" pattern="#,###" /></td>
-												<td>${a.isAdmin }</td>
+												<td>
+													<c:choose>
+													<c:when test="${a.isAdmin eq 'Y' }">관리자</c:when>
+													<c:otherwise></c:otherwise>
+													</c:choose>
+												</td>
 											</tr>
 										</c:forEach>
 									</table>

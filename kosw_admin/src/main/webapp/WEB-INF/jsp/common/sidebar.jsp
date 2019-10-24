@@ -192,7 +192,7 @@
 	$(function(){
 		$(".menu").each(function(i,e){
 			var t = $(e).find(".menu-name").text();
-			console.log("${title}" + "___" + t + "__" + "${title}".indexOf(t));
+			
 			if ("${title}".indexOf(t) > -1) {
 //			if (t == "${title}"){
 				$(e).addClass("active");

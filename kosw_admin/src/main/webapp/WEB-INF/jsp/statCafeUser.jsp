@@ -264,8 +264,8 @@
                     
                 	<div class="content">
                 		<form name="searchForm" method="get" class="form-horizontal">
-							<!-- <input name="userSeq" type="hidden" value="${rank.userSeq }"/>
-							<input name="cateseq" type="hidden" value=""/> -->
+							<input name="userSeq" type="hidden" value="${rank.userSeq }"/>
+							<!--  <input name="cateseq" type="hidden" value=""/> -->
 							<input name="cafeseq" type="hidden" value="${cafeseq }"/>
 							
 							<c:if test="${cafeSelected eq false}">

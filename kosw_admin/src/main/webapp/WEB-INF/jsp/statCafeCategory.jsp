@@ -186,6 +186,7 @@
                 	<div class="content">
                 		<form name="searchForm" method="get" class="form-horizontal">
                 				<%-- <input name="custSeq" type="hidden" value="${rank.custSeq }"/> --%>
+                				<input name="cafeseq" type="hidden" value="${cafeseq }"/>
                 			<c:if test="${cafeSelected eq false}">
 								<fieldset>
 									<div class="form-group">
