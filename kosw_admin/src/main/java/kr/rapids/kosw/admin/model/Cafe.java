@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import org.apache.ibatis.type.Alias;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 @Alias("cafe")
 public class Cafe extends Page implements Serializable, InputFormModel {
@@ -28,6 +29,16 @@ public class Cafe extends Page implements Serializable, InputFormModel {
 	private String startDate;  		// 조회 시작 일자 yyyyMMdd
 	private String endDate;			// 조회 종료 일자 yyyyMMdd
 	private String reqType;			// excel 다운로드시 사용
+	
+	private MultipartFile file;
+	
+	public MultipartFile getFile() {
+		return file;
+	}
+
+	public void setFile(MultipartFile file) {
+		this.file = file;
+	}
 	
 	public String getAdminemail() {
 		return adminemail;

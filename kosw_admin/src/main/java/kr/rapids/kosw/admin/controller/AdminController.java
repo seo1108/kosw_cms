@@ -1321,6 +1321,40 @@ public class AdminController {
 	 * @param request 
 	 * @return
 	 */
+	@RequestMapping(path="cafeEdit", method = RequestMethod.POST)
+	public ModelAndView cafeEditProc(
+			HttpServletRequest request,
+			RedirectAttributes redirectAttributes,
+			@ModelAttribute(name="cafe") Cafe cafe
+			){
+		String cafeseq = cafe.getCafeseq();
+		
+		String inputValidateErrroMessage = cafe.inputValidateErrroMessage();
+		if (inputValidateErrroMessage != null){
+			redirectAttributes.addFlashAttribute("cafename", inputValidateErrroMessage);
+			return redirectCafeOne(cafeseq);
+		}
+
+		boolean successYn = adminService.cafeEdit(cafe);
+		if (!successYn){
+			redirectAttributes.addFlashAttribute("message", "서버 에러가 발생하였습니다. 관리자에게 문의해주세요.");
+			return redirectCafeOne(cafeseq);
+		}
+		
+		logger.info("EDIT CAFE : {}", cafe.toString());
+		redirectAttributes.addFlashAttribute("message", String.format("카페 %s 이(가) 정상 수정되었습니다.", cafe.getCafename()));
+
+		return redirectCafeOne(cafeseq);
+	}
+	
+	/**
+	 * 고객사 수정
+	 * redirectAttributes 를 사용하기 위해서는 화면 전환이 필요하다.
+	 * @param redirectAttributes
+	 * @param customer
+	 * @param request 
+	 * @return
+	 */
 	@RequestMapping(path="customerEdit", method = RequestMethod.POST)
 	public ModelAndView customerEditProc(
 			HttpServletRequest request,
@@ -1875,6 +1909,63 @@ public class AdminController {
 	}
 	
 	
+	/**
+	 * 로고 색상 선택
+	 * 로고 이미지 파일 업로드
+	 * @param redirectAttributes
+	 * @param logo
+	 * @return
+	 */
+	@RequestMapping(path="updateCafeLogo", method = RequestMethod.POST)
+	public ModelAndView updateCafeLogoProc(
+			RedirectAttributes redirectAttributes, 
+			@ModelAttribute Cafe cafe
+			){
+		String cafeseq = cafe.getCafeseq();
+		MultipartFile file = cafe.getFile();
+		
+	
+		File directory = filePathUtils.getLogoFile();
+		if (directory == null){
+			return null;
+		}
+		
+		String fileName = FilenameUtils.getName(file.getOriginalFilename());
+		File destFile = new File(directory, fileName);
+		String baseName = FilenameUtils.getBaseName(fileName);
+		String extension = FilenameUtils.getExtension(fileName);
+		
+		
+		// 중복 OVERWIRETE 방지
+		int postfix = 1;
+		while(destFile.exists()){
+			fileName = baseName +"_"+ String.valueOf(postfix) + "." + extension;
+			System.out.println(fileName);
+			destFile = new File(directory, fileName);
+			postfix += 1;
+		}
+		
+		try {
+			file.transferTo(destFile); // OVERWRITE 되어 이름 같으면 기존것 삭제됨
+			
+			// FULL PATH (?)
+			//cafe.setFile(filename);
+			//boolean success = adminService.updateCafeLogo(logo);
+			
+			redirectAttributes.addFlashAttribute("message", "등록되었습니다.");
+			
+		} catch (IllegalStateException e) {
+			e.printStackTrace();
+			redirectAttributes.addFlashAttribute("message", "파일 등록 중 에러가 발생하였습니다.");
+		} catch (IOException e) {
+			e.printStackTrace();
+			redirectAttributes.addFlashAttribute("message", "파일 등록 중 에러가 발생하였습니다.");
+		}
+
+		return redirectCafeOne(cafeseq);
+	}
+	
+	
 	
 	
 	/**
@@ -1958,6 +2049,12 @@ public class AdminController {
 	private ModelAndView redirectCustomerOne(String custSeq) {
 		ModelAndView modelAndView = new ModelAndView("redirect:customerOne");
 		modelAndView.getModel().put("cSeq", custSeq);
+		return modelAndView;
+	}
+	
+	private ModelAndView redirectCafeOne(String cafeseq) {
+		ModelAndView modelAndView = new ModelAndView("cafeOne");
+		modelAndView.getModel().put("cafeseq", cafeseq);
 		return modelAndView;
 	}
 	

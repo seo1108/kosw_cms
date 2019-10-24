@@ -401,6 +401,31 @@ public class AdminService {
 		List<Character> chracterList = mapper.selectCharacterList();
 		return chracterList;
 	}
+	
+	public boolean cafeEdit(Cafe cafe) {
+		try {
+			int count = mapper.cafeEdit(cafe);
+			if (count == 1){
+				return true;
+			}
+		} catch (Exception e) {
+			logger.error("{}", e);
+		}
+		return false;
+		
+	}
+	
+	public boolean updateCafeLogo(Cafe cafe) {
+		try {
+			int count = mapper.updateCafeLogo(cafe);
+			if (count == 1){
+				return true;
+			}
+		} catch (Exception e) {
+			logger.error("{}", e);
+		}
+		return false;
+	}
 
 	public boolean customerEdit(Customer customer) {
 		try {

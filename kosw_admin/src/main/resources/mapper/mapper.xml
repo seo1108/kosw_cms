@@ -150,6 +150,31 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		)
 	</insert>
 	
+	
+	<update id="cafeEdit" parameterType="kr.rapids.kosw.admin.model.Cafe">
+		UPDATE t_cafe 
+		SET
+			cafename = #{cafename},
+			cafedesc = #{cafedesc},
+			additions = #{additions},
+			<if test="confirm == null">
+			confirm = 'N'
+			</if>
+			<if test="confirm != null">
+			confirm = #{confirm}
+			</if>
+		WHERE cafeseq = #{cafeseq}	
+	</update>
+	
+	<update id="updateCafeLogo" parameterType="kr.rapids.kosw.admin.model.Cafe">
+		UPDATE t_cafe
+		SET
+		<if test="logoImageFile != null and logoImageFile !=''">
+			logo = #{logoImageFile},
+		</if>
+		WHERE cafeseq = #{cafeseq}
+	</update>
+	
 	<update id="customerEdit" parameterType="kr.rapids.kosw.admin.model.Customer" >
 		UPDATE c_customer SET
 			cust_name = #{custName},

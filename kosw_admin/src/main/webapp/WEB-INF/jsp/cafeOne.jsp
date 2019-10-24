@@ -29,19 +29,19 @@
                     </div>
                     <div class="content">
                     	
-                        <form name="customerEdit" action="<c:url value='/customerEdit' />" method="POST">
+                        <form name="cafeEdit" action="<c:url value='/cafeEdit' />" method="POST">
                         	<input name="cafeseq" type="hidden" value="${cafe.cafeseq }">
                             <div class="row">
                                 <div class="col-md-5">
                                     <div class="form-group">
-                                        <label>회사명</label>
+                                        <label>카페명</label>
                                         <input name="cafename" type="text" class="form-control" placeholder="카페" value="${cafe.cafename }">
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label>담당자명</label>
-                                        <input name="adminname" type="text" class="form-control" placeholder="담당자명" value="${cafe.adminname }">
+                                        <input name="adminname" type="text" disabled class="form-control" placeholder="담당자명" value="${cafe.adminname }">
                                     </div>
                                 </div>
                                 <div class="col-md-4">
@@ -56,7 +56,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>담당자 이메일</label>
-                                        <input name="postEmail" type="email" class="form-control" placeholder="이메일" value="${cafe.adminemail }">
+                                        <input name="postEmail" type="text" disabled class="form-control" placeholder="이메일" value="${cafe.adminemail }">
                                     </div>
                                 </div>
                                 
@@ -66,8 +66,8 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label>비고</label>
-                                        <input name="cafedesc" type="text" class="form-control" placeholder="" value="${cafe.cafedesc }">
+                                        <label>카페설명</label>
+                                        <textarea name="cafedesc" rows="5" class="form-control" placeholder="">${cafe.cafedesc }</textarea>
                                     </div>
                                 </div>
                             </div>
@@ -86,10 +86,12 @@
                             
                             
                             <div class="row">
-                                <div class="col-md-5">
+                                <div class="col-md-8">
                                     <div class="form-group">
-                                        <label>회사 공개</label>
-                                        <input name="shared" type="checkbox" <c:if test="${cafe.confirm eq 'Y'}">checked</c:if> value="Y" data-toggle="switch" data-on-color="info" data-off-color="info" data-on-text="ON" data-off-text="OFF"/>
+                                        <label>카페 공개</label><br>
+                                        <label>공개시, 카페리스트에 카페명이 공개되고 누구나 게시글과 랭킹 등 카페 정보를 볼 수 있습니다.</label><br>
+                                        <label>비공개시, 카페리스트에 카페명이 공개되지 않습니다. 초대받은 사람만 가입할 수 있습니다.</label><br>
+                                        <input name="confirm" type="checkbox" <c:if test="${cafe.confirm eq 'Y'}">checked</c:if> value="Y" data-toggle="switch" data-on-color="info" data-off-color="info" data-on-text="ON" data-off-text="OFF"/>
 										<span class="toggle"></span>
                                     </div>
                                 </div>
@@ -106,53 +108,21 @@
 
                         <script>
 		                    (function($) {
-	                    		$(document.customerEdit).validate({
+	                    		$(document.cafeEdit).validate({
 	                    			rules : {
-		                				custName : {
-		                					required : true,
-		                					minlength : 3,
-		                					maxlength : 32
+	                    				cafename : {
+		                					required : true
 		                				},
-		                				postName : {
-		                					required : true,
-		                					minlength : 3,
-		                					maxlength : 16
+		                				cafedesc : {
 		                				},
-		                				postEmail : {
-		                					required : true,
-		                					email : true,
+		                				additions : {
 		                				},
-		                				postPhone : {
-		                					required : true,
-		                					minlength : 8,
-		                					maxlength : 15
-		                				},
-		                				custRemarks : {
-		                					maxlength : 100
-		                				}
+		                				confirm : {
+										}
 		                			},
 		                			messages : {
-		                				custName : {
-		                					required : "고객사명을 입력해주세요.",
-		                					minlength : "고객사명을 3자리 이상 입력해주세요.",
-		                					maxlength : "고객사명을 32자리 미만으로 입력해주세요.",
-		                				},
-		                				postEmail : {
-		                					required : "담당자 이메일을 입력해주세요.",
-		                					email : "담당자 이메일의 형식을 확인해주세요."
-		                				},
-		                				postName : {
-		                					required : "담당자명을 입력해주세요.",
-		                					minlength : "담당자명을 3자리 이상 입력해주세요.",
-		                					maxlength : "담당자명을 16자리 미만으로 입력해주세요.",
-		                				},
-		                				postPhone : {
-		                					required : "담당자 전화번호를 입력해주세요.",
-		                					minlength : "담당자 전화번호를 8자리 이상 입력해주세요.",
-		                					maxlength : "담당자 전화번호를 15자리 미만으로 입력해주세요.",
-		                				},
-		                				custRemarks : {
-		                					maxlength : "비고를 100자 미만으로 입력해주세요."	
+		                				cafename : {
+		                					required : "카페명을 입력해주세요."
 		                				}
 		                			}
 	                    		});
@@ -186,8 +156,8 @@
                      --%>
                     	
 	                <div style="padding:6px;">
-	                	<form name="updateLogo" action="<c:url value="/updateLogo" />" method="post" enctype="multipart/form-data" >
-	                		<input name="custSeq" type="hidden" value="${customer.custSeq }">
+	                	<form name="updateCafeLogo" action="<c:url value="/updateCafeLogo" />" method="post" enctype="multipart/form-data" >
+	                		<input name="cafeseq" type="hidden" value="${cafeseq }">
                             <div class="form-group">
                                 <label>로고 이미지 (가로x세로 비율 : 2:1 권장, 세로 제한 200px)</label>
                                 <input name="file" type="file" />
@@ -377,25 +347,9 @@
 							</c:if>
 	                    </div>
                     </div>
-                    
 	                    
 				</c:if>
-				<%-- <div class="card">
-                    <div class="header">
-                        <p class="category">추가 분류 (관리자 메모기능)</p>
-                        
-                        <div class="form-group" style="padding-top:10px;padding-bottom:10px;">
-                        	<input name="cafedesc" type="text" class="form-control" placeholder="" value="${cafe.additions }" />
-                       	</div>
-                    </div>
-                    
-                    
-                </div>     --%>
 				
-                    
-<%--                     <div class="text-center">
-                    	<a href="${userListURL }" class="btn btn-fill btn-info">사용자 리스트 보기</a>
-                    </div> --%>
             </div>
         </div>
     </div>

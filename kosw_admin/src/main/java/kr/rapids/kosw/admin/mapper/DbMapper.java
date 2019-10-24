@@ -144,6 +144,9 @@ public interface DbMapper {
 
 	List<Character> selectCharacterList();
 
+	int cafeEdit(Cafe cafe);
+	int updateCafeLogo(Cafe cafe);
+	
 	int customerEdit(Customer customer);
 
 	int selectUserLTotalCount(User user);
