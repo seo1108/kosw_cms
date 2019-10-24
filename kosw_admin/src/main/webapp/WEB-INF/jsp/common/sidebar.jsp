@@ -298,12 +298,14 @@
 			</li>
 			</c:if> --%>
 			
-			<li class="menu">
-				<a href="${userListURL }">
-					<i class="pe-7s-users"></i>
-					<p class="menu-name">사용자 리스트</p>
-				</a>
-			</li>
+			<c:if test="${user.superAdmin eq 'true'}">
+				<li class="menu">
+					<a href="${userListURL }">
+						<i class="pe-7s-users"></i>
+						<p class="menu-name">사용자 리스트</p>
+					</a>
+				</li>
+			</c:if>	
 			
 			<c:if test="${user.superAdmin eq 'true'}">
 			<li class="menu">
@@ -323,7 +325,7 @@
                 </a>
 				<div class="collapse" id="statList">
 					<ul class="nav">
-						<li class="menu">
+						<%-- <li class="menu">
 							<a href="${statUserURL }">
 								<span class="sidebar-mini">&nbsp;</span>
 								<span class="sidebar-normal menu-name">회사 개별 통계</span>
@@ -334,7 +336,7 @@
 								<span class="sidebar-mini">&nbsp;</span>
 								<span class="sidebar-normal menu-name">전체 그룹 통계</span>
 							</a>
-						</li>
+						</li> --%>
 						
 						
 						
