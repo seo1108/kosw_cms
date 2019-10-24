@@ -201,7 +201,17 @@ public interface DbMapper {
 	int departmentEdit(Department department);
 
 	int departmentDelete(Department department);
+	
+	int categoryAdd(Category category);
+	
+	int categoryCafeAdd(Category category);
+	
+	int categoryEdit(Category category);
 
+	int categoryDelete(Category category);
+
+	int categoryCafeDelete(Category category);
+	
 	Admin adminEmailCheck(Admin admin);
 
 	int buildingEdit(Building building);

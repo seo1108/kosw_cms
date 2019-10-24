@@ -706,6 +706,53 @@ public class AdminService {
 		}
 		return false;
 	}
+	
+	public boolean categoryAdd(Category category) {
+		int count = mapper.categoryAdd(category);
+		mapper.categoryCafeAdd(category);
+		if (count == 1){
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean categoryDelete(Category category) {
+		try {
+			int count = mapper.categoryDelete(category);
+			mapper.categoryCafeDelete(category);
+			if (count == 1){
+				return true;
+			}
+		} catch (Exception e) {
+			logger.error("{}", e);
+		}
+		return false;
+	}
+	
+	public boolean categoryEdit(Category category) {
+		try {
+			int count = mapper.categoryEdit(category);
+			if (count == 1){
+				return true;
+			}
+		} catch (Exception e) {
+			logger.error("{}", e);
+		}
+		return false;
+	}
+
+//	public boolean departmentDelete(Department department) {
+//		try {
+//			int count = mapper.departmentDelete(department);
+//			mapper.departmentDeleteStep2(department);
+//			if (count == 1){
+//				return true;
+//			}
+//		} catch (Exception e) {
+//			logger.error("{}", e);
+//		}
+//		return false;
+//	}
 
 	public Admin adminEmailCheck(Admin admin) {
 		Admin exAdmin = mapper.adminEmailCheck(admin);

@@ -196,13 +196,13 @@
 											<tr>
 												<td>${a.name }</td>
 												<td class="tx-actions text-right">
-	                                                <a onclick="departmentEditShow('${a.cateseq}','${a.name }');"  rel="tooltip" title="수정" class="btn btn-primary btn-simple btn-icon edit" style="display:inline-block;">
+	                                                <a onclick="categoryEditShow('${a.cateseq}','${a.name }');"  rel="tooltip" title="수정" class="btn btn-primary btn-simple btn-icon edit" style="display:inline-block;">
 	                                                    <i class="fa fa-edit"></i>
 	                                                </a>
 	                                                
-	                                                <form class="deleteForm" method="post" action="<c:url value='/departmentDelete'/>" style="display:inline-block;">
+	                                                <form class="deleteForm" method="post" action="<c:url value='/categoryDelete'/>" style="display:inline-block;">
 	                                                	<input name="cateseq" type="hidden" value="${a.cateseq }"/>
-	                                                	<input name="cafeseq" type="hidden" value="${a.cafeseq }">
+	                                                	<input name="cafeseq" type="hidden" value="${cafe.cafeseq }">
 		                                                <button type="submit" rel="tooltip" title="삭제" class="btn btn-danger btn-simple btn-icon remove">
 		                                                    <i class="fa fa-times"></i>
 		                                                </button>
@@ -215,7 +215,7 @@
 							</c:if>
 							
 							<div class="text-center">
-		                    	<a data-target="#departmentAdd"  data-toggle="collapse">
+		                    	<a data-target="#categoryAdd"  data-toggle="collapse">
 	                        		신규 카테고리 등록<b class="caret"></b>
 	                    		</a>
 		                    </div>
@@ -223,27 +223,28 @@
                     </div>
                     
 	                    
-                    <div id="departmentEdit" class="card card-collapse collapse">
+                    <div id="categoryEdit" class="card card-collapse collapse">
 	                    <div class="header">
 	                    	<div class="row">
 		                        <div class="col-sm-8">
 	                    			<p class="category">카테고리 수정</p>
 	                    		</div>
 	                    		<div class="col-sm-4">
-	                    			<a data-target="#departmentEdit"  data-toggle="collapse" aria-hidden="true" class="close" style="opacity:1.0;">×</a>
+	                    			<a data-target="#categoryEdit"  data-toggle="collapse" aria-hidden="true" class="close" style="opacity:1.0;">×</a>
 	                    		</div>
                     		</div>
 	                    </div>
 	                    <div class="content">
-	                    	<c:url var="departmentEdit" value="/departmentEdit"/>
-	                    	<form name="departmentEdit" method="POST" action="${departmentEdit }" class="form-horizontal">
+	                    	<c:url var="categoryEdit" value="/categoryEdit"/>
+	                    	<form name="categoryEdit" method="POST" action="${categoryEdit }" class="form-horizontal">
+	                    		<input name="cafeseq" type="hidden" value="${cafe.cafeseq }">
 	                    		<input name="cateseq" type="hidden" value="${a.cateseq }">
 	                    		<input name="user_seq" type="hidden" value="${loginseq }">
 	                    		<fieldset>
 	                    		<div class="form-group">
 	                    			<label class="col-sm-2 control-label">카테고리명</label>
 	                    			<div class="col-sm-10">
-	                    				<input name="deptName" type="text" class="form-control" autocomplete="off">
+	                    				<input name="name" type="text" class="form-control" autocomplete="off">
 	                    			</div>
 	                    		</div>
 	                    		</fieldset>
@@ -258,13 +259,14 @@
                     
                     
 
-                    <div id="departmentAdd" class="card card-collapse collapse">
+                    <div id="categoryAdd" class="card card-collapse collapse">
 	                    <div class="header">
 	                        <p class="category">카테고리 등록</p>
 	                    </div>
 	                    <div class="content">
-	                    	<c:url var="departmentAdd" value="/departmentAdd"/>
-	                    	<form name="departmentAdd" method="POST" action="${departmentAdd }" class="form-horizontal">
+	                    	<c:url var="categoryAdd" value="/categoryAdd"/>
+	                    	<form name="categoryAdd" method="POST" action="${categoryAdd }" class="form-horizontal">
+	                    		<input name="cafeseq" type="hidden" value="${cafe.cafeseq }">
 	                    		<input name="user_seq" type="hidden" value="${loginseq }">
 	                    		<fieldset>
 	                    		<div class="form-group">
@@ -285,11 +287,11 @@
                     
                     <script>
 	                    $(function(){
-	                    	departmentEditShow = function(cateseq, name){
-		                		document.departmentEdit.cateseq.value = cateseq;
-		                		document.departmentEdit.name.value = name;
+	                    	categoryEditShow = function(cateseq, name){
+		                		document.categoryEdit.cateseq.value = cateseq;
+		                		document.categoryEdit.name.value = name;
 		                		
-		                		$("#departmentEdit").collapse("show");
+		                		$("#categoryEdit").collapse("show");
 		                	}
 	                    	
 	                    	var validate_option = {
@@ -308,8 +310,8 @@
 	                    				}
 	                    			}
 	                    		};
-	                    	$(document.departmentAdd).validate(validate_option);
-	                    	$(document.departmentEdit).validate(validate_option);
+	                    	$(document.categoryAdd).validate(validate_option);
+	                    	$(document.categoryEdit).validate(validate_option);
 	                    });
                     </script>
 				</c:if>
@@ -329,6 +331,7 @@
 										<tr>
 											<th>사용자명</th>
 											<th>닉네임</th>
+											<th>카테고리</th>
 											<th>오른층수</th>
 											<th>걸음수</th>
 											<th>관리자여부</th>
@@ -337,6 +340,7 @@
 											<tr>
 												<td>${a.userName }</td>
 												<td>${a.nickName }</td>
+												<td>${a.catename }</td>
 												<td><fmt:formatNumber value="${a.sActAmt }" pattern="#,###" /></td>
 												<td><fmt:formatNumber value="${a.walkcount }" pattern="#,###" /></td>
 												<td>${a.isAdmin }</td>

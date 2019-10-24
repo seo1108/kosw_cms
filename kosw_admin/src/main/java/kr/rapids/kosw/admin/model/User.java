@@ -36,7 +36,7 @@ public class User extends Page implements Serializable, InputFormModel {
 	private String regdate;
 	private String status;
 	private int walkcount;
-	
+	private String catename;
 
 	
 	public int getsActAmt() {
@@ -306,6 +306,18 @@ public class User extends Page implements Serializable, InputFormModel {
 
 	public void setWalkcount(int walkcount) {
 		this.walkcount = walkcount;
+	}
+
+
+
+	public String getCatename() {
+		return catename;
+	}
+
+
+
+	public void setCatename(String catename) {
+		this.catename = catename;
 	}
 
 

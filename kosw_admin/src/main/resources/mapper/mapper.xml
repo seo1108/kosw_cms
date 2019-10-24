@@ -586,6 +586,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			u.user_seq, u.user_email, u.user_name, cu.isAdmin, cu.status, u.nickname
 			,ifnull((select sum(act_amt) from s_activity_user_daily where user_seq = u.user_seq), 0) s_act_amt
             ,ifnull((select sum(walk_count) from u_user_walk where user_seq = u.user_seq), 0) walkcount
+            ,ifnull((select name from t_category where cateseq = cu.cateseq), '') catename
 		FROM u_user u, t_cafe_user cu 
 		WHERE u.user_seq = cu.user_seq
 			AND cafeseq = #{cafeseq}
@@ -696,6 +697,51 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		WHERE dept_seq = #{deptSeq}
 		AND cust_seq = #{custSeq} 
 	</update>
+	
+	<insert id="categoryAdd" parameterType="kr.rapids.kosw.admin.model.Category" useGeneratedKeys="true" keyProperty="cateseq" keyColumn="cateseq">
+		INSERT INTO t_category (
+			name,
+			user_seq,
+			regdate		
+		) VALUES (
+			#{name},
+			#{user_seq},
+			DATE_FORMAT(NOW(), "%Y%m%d%H%i%s")
+		)
+	</insert>
+	
+	<insert id="categoryCafeAdd" parameterType="kr.rapids.kosw.admin.model.Category" useGeneratedKeys="true" keyProperty="cateseq" keyColumn="cateseq">
+		INSERT INTO t_cafe_category (
+			cafeseq,
+			cateseq,
+			regdate		
+		) VALUES (
+			#{cafeseq},
+			#{cateseq},
+			DATE_FORMAT(NOW(), "%Y%m%d%H%i%s")
+		)
+	</insert>
+	
+	<update id="categoryDelete" parameterType="kr.rapids.kosw.admin.model.Category" >
+		DELETE FROM t_category
+		WHERE cateseq = #{cateseq}
+	</update>
+	
+	<update id="categoryCafeDelete" parameterType="kr.rapids.kosw.admin.model.Category" >
+		UPDATE t_cafe_user 
+		SET cateseq = null
+		WHERE cateseq = #{cateseq}
+	</update>
+	
+	<update id="categoryEdit" parameterType="kr.rapids.kosw.admin.model.Category" >
+		UPDATE t_category
+		SET
+			user_seq = #{user_seq},
+			name = #{name},
+			regdate = DATE_FORMAT(NOW(), "%Y%m%d%H%i%s")
+		WHERE cateseq = #{cateseq}
+	</update>
+	
 	
 	<update id="departmentDeleteStep2" parameterType="kr.rapids.kosw.admin.model.Department" >
 		UPDATE u_user_building_map 
@@ -1129,6 +1175,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="cafeseq" column="cafeseq" />
 		<result property="isAdmin" column="isAdmin" />
 		<result property="walkcount" column="walkcount" />
+		<result property="catename" column="catename" />
 	</resultMap>
 	
 	<select id="selectUserBySeq" parameterType="java.lang.String" resultMap="userMap">

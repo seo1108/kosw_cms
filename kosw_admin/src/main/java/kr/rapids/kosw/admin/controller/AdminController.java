@@ -267,6 +267,90 @@ public class AdminController {
 	
 	
 	/**
+	 * 카테고리 추가 처리
+	 * @param redirectAttributes
+	 * @param category
+	 * @return
+	 */
+	@RequestMapping(path="categoryAdd", method = RequestMethod.POST)
+	public ModelAndView categoryAddProc(
+			RedirectAttributes redirectAttributes,
+			@ModelAttribute(name="category") Category category
+			){
+		
+		if (StringUtils.isEmpty(category.getName())){
+			redirectAttributes.addFlashAttribute("message", "카테고리명을 입력해주세요.");
+			return redirectCafeOne(category.getCafeseq());
+		}
+		
+		
+		boolean successYn = adminService.categoryAdd(category);
+		if (!successYn){
+			redirectAttributes.addFlashAttribute("message", "서버 에러가 발생하였습니다. 관리자에게 문의해주세요.");
+			return redirectCafeOne(category.getCafeseq());
+		}
+		
+		logger.info("NEW CATEGORY : {}", category.toString());
+		
+		redirectAttributes.addFlashAttribute("message", String.format("신규 카테고리 %s 이(가) 등록되었습니다.", category.getName()));
+		return redirectCafeOne(category.getCafeseq());
+	}
+	
+	/**
+	 * 카테고리 편집 처리
+	 * @param redirectAttributes
+	 * @param category
+	 * @return
+	 */
+	@RequestMapping(path="categoryEdit", method = RequestMethod.POST)
+	public ModelAndView categoryEditProc(
+			RedirectAttributes redirectAttributes,
+			@ModelAttribute(name="category") Category category
+			){
+		String cateseq = category.getCateseq();
+		if (StringUtils.isEmpty(cateseq)){
+			redirectAttributes.addFlashAttribute("message", "카테고리명을 입력해주세요.");
+			return redirectCafeOne(category.getCafeseq());
+		}
+				
+		boolean successYn = adminService.categoryEdit(category);
+		if (!successYn){
+			redirectAttributes.addFlashAttribute("message", "서버 에러가 발생하였습니다. 관리자에게 문의해주세요.");
+			return redirectCafeOne(category.getCafeseq());
+		}
+		
+		logger.info("NEW DEPARTMENT : {}", category.toString());
+		redirectAttributes.addFlashAttribute("message", "카테고리가 수정되었습니다.");
+		return redirectCafeOne(category.getCafeseq());
+	}
+	
+	/**
+	 * 카테고리 삭제
+	 * 카테고리 삭제시 t_cafe_user 에 매핑된 사용자의 카테고리를 '' 으로 변경
+	 * @param redirectAttributes
+	 * @param category
+	 * @return
+	 */
+	@RequestMapping(path="categoryDelete", method = RequestMethod.POST)
+	public ModelAndView categoryDeleteProc(
+			RedirectAttributes redirectAttributes,
+			@ModelAttribute(name="category") Category category
+			){
+		
+		boolean successYn = adminService.categoryDelete(category);
+		if (!successYn){
+			redirectAttributes.addFlashAttribute("message", "서버 에러가 발생하였습니다. 관리자에게 문의해주세요.");
+			return redirectCafeOne(category.getCafeseq());
+		}
+		
+		logger.info("NEW CATEGORY : {}", category.toString());
+		redirectAttributes.addFlashAttribute("message", "카테고리가 삭제되었습니다.");
+		return redirectCafeOne(category.getCafeseq());
+	}
+	
+	
+	
+	/**
 	 * 빌딩 추가 처리
 	 * 빌딩을 추가하귀 위해서는 관리자와 고객사를 지정 하여야 한다.
 	 * @param redirectAttributes
@@ -2053,7 +2137,7 @@ public class AdminController {
 	}
 	
 	private ModelAndView redirectCafeOne(String cafeseq) {
-		ModelAndView modelAndView = new ModelAndView("cafeOne");
+		ModelAndView modelAndView = new ModelAndView("redirect:cafeOne");
 		modelAndView.getModel().put("cafeseq", cafeseq);
 		return modelAndView;
 	}
