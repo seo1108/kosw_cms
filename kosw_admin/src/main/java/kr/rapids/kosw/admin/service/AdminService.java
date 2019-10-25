@@ -863,7 +863,44 @@ public class AdminService {
 		List<Bbs> userList = mapper.selectBbsList(bbs);
 		return new PagePair(userList, pageNavigation);
 	}
+	
+	public PagePair selectCafeBbsList(Integer page, Bbs bbs) {
+		int totalCount = mapper.selectCafeBbsTotalCount(bbs);
+		PageNavigation pageNavigation = new PageNavigation(page, totalCount);
+		bbs.setPage(pageNavigation);
+		List<Bbs> userList = mapper.selectCafeBbsList(bbs);
+		return new PagePair(userList, pageNavigation);
+	}
 
+	public boolean cafeBbsAdd(Bbs bbs) {
+		try {
+			int count = mapper.cafeBbsAdd(bbs);
+			if (count == 1){
+				return true;
+			}
+		} catch (Exception e) {
+			logger.error("{}", e);
+		}
+		return false;
+	}
+	
+	public boolean cafeBbsEdit(Bbs bbs) {
+		try {
+			int count = mapper.cafeBbsEdit(bbs);
+			if (count == 1){
+				return true;
+			}
+		} catch (Exception e) {
+			logger.error("{}", e);
+		}
+		return false;
+	}
+	
+	public Bbs selectCafeNoticeBySeq(Bbs bbs) {
+		return mapper.selectCafeNoticeBySeq(bbs);
+	}
+	
+	
 	public boolean bbsAdd(Bbs bbs) {
 		try {
 			int count = mapper.bbsAdd(bbs);

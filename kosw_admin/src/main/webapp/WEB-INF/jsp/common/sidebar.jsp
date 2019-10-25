@@ -161,16 +161,29 @@
 	<c:set var="title" value="캐릭터 등록" />
 </c:if>
 
-
 <c:url var="bbsListURL" value="/bbsList" />
 <c:if test="${fn:indexOf(path, '/bbsList') != -1}">
-	<c:set var="title" value="공지 게시판" />
+	<c:set var="title" value="전체 공지 게시판" />
+</c:if>
+
+<c:url var="cafeNoticeListURL" value="/cafeNoticeList" >
+	<c:param name="cafeseq" value=""/>
+</c:url>	
+<c:if test="${fn:indexOf(path, '/cafeNoticeList') != -1}">
+	<c:set var="title" value="Cafe 공지 게시판" />
 </c:if>
 
 
 <c:url var="pushListURL" value="/pushList" />
 <c:if test="${fn:indexOf(path, '/pushList') != -1}">
-	<c:set var="title" value="푸쉬 메세지" />
+	<c:set var="title" value="전체 푸쉬 메세지" />
+</c:if>
+
+<c:url var="cafePushListURL" value="/cafePushList" >
+	<c:param name="cafeseq" value=""/>
+</c:url>	
+<c:if test="${fn:indexOf(path, '/cafePushList') != -1}">
+	<c:set var="title" value="Cafe 푸쉬 메세지" />
 </c:if>
 
 <c:url var="appVersionURL" value="/appVersion" />
@@ -276,13 +289,14 @@
 				</div>
 			</li>
 		
-		
+			<c:if test="${user.superAdmin eq 'true'}">
 			<li class="menu">
 				<a href="${customerOneURL }">
 					<i class="pe-7s-id"></i>
 					<p class="menu-name">우리 회사 설정</p>
 				</a>
 			</li>
+			</c:if>
 			<%-- <c:if test="${user.superAdmin eq 'true'}">
 			<li class="menu">
 				<a href="${buildingURL }">
@@ -488,19 +502,105 @@
 				
 			</c:if>
 			
+			
+			<li>
+				<a data-toggle="collapse" href="#noticeList">
+                    <i class="pe-7s-speaker"></i>
+                    <p>공지 게시판
+                       <b class="caret"></b>
+                    </p>
+                </a>
+				<div class="collapse" id="noticeList">
+					<ul class="nav">
+						<c:choose>
+							<c:when test="${user.superAdmin eq 'true'}">
+								<li class="menu">
+									<a href="${bbsListURL }">
+										<span class="sidebar-mini">&nbsp;</span>
+										<span class="sidebar-normal menu-name">전체 공지 게시판</span>
+									</a>
+								</li>
+								<li class="menu">
+									<a href="${cafeNoticeListURL }">
+										<span class="sidebar-mini">&nbsp;</span>
+										<span class="sidebar-normal menu-name">Cafe 공지 게시판</span>
+									</a>
+								</li>
+							</c:when>
+							<c:otherwise>
+								<li class="menu">
+									<a href="${cafeNoticeListURL }">
+										<span class="sidebar-mini">&nbsp;</span>
+										<span class="sidebar-normal menu-name">Cafe 공지 게시판</span>
+									</a>
+								</li>
+							</c:otherwise>
+						</c:choose>	
+					</ul>
+				</div>
+			</li>
+			
+<%-- 			<c:if test="${user.superAdmin eq 'true'}">
 			<li class="menu">
 				<a href="${bbsListURL }">
 					<i class="pe-7s-speaker"></i>
 					<p class="menu-name">공지 게시판</p>
 				</a>
 			</li>
+			</c:if>
 			
-			
+			<c:if test="${user.superAdmin eq 'false'}">
 			<li class="menu">
-				<a href="${pushListURL }">
-					<i class="pe-7s-comment"></i>
-					<p class="menu-name">앱 푸쉬 메세지</p>
+				<a href="${cafeNoticeListURL }">
+					<i class="pe-7s-speaker"></i>
+					<p class="menu-name">Cafe 공지 게시판</p>
 				</a>
+			</li>
+			</c:if>
+			 --%>
+			
+			<%-- <li class="menu">
+				<a href="${cafePushListURL }">
+					<i class="pe-7s-comment"></i>
+					<p class="menu-name">푸쉬 메세지</p>
+				</a>
+			</li>
+			 --%>
+			<li>
+				<a data-toggle="collapse" href="#pushList">
+                    <i class="pe-7s-comment"></i>
+                    <p>푸쉬 메세지
+                       <b class="caret"></b>
+                    </p>
+                </a>
+				<div class="collapse" id="pushList">
+					<ul class="nav">
+						<c:choose>
+							<c:when test="${user.superAdmin eq 'true'}">
+								<li class="menu">
+									<a href="${pushList }">
+										<span class="sidebar-mini">&nbsp;</span>
+										<span class="sidebar-normal menu-name">전체 푸쉬 메세지</span>
+									</a>
+								</li>
+								<li class="menu">
+									<a href="${cafePushListURL }">
+										<span class="sidebar-mini">&nbsp;</span>
+										<span class="sidebar-normal menu-name">Cafe 푸쉬 메세지</span>
+									</a>
+								</li>
+							</c:when>
+							<c:otherwise>
+								<li class="menu">
+									<a href="${cafePushListURL }">
+										<span class="sidebar-mini">&nbsp;</span>
+										<span class="sidebar-normal menu-name">Cafe 푸쉬 메세지</span>
+									</a>
+								</li>
+							</c:otherwise>
+						</c:choose>	
+					</ul>
+				</div>
 			</li>
 			
 		</ul>

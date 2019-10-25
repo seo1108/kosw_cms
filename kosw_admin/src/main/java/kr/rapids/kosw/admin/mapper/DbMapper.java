@@ -241,8 +241,18 @@ public interface DbMapper {
 	int selectBbsTotalCount(Bbs bbs);
 
 	List<Bbs> selectBbsList(Bbs bbs);
-
+	
 	int bbsAdd(Bbs bbs);
+	
+	int cafeBbsAdd(Bbs bbs);
+	
+	int cafeBbsEdit(Bbs bbs);
+	
+	int selectCafeBbsTotalCount(Bbs bbs);
+
+	List<Bbs> selectCafeBbsList(Bbs bbs);
+	
+	Bbs selectCafeNoticeBySeq(Bbs bbs);
 
 	Bbs selectBbsBySeq(Bbs bbs);
 

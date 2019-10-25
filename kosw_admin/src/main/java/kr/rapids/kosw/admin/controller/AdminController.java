@@ -3566,8 +3566,6 @@ public class AdminController {
 		
 	}
 	
-	
-	
 	/**
 	 * 게시판 리스트
 	 * custSeq, stairSeq, buildSeq 로 각각 필터
@@ -3617,6 +3615,192 @@ public class AdminController {
 		PageNavigation pageNavigation = pagePair.getPageNavigation();
 		
 		modelAndView.addObject("bbsList", bbsList);
+		modelAndView.addObject("pageNavigation", pageNavigation);
+		
+		return modelAndView;
+	}
+	
+	
+	/**
+	 * 게시판 리스트
+	 * custSeq, stairSeq, buildSeq 로 각각 필터
+	 * @param beaconManufac
+	 * @return
+	 */
+	@RequestMapping(path="cafeNoticeList", method = RequestMethod.GET)
+	public ModelAndView cafeNoticeList(
+			@ModelAttribute Bbs bbs,
+			@ModelAttribute Cafe cafe,
+			@RequestParam(name="cafeseq", required=false) String cafeseq,
+			@RequestParam(name="p", defaultValue="1") String page
+	){
+		
+		ModelAndView modelAndView = new ModelAndView("cafeNoticeList");
+		
+		List<Cafe> cafeList;
+		
+		String isSuperAdmin = "N";
+		
+		Admin admin = currentAdmin(modelAndView);
+		if (admin.isSuperAdmin()){
+			isSuperAdmin = "Y";
+		}
+		
+		if ("Y".equals(isSuperAdmin)) {
+			cafeList = adminService.selectCafeAllList(cafe);
+			
+			modelAndView.addObject("cafeList", cafeList);
+			modelAndView.addObject("loginseq", "1");
+			modelAndView.addObject("cafeseq", cafeseq);
+		} else {
+			User user = adminService.selectUserByEmail(admin.getEmail());
+			if (null != user) {
+				cafe.setAdminseq(user.getUserSeq());
+				
+				cafeList = adminService.selectCafeOfMineAllList(cafe);
+				modelAndView.addObject("cafeList", cafeList);
+			} else {
+				modelAndView.addObject("cafeList", null);
+			}
+			
+			modelAndView.addObject("loginseq", user.getUserSeq());
+			modelAndView.addObject("cafeseq", cafeseq);
+		}
+		
+		
+		
+		if ("".equals(cafeseq)) {
+			modelAndView.addObject("cafeSelected", false);
+		} else {
+			modelAndView.addObject("cafeSelected", true);
+			cafe.setCafeseq(cafeseq);
+			bbs.setCafeseq(cafeseq);
+			//rank.setCafeseq(rank.getCafeseq());
+		}
+
+		
+		
+		PagePair pagePair = adminService.selectCafeBbsList(Integer.valueOf(page), bbs);
+		List<Bbs> bbsList = (List<Bbs>) pagePair.getList();
+		PageNavigation pageNavigation = pagePair.getPageNavigation();
+		
+		modelAndView.addObject("bbsList", bbsList);
+		modelAndView.addObject("pageNavigation", pageNavigation);
+		
+		return modelAndView;
+	}
+	
+	/**
+	 * 푸쉬 리스트
+	 * @param push
+	 * @param page
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	@RequestMapping(path="cafePushList", method = RequestMethod.GET)
+	public ModelAndView cafePushList(
+			@ModelAttribute Push push,
+			@ModelAttribute Cafe cafe,
+			@RequestParam(name="cafeseq", required=false) String cafeseq,
+			@RequestParam(name="p", defaultValue="1") String page
+	){
+		
+		ModelAndView modelAndView = new ModelAndView("cafePushList");
+		
+		
+		List<Cafe> cafeList;
+		
+		String isSuperAdmin = "N";
+		
+		Admin admin = currentAdmin(modelAndView);
+		if (admin.isSuperAdmin()){
+			isSuperAdmin = "Y";
+		}
+		
+		if ("Y".equals(isSuperAdmin)) {
+			cafeList = adminService.selectCafeAllList(cafe);
+			
+			modelAndView.addObject("cafeList", cafeList);
+			modelAndView.addObject("loginseq", "1");
+			modelAndView.addObject("cafeseq", cafeseq);
+		} else {
+			User user = adminService.selectUserByEmail(admin.getEmail());
+			if (null != user) {
+				cafe.setAdminseq(user.getUserSeq());
+				
+				cafeList = adminService.selectCafeOfMineAllList(cafe);
+				modelAndView.addObject("cafeList", cafeList);
+			} else {
+				modelAndView.addObject("cafeList", null);
+			}
+			
+			modelAndView.addObject("loginseq", user.getUserSeq());
+			modelAndView.addObject("cafeseq", cafeseq);
+		}
+		
+		
+		
+		if ("".equals(cafeseq)) {
+			modelAndView.addObject("cafeSelected", false);
+		} else {
+			modelAndView.addObject("cafeSelected", true);
+			cafe.setCafeseq(cafeseq);
+		}
+
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		String custSeq = null;
+		String buildSeq = push.getBuildSeq();
+
+		Admin currentAdmin = currentAdmin();
+		if (!currentAdmin.isSuperAdmin()){
+			custSeq = currentAdmin.getCustSeq();
+		}
+		push.setCustSeq(custSeq);
+		
+		
+		
+		
+		if (custSeq == null){
+			// 전체 고객 리스트
+			//List<Customer> customerAll = adminService.customerAll();
+			//modelAndView.addObject("customerAll", customerAll);
+			List<Cafe> cafeAllList = adminService.selectCafeAllList(cafe);
+			modelAndView.addObject("cafeAll", cafeAllList);
+		} else {
+			Customer customer = adminService.getCustomerBySeq(custSeq);
+			// 건물 리스트
+			List<Building> buildingList = adminService.buildingListOfCustomer(customer);
+			modelAndView.addObject("buildingList", buildingList);
+		}
+		
+		// 계단 리스트
+		if (buildSeq != null){
+			Building building = new Building();
+			building.setBuildSeq(buildSeq);
+			building.setCustSeq(custSeq);
+			List<BuildingStair> buildingStairList = adminService.selectBuildingStairListOfBuilding(building);
+			modelAndView.addObject("buildingStairList", buildingStairList);
+		}
+
+		PagePair pagePair = adminService.selectPushList(Integer.valueOf(page), push);
+		List<Push> pushList = (List<Push>) pagePair.getList();
+		PageNavigation pageNavigation = pagePair.getPageNavigation();
+		
+		modelAndView.addObject("pushList", pushList);
 		modelAndView.addObject("pageNavigation", pageNavigation);
 		
 		return modelAndView;
@@ -3955,6 +4139,83 @@ public class AdminController {
 	
 	
 	
+	
+	
+	
+	@SuppressWarnings("null")
+	@RequestMapping(path="cafeNoticeAdd", method = RequestMethod.POST)
+	public ModelAndView cafeNoticeAddProc(
+			RedirectAttributes redirectAttributes,
+			@ModelAttribute Bbs bbs
+	){
+		
+		ModelAndView modelAndView = new ModelAndView("redirect:cafeNoticeList?cafeseq="+bbs.getCafeseq());
+		
+		User user = adminService.selectUserByEmail(currentAdmin().getEmail());
+		if (null == user) {
+			redirectAttributes.addFlashAttribute("message", "서버 에러가 발생하였습니다.");
+			return modelAndView;
+		} else {
+			bbs.setUser_seq(user.getUserSeq());
+		}
+		
+		boolean success = adminService.cafeBbsAdd(bbs);
+		if (!success){
+			redirectAttributes.addFlashAttribute("message", "서버 에러가 발생하였습니다.");
+			return modelAndView;
+		}
+		
+		redirectAttributes.addFlashAttribute("message", "게시물이 등록 되었습니다.");
+		return modelAndView;
+	}
+	
+	@RequestMapping(path="cafeNoticeEdit", method = RequestMethod.POST)
+	public ModelAndView cafeNoticeProc(
+			RedirectAttributes redirectAttributes,
+			@RequestParam(name="cafeseq", required=false) String cafeseq,
+			@ModelAttribute Bbs bbs
+	){
+			
+		ModelAndView modelAndView = new ModelAndView("redirect:cafeNoticeList?cafeseq="+cafeseq);
+
+		boolean success = adminService.cafeBbsEdit(bbs);
+		if (!success){
+			redirectAttributes.addFlashAttribute("message", "서버 에러가 발생하였습니다.");
+			return modelAndView;
+			
+		}
+		
+		redirectAttributes.addFlashAttribute("message", "게시물이 수정 되었습니다.");
+		return modelAndView;
+	}
+	
+	@RequestMapping(path="cafeNoticeDetail", method = RequestMethod.GET)
+	public @ResponseBody Map<String,Object> cafeNoticeDetail(
+			@ModelAttribute Bbs bbs
+	){
+		Map<String, Object> jsonResponse = new HashMap<String,Object>();
+		
+		
+		String notiseq = bbs.getNotiseq();
+		if (StringUtils.isEmpty(notiseq)){
+			jsonResponse.put("success", "false");
+			jsonResponse.put("error", "파라메터 에러");
+			return jsonResponse;
+		}
+		
+		// cust_seq, bbs_seq 조건
+		bbs = adminService.selectCafeNoticeBySeq(bbs);
+		if (bbs == null){
+			jsonResponse.put("success", "false");
+			jsonResponse.put("error", "no bbs");
+			return jsonResponse;
+		}
+		
+		jsonResponse.put("success", "true");
+		jsonResponse.put("bbs", bbs);
+		
+		return jsonResponse;
+	}
 	
 	
 	

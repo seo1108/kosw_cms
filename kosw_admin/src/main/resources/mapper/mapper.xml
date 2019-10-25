@@ -1751,6 +1751,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="content" column="content" />
 		<result property="expireDate" column="expire_date" />
 		<result property="bbsRegTime" column="bbs_reg_time" />
+		
+		<result property="cafeseq" column="cafeseq" />
+		<result property="contents" column="contents" />
+		<result property="regdate" column="regdate" />
+		<result property="user_name" column="user_name" />
+		<result property="nickname" column="nickname" />
+		<result property="cafename" column="cafename" />
+		<result property="notiseq" column="notiseq" />
+		<result property="user_seq" column="user_seq" />
 	</resultMap>
 	
 	
@@ -1812,6 +1821,67 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			) A , (SELECT @ROWNUM:=#{totalCount}+1) R 
 		) B 
 		LIMIT #{startList}, #{pageViewCnt}
+	</select>
+	
+	<select id="selectCafeBbsTotalCount" parameterType="kr.rapids.kosw.admin.model.Bbs" resultType="java.lang.Integer">
+		SELECT COUNT(1)
+		FROM t_cafe_notice
+		WHERE 1=1
+			AND cafeseq = #{cafeseq}
+	</select>
+	
+	
+	<select id="selectCafeBbsList" parameterType="kr.rapids.kosw.admin.model.Bbs" resultMap="bbsMap">
+		SELECT CAST(pnum AS SIGNED) AS rowNum ,
+			B.* FROM (
+				SELECT @ROWNUM:=@ROWNUM -1 AS pnum , A.* FROM (
+					SELECT B.*, A.user_name, A.nickname, C.cafename
+					FROM t_cafe_notice B
+					JOIN u_user A
+						ON B.user_seq = A.user_seq
+					LEFT OUTER JOIN t_cafe C
+						ON C.cafeseq = B.cafeseq
+					WHERE 1=1
+						AND B.cafeseq = #{cafeseq}
+					ORDER BY regdate DESC
+					
+			) A , (SELECT @ROWNUM:=100+1) R 
+		) B
+		LIMIT #{startList}, #{pageViewCnt}
+	</select>
+	
+	<insert id="cafeBbsAdd" parameterType="kr.rapids.kosw.admin.model.Bbs"
+		useGeneratedKeys="true" 
+     	keyColumn="notiseq" 
+     	statementType="PREPARED"
+     	keyProperty="notiseq">
+		INSERT INTO t_cafe_notice (
+			cafeseq,
+			user_seq,
+			contents,
+			regdate
+		) VALUES (
+			#{cafeseq},
+			#{user_seq},
+			#{contents},
+			DATE_FORMAT(NOW(), "%Y%m%d%H%i%s")
+		)
+	</insert>
+	
+	<insert id="cafeBbsEdit" parameterType="kr.rapids.kosw.admin.model.Bbs">
+		UPDATE t_cafe_notice 
+		SET
+			contents = #{contents},
+			user_seq = #{user_seq}
+		WHERE
+			notiseq = #{notiseq}
+	</insert>
+	
+	<select id="selectCafeNoticeBySeq" parameterType="kr.rapids.kosw.admin.model.Bbs" resultMap="bbsMap">
+		SELECT * 
+		FROM t_cafe_notice
+		WHERE
+			notiseq = #{notiseq}
 	</select>
 	
 	<insert id="bbsAdd" parameterType="kr.rapids.kosw.admin.model.Bbs"

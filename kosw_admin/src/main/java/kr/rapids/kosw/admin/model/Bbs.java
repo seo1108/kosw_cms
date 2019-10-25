@@ -35,6 +35,16 @@ public class Bbs extends Page implements Serializable, InputFormModel {
 	private String buildName;
 	
 	
+	// CafeBBS (t_cafe_notice table)
+	private String cafeseq;
+	private String contents;
+	private String regdate;
+	private String user_name;
+	private String nickname;
+	private String cafename;
+	private String notiseq;
+	private String user_seq;
+	
 	
 	
 	public String getCustName() {
@@ -190,7 +200,7 @@ public class Bbs extends Page implements Serializable, InputFormModel {
 	}
 	
 	public String getContentTrim() {
-		if (content.length() > 50){
+		if (null != content && content.length() > 50){
 			return content.substring(0, 50) + "...";
 		}
 		return content; 
@@ -238,12 +248,118 @@ public class Bbs extends Page implements Serializable, InputFormModel {
 
 
 
+	public String getCafeseq() {
+		return cafeseq;
+	}
+
+
+
+	public void setCafeseq(String cafeseq) {
+		this.cafeseq = cafeseq;
+	}
+
+
+
+	public String getContents() {
+		return contents;
+	}
+	
+	public String getContentsTrim() {
+		if (null != contents && contents.length() > 50){
+			return contents.substring(0, 50) + "...";
+		}
+		return contents; 
+	}
+
+
+
+	public void setContents(String contents) {
+		this.contents = contents;
+	}
+
+
+
+	public String getRegdate() {
+		return regdate;
+	}
+
+
+
+	public void setRegdate(String regdate) {
+		this.regdate = regdate;
+	}
+
+
+
+	public String getUser_name() {
+		return user_name;
+	}
+
+
+
+	public void setUser_name(String user_name) {
+		this.user_name = user_name;
+	}
+
+
+
+	public String getNickname() {
+		return nickname;
+	}
+
+
+
+	public void setNickname(String nickname) {
+		this.nickname = nickname;
+	}
+
+
+
+	public String getCafename() {
+		return cafename;
+	}
+
+
+
+	public void setCafename(String cafename) {
+		this.cafename = cafename;
+	}
+
+
+
+	public String getNotiseq() {
+		return notiseq;
+	}
+
+
+
+	public void setNotiseq(String notiseq) {
+		this.notiseq = notiseq;
+	}
+
+
+
+	public String getUser_seq() {
+		return user_seq;
+	}
+
+
+
+	public void setUser_seq(String user_seq) {
+		this.user_seq = user_seq;
+	}
+
+
+
 	@Override
 	public String inputValidateErrroMessage() {
 		if (StringUtils.isEmpty(this.title)){
 			return "제목을 입력해주세요.";
 		}
 		if (StringUtils.isEmpty(this.content)){
+			return "내용을 입력해주세요.";
+		}
+		if (StringUtils.isEmpty(this.contents)){
 			return "내용을 입력해주세요.";
 		}
 		return null;
