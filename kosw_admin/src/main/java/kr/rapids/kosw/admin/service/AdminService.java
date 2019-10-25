@@ -976,6 +976,38 @@ public class AdminService {
 		return mapper.selectFcmTokenOfCustomer(customerSeq);
 	}
 
+	public PagePair selectCafePushList(Integer page, Push push) {
+		int totalCount = mapper.selectCafePushTotalCount(push);
+		PageNavigation pageNavigation = new PageNavigation(page, totalCount);
+		push.setPage(pageNavigation);
+		List<Bbs> userList = mapper.selectCafePushList(push);
+		return new PagePair(userList, pageNavigation);
+	}
+	
+	public boolean cafePushAdd(Push push) {
+		try {
+			int count = mapper.cafePushAdd(push);
+			if (count == 1){
+				return true;
+			}
+		} catch (Exception e) {
+			logger.error("{}", e);
+		}
+		return false;
+	}
+	
+	public boolean cafePushEdit(Push push) {
+		try {
+			int count = mapper.cafePushEdit(push);
+			if (count == 1){
+				return true;
+			}
+		} catch (Exception e) {
+			logger.error("{}", e);
+		}
+		return false;
+	}
+	
 	public PagePair selectPushList(Integer page, Push push) {
 		int totalCount = mapper.selectPushTotalCount(push);
 		PageNavigation pageNavigation = new PageNavigation(page, totalCount);

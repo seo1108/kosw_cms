@@ -30,6 +30,11 @@ public class Push extends Page implements Serializable, InputFormModel {
 	private String custName;
 	private String buildName;
 	
+	private String cafeseq;
+	private String cafename;
+	private String user_name;
+	private String nickname;
+	
 	@Override
 	public String inputValidateErrroMessage() {
 		if (StringUtils.isEmpty(this.adminSeq)){
@@ -181,6 +186,46 @@ public class Push extends Page implements Serializable, InputFormModel {
 
 	public void setBuildName(String buildName) {
 		this.buildName = buildName;
+	}
+
+
+	public String getCafeseq() {
+		return cafeseq;
+	}
+
+
+	public void setCafeseq(String cafeseq) {
+		this.cafeseq = cafeseq;
+	}
+
+
+	public String getCafename() {
+		return cafename;
+	}
+
+
+	public void setCafename(String cafename) {
+		this.cafename = cafename;
+	}
+
+
+	public String getUser_name() {
+		return user_name;
+	}
+
+
+	public void setUser_name(String user_name) {
+		this.user_name = user_name;
+	}
+
+
+	public String getNickname() {
+		return nickname;
+	}
+
+
+	public void setNickname(String nickname) {
+		this.nickname = nickname;
 	}
 
 

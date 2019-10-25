@@ -3747,62 +3747,167 @@ public class AdminController {
 			cafe.setCafeseq(cafeseq);
 		}
 
+		push.setAdminSeq(admin.getAdminSeq());
 		
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		String custSeq = null;
-		String buildSeq = push.getBuildSeq();
-
-		Admin currentAdmin = currentAdmin();
-		if (!currentAdmin.isSuperAdmin()){
-			custSeq = currentAdmin.getCustSeq();
-		}
-		push.setCustSeq(custSeq);
-		
-		
-		
-		
-		if (custSeq == null){
-			// 전체 고객 리스트
-			//List<Customer> customerAll = adminService.customerAll();
-			//modelAndView.addObject("customerAll", customerAll);
-			List<Cafe> cafeAllList = adminService.selectCafeAllList(cafe);
-			modelAndView.addObject("cafeAll", cafeAllList);
-		} else {
-			Customer customer = adminService.getCustomerBySeq(custSeq);
-			// 건물 리스트
-			List<Building> buildingList = adminService.buildingListOfCustomer(customer);
-			modelAndView.addObject("buildingList", buildingList);
-		}
-		
-		// 계단 리스트
-		if (buildSeq != null){
-			Building building = new Building();
-			building.setBuildSeq(buildSeq);
-			building.setCustSeq(custSeq);
-			List<BuildingStair> buildingStairList = adminService.selectBuildingStairListOfBuilding(building);
-			modelAndView.addObject("buildingStairList", buildingStairList);
-		}
-
-		PagePair pagePair = adminService.selectPushList(Integer.valueOf(page), push);
+		PagePair pagePair = adminService.selectCafePushList(Integer.valueOf(page), push);
 		List<Push> pushList = (List<Push>) pagePair.getList();
 		PageNavigation pageNavigation = pagePair.getPageNavigation();
 		
 		modelAndView.addObject("pushList", pushList);
 		modelAndView.addObject("pageNavigation", pageNavigation);
 		
+		return modelAndView;
+	}
+	
+	/**
+	 * 푸쉬 추가 처리
+	 * @param redirectAttributes
+	 * @param push
+	 * @return
+	 */
+	@RequestMapping(path="cafePushAdd", method = RequestMethod.POST)
+	public ModelAndView cafePushAddProc(
+			RedirectAttributes redirectAttributes,
+			@RequestParam(name="cafeseq", required=false) String cafeseq,
+			@ModelAttribute Push push
+	){
+		
+		Admin currentAdmin = currentAdmin();
+		
+		
+		ModelAndView modelAndView = new ModelAndView("redirect:cafePushList?cafeseq="+cafeseq);
+		
+		push.setAdminSeq(currentAdmin.getAdminSeq()); // SET ADMIN
+		
+		String inputValidateErrroMessage = push.inputValidateErrroMessage();
+		if (inputValidateErrroMessage != null){
+			redirectAttributes.addFlashAttribute("message", inputValidateErrroMessage);
+			return modelAndView;
+		}
+		
+		System.out.println(push.toString());
+		
+		String reserveTime = push.getReserveTime();
+		if (reserveTime != null && reserveTime.length() == 12){
+			SimpleDateFormat f = new SimpleDateFormat("yyyyMMddHHmm");
+			try {
+				f.parse(reserveTime);
+			} catch (ParseException e) {
+				push.setReserveTime(null);
+				e.printStackTrace();
+			}
+		}else{
+			push.setReserveTime(null);
+		}
+		
+		push.setCafeseq(cafeseq);
+		boolean success = adminService.cafePushAdd(push);
+		if (!success){
+			redirectAttributes.addFlashAttribute("message", "서버 에러가 발생하였습니다.");
+			return modelAndView;
+		}
+		
+		
+		
+		// 즉시 발송이면 푸쉬 발송
+		if (push.getReserveTime() == null){
+			List<String> targets = adminService.pushTargets(push);
+			
+			String pushTitle = push.getPushTitle();
+			String pushContent = push.getPushContent();
+			
+			HashMap<String, String> msg = new RapidsMap<>();
+			msg.put("push_type", PushType.GENERAL.name());
+			
+			fcmService.sendFcmToGroup(pushTitle, pushContent, targets, msg);
+			
+			adminService.pushSent(push); // 발송 여부 저장
+			
+		}
+		
+		
+		redirectAttributes.addFlashAttribute("message", "등록 되었습니다.");
+		return modelAndView;
+	}
+	
+	@RequestMapping(path="cafePushEdit", method = RequestMethod.POST)
+	public ModelAndView cafePushEditProc(
+			RedirectAttributes redirectAttributes,
+			@ModelAttribute Push push
+	){
+		
+		ModelAndView modelAndView = new ModelAndView("redirect:cafePushList?cafeseq="+push.getCafeseq());
+		
+		Admin currentAdmin = currentAdmin();
+
+		push.setAdminSeq(currentAdmin.getAdminSeq()); // SET ADMIN
+		String pushSeq = push.getPushSeq();
+		if (StringUtils.isEmpty(pushSeq)){
+			redirectAttributes.addFlashAttribute("message", "푸쉬 등록 번호가 없습니다.");
+			return modelAndView;
+		}
+		
+		String reserveTime = push.getReserveTime();
+		if (reserveTime.length() == 12){
+			SimpleDateFormat f = new SimpleDateFormat("yyyyMMddHHmm");
+			try {
+				f.parse(reserveTime);
+			} catch (ParseException e) {
+				push.setReserveTime(null);
+				e.printStackTrace();
+			}
+		}else{
+			push.setReserveTime(null);
+		}
+		
+
+		boolean success = adminService.cafePushEdit(push);
+		if (!success){
+			redirectAttributes.addFlashAttribute("message", "서버 에러가 발생하였습니다.");
+			return modelAndView;
+		}
+		
+		// 즉시 발송이면 푸쉬 발송
+		if (push.getReserveTime() == null){
+			List<String> targets = adminService.pushTargets(push);
+			
+			String pushTitle = push.getPushTitle();
+			String pushContent = push.getPushContent();
+			
+			HashMap<String, String> msg = new RapidsMap<>();
+			msg.put("push_type", PushType.GENERAL.name());
+			fcmService.sendFcmToGroup(pushTitle, pushContent, targets, msg);
+			
+			adminService.pushSent(push);
+			
+		}
+		
+		redirectAttributes.addFlashAttribute("message", "수정 되었습니다.");
+		return modelAndView;
+	}
+	
+	
+	@RequestMapping(path="cafePushDelete", method = RequestMethod.POST)
+	public ModelAndView cafePushDeleteProc(
+			RedirectAttributes redirectAttributes,
+			@ModelAttribute Push push
+	){
+		ModelAndView modelAndView = new ModelAndView("redirect:cafePushList?cafeseq="+push.getCafeseq());
+		
+		String pushSeq = push.getPushSeq();
+		if (StringUtils.isEmpty(pushSeq)){
+			redirectAttributes.addFlashAttribute("message", "푸쉬 메세지 등록 번호가 없습니다.");
+			return modelAndView;
+		}
+		
+		boolean success = adminService.pushDelete(push);
+		if (!success){
+			redirectAttributes.addFlashAttribute("message", "서버 에러가 발생하였습니다.");
+			return modelAndView;
+		}
+		
+		redirectAttributes.addFlashAttribute("message", "삭제 되었습니다.");
 		return modelAndView;
 	}
 	

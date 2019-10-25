@@ -1984,6 +1984,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="pushContent" column="push_content" />
 		<result property="reserveTime" column="reserve_time" />
 		<result property="pushRegTime" column="push_reg_time" />
+		
+		<result property="cafeseq" column="cafeseq" />
+		<result property="cafename" column="cafename" />
+		<result property="user_name" column="user_name" />
+		<result property="nickname" column="nickname" />
 	</resultMap>
 	
 	<select id="scheduledPushList" resultMap="pushMap">
@@ -2015,6 +2020,74 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		</if>
 		GROUP BY U.fcm_token
 	</select>
+	
+	<select id="selectCafePushTotalCount" parameterType="kr.rapids.kosw.admin.model.Push" resultType="java.lang.Integer">
+		SELECT COUNT(1)
+		FROM b_push
+		WHERE 1=1
+		<if test="cafeseq != null and cafeseq != ''">
+			AND cafeseq = #{cafeseq}
+		</if>
+	</select>
+	
+	<select id="selectCafePushList" parameterType="kr.rapids.kosw.admin.model.Push" resultMap="pushMap">
+		SELECT CAST(pnum AS SIGNED) AS rowNum ,
+			B.* FROM (
+				SELECT @ROWNUM:=@ROWNUM -1 AS pnum , A.* FROM (
+					SELECT B.*, A.admin_name, C.cafename
+					FROM b_push B
+					JOIN a_admin A
+						ON B.admin_seq = A.admin_seq
+					LEFT OUTER JOIN t_cafe C
+						ON B.cafeseq = C.cafeseq
+					WHERE 1=1
+					<if test="cafeseq != null and cafeseq != ''">
+						AND B.cafeseq = #{cafeseq}
+					</if>
+					ORDER BY push_reg_time DESC
+					
+			) A , (SELECT @ROWNUM:=#{totalCount}+1) R 
+		) B 
+		LIMIT #{startList}, #{pageViewCnt}
+	</select>
+	
+	<insert id="cafePushAdd" parameterType="kr.rapids.kosw.admin.model.Push"
+		useGeneratedKeys="true" 
+     	keyColumn="push_seq" 
+     	statementType="PREPARED"
+     	keyProperty="pushSeq">
+		INSERT INTO b_push (
+			admin_seq, 
+			push_type,
+			push_title,
+			push_content,
+			reserve_time,
+			cafeseq,
+			push_reg_time
+		) VALUES (
+			#{adminSeq},
+			#{pushType},
+			#{pushTitle},
+			#{pushContent},
+			#{reserveTime},
+			#{cafeseq},
+			DATE_FORMAT(NOW(), "%Y%m%d%H%i%s")
+		)
+	</insert>
+	
+	<update id="cafePushEdit" parameterType="kr.rapids.kosw.admin.model.Push">
+		UPDATE b_push 
+		SET
+			admin_seq = #{adminSeq},
+			push_type = #{pushType},
+			push_title = #{pushTitle},
+			push_content = #{pushContent},
+			reserve_time = #{reserveTime},
+			push_reg_time = DATE_FORMAT(NOW(), "%Y%m%d%H%i%s")
+		WHERE
+			push_seq = #{pushSeq}
+	</update>
+	
 	
 	<select id="selectPushList" parameterType="kr.rapids.kosw.admin.model.Push" resultMap="pushMap">
 		SELECT CAST(pnum AS SIGNED) AS rowNum ,

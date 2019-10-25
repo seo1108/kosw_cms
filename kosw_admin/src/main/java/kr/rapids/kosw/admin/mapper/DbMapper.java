@@ -281,6 +281,11 @@ public interface DbMapper {
 	/**
 	 * 푸쉬관련
 	 */
+	int selectCafePushTotalCount(Push push);
+	List<Bbs> selectCafePushList(Push push);
+	int cafePushAdd(Push push);
+	int cafePushEdit(Push push);
+	
 	int selectPushTotalCount(Push push);
 	List<Bbs> selectPushList(Push push);
 	int pushAdd(Push push);
