@@ -122,7 +122,7 @@
 										<tr>
 											<td>${a.cafeseq }</td>
 											<td>
-												<a href="<c:url value="/customerOne" />?cSeq=${a.cafeseq }">${a.cafename }</a>
+												<a href="<c:url value="/cafeOne" />?cafeseq=${a.cafeseq }">${a.cafename }</a>
 											</td>
 											<td>${a.adminname }</td>
 											<td>${a.usercount }</td>

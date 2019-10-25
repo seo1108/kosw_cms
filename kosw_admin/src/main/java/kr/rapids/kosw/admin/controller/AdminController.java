@@ -4783,7 +4783,7 @@ public class AdminController {
 		String inputValidateErrroMessage = rank.inputValidateErrroMessage();
 		if (inputValidateErrroMessage != null){
 			redirectAttributes.addFlashAttribute("message", inputValidateErrroMessage);
-			return redirectCustomerOne(rank.getCustSeq());
+			return redirectCafeOne(cafeseq);
 		}
 		
 		User user = adminService.selectUserByEmail(currentAdmin().getEmail());
