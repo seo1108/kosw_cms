@@ -22,6 +22,7 @@ public class FilePathUtils {
 	
 	private String fileUploadPathOfLogo;
 	private String fileUploadPathOfCharacter;
+	private String fileUploadPathOfCafeLogo;
 	
 	public FilePathUtils() {
 		Properties properties = System.getProperties();
@@ -40,13 +41,19 @@ public class FilePathUtils {
 			directoryLogo.mkdirs();
 		}
 		
-		
 		this.fileUploadPathOfCharacter = Paths.get(this.catalinaHome, fileUploadPathProperty.getCharacter()).toString();
 		File directoryCharacter = new File(this.fileUploadPathOfCharacter);
 		
 		if (!directoryCharacter.exists()){
 			directoryCharacter.mkdirs();
 		}
+		
+		this.fileUploadPathOfCafeLogo = Paths.get(this.catalinaHome, fileUploadPathProperty.getCafelogo()).toString();
+		File directoryCafeLogo = new File(this.fileUploadPathOfCafeLogo);
+		if (!directoryCafeLogo.exists()){
+			directoryCafeLogo.mkdirs();
+		}
+		
 	}
 	
 	
@@ -60,6 +67,11 @@ public class FilePathUtils {
 		return file;
 	}
 	
+	public File getCafeLogoFile(){
+		File file = new File(this.fileUploadPathOfCafeLogo);
+		return file;
+	}
+	
 	
 	
 	
@@ -70,6 +82,14 @@ public class FilePathUtils {
 
 	public void setFileUploadPathOfLogo(String fileUploadPathOfLogo) {
 		this.fileUploadPathOfLogo = fileUploadPathOfLogo;
+	}
+	
+	public String getFileUploadPathOfCafeLogo() {
+		return fileUploadPathOfCafeLogo;
+	}
+	
+	public void setFileUploadPathOfCafeLogo(String fileUploadPathOfCafeLogo) {
+		this.fileUploadPathOfCafeLogo = fileUploadPathOfCafeLogo;
 	}
 
 	public String getCatalinaHome() {

@@ -93,7 +93,36 @@
             <div class="col-md-12">
                 
                 <div class="card">
-                    <div class="header">
+                	<div class="header">
+                        <p class="category">카페 정보</p>
+                    </div>
+                    <div class="content">
+                    	<c:if test="${empty cafeList }">
+                    		<h5 class="text-danger">가입한 카페가 없습니다.</h5>
+                    	</c:if>
+						<c:if test="${not empty cafeList }">
+							<div class="table-responsive">
+								<table class="table">
+									<tr>
+										<th>카페명</th>
+										<th>관리자명</th>
+										<th>카페개설일시</th>
+										<th>카페가입일시</th>
+									</tr>
+									<c:forEach var="a" items="${cafeList }">
+										<tr>
+											<td>${a.cafename }</td>
+											<td>${a.adminname }</td>
+											<td>${a.opendate }</td>
+											<td>${a.regdate }</td>
+										</tr>
+									</c:forEach>
+								</table>
+							</div>
+						</c:if>
+
+                    </div>
+                    <%-- <div class="header">
                         <p class="category">건물 정보</p>
                     </div>
                     <div class="content">
@@ -131,11 +160,11 @@
 							</div>
 						</c:if>
 
-                    </div>
+                    </div> --%>
                 </div>
                 
                 
-                <c:if test="${isSuperAdmin eq 'Y'}">
+                <%-- <c:if test="${isSuperAdmin eq 'Y'}">
                 <div class="card">
                     <div class="header">
                         <p class="category">건물별/일자별 정보</p>
@@ -172,7 +201,7 @@
 
                     </div>
                 </div>
-                </c:if>
+                </c:if> --%>
 				
 				<c:if test="${not empty userRecords }">
 					

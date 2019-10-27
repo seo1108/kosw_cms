@@ -86,6 +86,8 @@ public interface DbMapper {
 	
 	List<Building> historyOfUserSeq(String userSeq);
 	
+	List<Cafe> cafeListOfUserSeq(String user_seq);
+	
 	List<Customer> customerListOfBuildSeq(String buildSeq);
 
 	int departmentAdd(Department department);
@@ -248,6 +250,12 @@ public interface DbMapper {
 	
 	int cafeBbsEdit(Bbs bbs);
 	
+	int selectBbsToAllTotalCount(Bbs bbs);
+
+	List<Bbs> selectBbsToAllList(Bbs bbs);
+	
+	int bbsToAllAdd(Bbs bbs);
+	
 	int selectCafeBbsTotalCount(Bbs bbs);
 
 	List<Bbs> selectCafeBbsList(Bbs bbs);
@@ -281,6 +289,10 @@ public interface DbMapper {
 	/**
 	 * 푸쉬관련
 	 */
+	int selectPushToAllTotalCount(Push push);
+	List<Bbs> selectPushToAllList(Push push);
+	int PushToAllAdd(Push push);
+	
 	int selectCafePushTotalCount(Push push);
 	List<Bbs> selectCafePushList(Push push);
 	int cafePushAdd(Push push);

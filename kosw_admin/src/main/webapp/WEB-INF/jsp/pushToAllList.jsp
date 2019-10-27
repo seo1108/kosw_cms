@@ -23,19 +23,12 @@
         </form>
 
         <script>
-        
-        jQuery(document).ready(function() {
-    		$('select[name="selectCafe"]').change(function(e) {
-    			location.href="cafePushList?cafeseq="+$(this).val();
-    		});
-        });
-        
         $(function(){
-        	/* $(document.search).show(); */
+        	$(document.search).show();
         	setPage = function(page){
         		document.pageForm.p.value=page;
         		document.pageForm.submit();
-        	} 
+        	}
         	
         	$("form.deleteForm").on("submit", function(){
     			var form = this;
@@ -104,7 +97,7 @@
         	$(document.pushAdd).validate(pushOption);
         	$(document.pushEdit).validate(pushOption);
 
-        	showPushAdd = function(){
+        	showBssAdd = function(){
         		$("#pushAdd").collapse("show");
         		setTimeout(function(){
         			location.href = "#pushAdd";	
@@ -169,7 +162,7 @@
         	});
         	
         	
-        	showDetail = function(pushSeq, title, content, reserveTime){
+        	showDetail = function(pushSeq, title, content, reserveTime, custSeq, buildSeq){
         		
         		document.pushEdit.pushSeq.value = pushSeq;
 				document.pushEdit.pushTitle.value = title;
@@ -181,8 +174,46 @@
 				$(document.pushEdit.mm).selectpicker("val", moment(reserveTime, "YYYYMMDDHHmm").format("mm"));
 				
 				
+				$(document.pushEdit.custSeq).selectpicker("val", custSeq);
+				
+				if (custSeq){
+					pushEditCustSeqChanged(custSeq, function(){
+						$(document.pushEdit.buildSeq).selectpicker("val", buildSeq);
+					});
+				}
+				
+				
 				showPushEdit();
         	}
+        	
+        	
+        	
+        	function pushEditCustSeqChanged(custSeq, succssFunc){
+				$.get("<c:url value='buildingSelectOption' />",{"custSeq" : custSeq} , function(response){
+					console.log(response);
+        			if (response.success == "true"){
+						var buildingList =  response.buildingList;
+						$(document.pushEdit.buildSeq).find("option").not("[value='']").remove();
+						$.each(buildingList, function(i,e){
+							var option = $("<option></option>");
+							option.text(e.buildName);
+							option.val(e.buildSeq); 
+							$(document.pushEdit.buildSeq).append(option);
+						});
+						$(document.pushEdit.buildSeq).selectpicker('refresh');
+        			
+						if (succssFunc){
+							succssFunc.call();
+						}
+        			}
+        			
+        		}).fail(function(e){
+        			console.log(e);
+        		});
+			}
+        	
+        	
+        	
         });
         </script>
 
@@ -197,123 +228,82 @@
                         <p class="category">푸쉬메세지 리스트</p>
                     </div>
                     <div class="content">
-                    	<form name="searchForm" method="get" class="form-horizontal">
-							<input name="cafeseq" type="hidden" />
-							
-							<c:if test="${cafeSelected eq false}">
-								<fieldset>
-									<div class="form-group">
-										<label class="col-sm-1 control-label">내 Cafe</label>
-		                    			<div class="col-sm-5">
-		                    				<select name="selectCafe" class="selectpicker" data-title="" data-style="btn-default btn-block" data-menu-style="dropdown-blue">
-		                    					<option value="" selected>Cafe를 선택해주세요.</option>
-				                    			<c:forEach var="a" items="${cafeList }">
-													<option value="${a.cafeseq }"> ${a.cafename }</option>
-												</c:forEach>
-					                    	</select>
-		                    			</div>
-									</div>
-								</fieldset>
-							</c:if>
-							
-							<c:if test="${cafeSelected eq true}">
-								<fieldset>
-									<div class="form-group">
-										<c:choose>
-											<c:when test="${type eq 'category' || type eq 'individual'}">
-												
-											</c:when>
-											<c:otherwise>
-												<label class="col-sm-1 control-label">내 Cafe</label>
-					                    			<div class="col-sm-5">
-					                    				<select name="selectCafe" class="selectpicker" data-title="" data-style="btn-default btn-block" data-menu-style="dropdown-blue">
-					                    					<option value="">Cafe를 선택해주세요.</option>
-							                    			<c:forEach var="a" items="${cafeList }">
-																<option value="${a.cafeseq }" <c:if test="${cafeseq eq a.cafeseq}">selected</c:if> > ${a.cafename }</option>
-															</c:forEach>
-								                    	</select>
-					                    			</div>
-											</c:otherwise>
-										</c:choose>
-									</div>
-								</fieldset>
-							</c:if>
-						</form>
-                    
-                    
-                    
-                    	<c:if test="${cafeSelected eq true}">
-                    
-                    
-                    
-	                		<c:if test="${empty pushList }">
-	                			<p class="text-danger">등록된 푸쉬 메세지가 없습니다.</p>
-	                		</c:if>
-	                		<c:if test="${not empty pushList }">
-								<div class="table-responsive">
-									<table class="table">
+                		<c:if test="${empty pushList }">
+                			<p class="text-danger">등록된 푸쉬 메세지가 없습니다.</p>
+                		</c:if>
+                		<c:if test="${not empty pushList }">
+							<div class="table-responsive">
+								<table class="table">
+									<tr>
+										<th>번호</th>
+										<th>제목</th>
+										<th>내용</th>
+										<th>대상</th>
+										<th>예약일자</th>
+										<th>발송여부</th>
+										<th>관리자</th>
+										<th>등록일시</th>
+										<th>ACTION</th>
+									</tr>
+									<c:forEach var="a" items="${pushList }">
 										<tr>
-											<th>번호</th>
-											<th>제목</th>
-											<th>내용</th>
-											<th>카페명</th>
-											<th>예약일자</th>
-											<th>발송여부</th>
-											<th>관리자</th>
-											<th>등록일시</th>
-											<th>ACTION</th>
+											<td>${a.pushSeq }</td>
+											<td>${a.pushTitle }</td>
+											<td>${a.pushContent }</td>
+											<td>
+												<c:if test="${empty a.custName }">
+													전체 대상
+												</c:if>
+												<c:if test="${not empty a.custName and empty a.buildName}">
+													${a.custName } 전체
+												</c:if>
+												<c:if test="${not empty a.custName and not empty a.buildName}">
+													${a.custName }-${a.buildName }
+												</c:if>
+											</td>
+											<td>
+												<c:if test="${not empty a.reserveTimeFormat }">
+													${a.reserveTimeFormat }
+												</c:if>
+												<c:if test="${empty a.reserveTimeFormat }">
+													<p class="text-primary">즉시발송</p>
+												</c:if>
+											</td>
+											<td>
+												<c:if test="${'Y' eq a.sentFlag }">
+													<p class="text-primary">발송됨</p>
+												</c:if>
+												<c:if test="${'Y' ne a.sentFlag }">
+													<p>대기</p>
+												</c:if>
+											</td>
+											<td>${a.adminName }</td>
+											<td>${a.pushRegTimeFormat }</td>
+											<td class="tx-actions text-right">
+											
+												<c:if test="${a.sentFlag ne 'Y' }">
+	                                                <a onclick="showDetail('${a.pushSeq}', '${a.pushTitle}', '${a.pushContent}', '${a.reserveTime}', '${a.custSeq}', '${a.buildSeq}');" rel="tooltip" title="수정" class="btn btn-warning btn-simple" style="display:inline-block;">
+	                                                    <i class="fa fa-edit"></i>
+	                                                </a>
+                                               	</c:if>
+                                                
+                                                <form class="deleteForm" method="post" action="<c:url value="pushDelete"/>" style="display:inline-block;">
+                                               		<input name="pushSeq" type="hidden" value="${a.pushSeq }"/>
+	                                                <button type="submit" rel="tooltip" title="삭제" class="btn btn-danger btn-simple btn-icon remove">
+	                                                    <i class="fa fa-times"></i>
+	                                                </button>
+                                                </form>
+											</td>
 										</tr>
-										<c:forEach var="a" items="${pushList }">
-											<tr>
-												<td>${a.pushSeq }</td>
-												<td>${a.pushTitle }</td>
-												<td>${a.pushContent }</td>
-												<td>${a.cafename }</td>
-												<td>
-													<c:if test="${not empty a.reserveTimeFormat }">
-														${a.reserveTimeFormat }
-													</c:if>
-													<c:if test="${empty a.reserveTimeFormat }">
-														<p class="text-primary">즉시발송</p>
-													</c:if>
-												</td>
-												<td>
-													<c:if test="${'Y' eq a.sentFlag }">
-														<p class="text-primary">발송됨</p>
-													</c:if>
-													<c:if test="${'Y' ne a.sentFlag }">
-														<p>대기</p>
-													</c:if>
-												</td>
-												<td>${a.adminName }</td>
-												<td>${a.pushRegTimeFormat }</td>
-												<td class="tx-actions text-right">
-												
-													<c:if test="${a.sentFlag ne 'Y' }">
-		                                                <a onclick="showDetail('${a.pushSeq}', '${a.pushTitle}', '${a.pushContent}', '${a.reserveTime}');" rel="tooltip" title="수정" class="btn btn-warning btn-simple" style="display:inline-block;">
-		                                                    <i class="fa fa-edit"></i>
-		                                                </a>
-	                                               	</c:if>
-	                                                
-	                                                <form class="deleteForm" method="post" action="<c:url value="cafePushDelete"/>" style="display:inline-block;">
-	                                               		<input name="pushSeq" type="hidden" value="${a.pushSeq }"/>
-	                                               		<input name="cafeseq" type="hidden" value="${a.cafeseq }"/>
-		                                                <button type="submit" rel="tooltip" title="삭제" class="btn btn-danger btn-simple btn-icon remove">
-		                                                    <i class="fa fa-times"></i>
-		                                                </button>
-	                                                </form>
-												</td>
-											</tr>
-										</c:forEach>
-									</table>
-								</div>
-			                    <%@ include file="/WEB-INF/jsp/common/pagenation.jsp" %>
-	                		</c:if>
-	                		
-	                		<div class="text-center">
-								<a href='javascript:showPushAdd();' class="btn btn-primary btn-fill" >신규 푸쉬 메세지 등록</a>
+									</c:forEach>
+								</table>
 							</div>
-						</c:if>
+		                    <%@ include file="/WEB-INF/jsp/common/pagenation.jsp" %>
+                		</c:if>
+                		
+                		<div class="text-center">
+							<a href='javascript:showBssAdd();' class="btn btn-primary btn-fill" >신규 푸쉬 메세지 등록</a>
+						</div>
             		</div>
 					
                 </div> <!-- CARD-1 -->
@@ -322,28 +312,6 @@
 
 				<script>
 					$(function(){
-						
-						$(document.pushAdd.custSeq).on("changed.bs.select", function(){
-							$.get("<c:url value='buildingSelectOption' />",{"custSeq" : this.value} , function(response){
-								console.log(response);
-			        			if (response.success == "true"){
-									var buildingList =  response.buildingList;
-									$(document.pushAdd.buildSeq).find("option").not("[value='']").remove();
-									$.each(buildingList, function(i,e){
-										var option = $("<option></option>");
-										option.text(e.buildName);
-										option.val(e.buildSeq); 
-										$(document.pushAdd.buildSeq).append(option);
-									});
-									$(document.pushAdd.buildSeq).selectpicker('refresh');
-			        			
-			        			}
-			        			
-			        		}).fail(function(e){
-			        			console.log(e);
-			        		});
-						});
-						
 						
 						
 					});
@@ -362,9 +330,8 @@
                     </div>
                     <div class="content">
                     	
-                    	<form name="pushAdd" method="POST" action="<c:url value="cafePushAdd" />" class="form-horizontal">
+                    	<form name="pushAdd" method="POST" action="<c:url value="pushToAllAdd" />" class="form-horizontal">
 							<input type="hidden" name="pushType" value="N">
-							<input type="hidden" name="cafeseq" value="${cafeseq }">
 							<fieldset>
 	                    		<div class="form-group">
 	                    			<label class="col-sm-2 control-label">제목</label>
@@ -440,12 +407,44 @@
                     </div>
                     <div class="content">
                     	
-                    	<form name="pushEdit" method="POST" action="<c:url value="cafePushEdit" />" class="form-horizontal">
+                    	<form name="pushEdit" method="POST" action="<c:url value="pushEdit" />" class="form-horizontal">
                     		<input type="hidden" name="pushSeq">
-                    		<input type="hidden" name="cafeseq" value="${cafeseq }">
                     		<input type="hidden" name="pushType" value="N">
 	
+							<c:if test="${not empty customerAll }">
+								<fieldset>
+		                    		<div class="form-group">
+		                    			<label class="col-sm-2 control-label">회사 선택</label>
+		                    			<div class="col-sm-10">
+		                    				<select name="custSeq" class="selectpicker" data-title="" data-style="btn-default btn-block" data-menu-style="dropdown-blue">
+		                    					<option value="">전체 회사 대상</option>
+				                    			<c:forEach var="a" items="${customerAll }">
+				                    				<option value="${a.custSeq }">${a.custName }</option>
+				                    			</c:forEach>
+					                    	</select>
+		                    			</div>
+		                    		</div>
+	                    		</fieldset>
+							</c:if>
+							
 							<fieldset>
+	                    		<div class="form-group">
+	                    			<label class="col-sm-2 control-label">건물 선택</label>
+	                    			<div class="col-sm-10">
+	                    				<select name="buildSeq" class="selectpicker" data-title="" data-style="btn-default btn-block" data-menu-style="dropdown-blue">
+	                    					<option value="">건물 전체 대상</option>
+			                    			<c:forEach var="a" items="${buildingList }">
+			                    				<option value="${a.buildSeq }">${a.buildName }</option>
+			                    			</c:forEach>
+				                    	</select>
+	                    			</div>
+	                    		</div>
+                    		</fieldset>
+	                    		
+                    		
+                    		
+                    		
+                    		<fieldset>
 	                    		<div class="form-group">
 	                    			<label class="col-sm-2 control-label">제목</label>
 	                    			<div class="col-sm-10">

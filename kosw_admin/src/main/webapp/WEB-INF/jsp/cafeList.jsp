@@ -116,7 +116,7 @@
 										<th>회원 수</th>
 										<th>공개여부</th>
 										<th>카페오픈일</th>
-										<th></th>
+										<!-- <th></th> -->
 									</tr>
 									<c:forEach var="a" items="${cafeList }">
 										<tr>
@@ -134,16 +134,16 @@
 											</td>
 											<td>${a.opendate }</td>
 											
-											<td>
+											<%-- <td>
 												<form class="deleteForm" method="post" action="<c:url value="deleteAdminCustomer"/>" style="display:inline-block;">
-                                                	<%-- <input name="custSeq" type="hidden" value="${a.custSeq }"/>
+                                                	<input name="custSeq" type="hidden" value="${a.custSeq }"/>
                                                 	<input name="adminSeq" type="hidden" value="${a.adminSeq }"/>
-                                                	<input name="custName" type="hidden" value="${a.custName }"/> --%>
+                                                	<input name="custName" type="hidden" value="${a.custName }"/>
 	                                                <button type="submit" class="btn btn-sm btn-danger btn-fill">
 	                                                    삭제
 	                                                </button>
                                                 </form>
-											</td>
+											</td> --%>
 										</tr>
 									</c:forEach>
 								</table>

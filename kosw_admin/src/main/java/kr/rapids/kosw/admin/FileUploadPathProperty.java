@@ -12,6 +12,7 @@ public class FileUploadPathProperty {
 
 	private String logo;
 	private String character;
+	private String cafelogo;
 	
 	public String getCharacter() {
 		return character;
@@ -24,6 +25,12 @@ public class FileUploadPathProperty {
 	}
 	public void setLogo(String logo) {
 		this.logo = logo;
+	}
+	public String getCafelogo() {
+		return cafelogo;
+	}
+	public void setCafelogo(String cafelogo) {
+		this.cafelogo = cafelogo;
 	}
 	
 	

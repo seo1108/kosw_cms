@@ -472,7 +472,7 @@
                     <div class="content">
                     	
                     	<form name="bbsEdit" method="POST" action="<c:url value="bbsEdit" />" class="form-horizontal">
-                    		<input type="hidden" name="bbsSeq" value="${a.bbsSeq}">
+                    		<input type="hidden" name="bbsSeq">
 	
 							<c:if test="${not empty customerAll }">
 								<fieldset>

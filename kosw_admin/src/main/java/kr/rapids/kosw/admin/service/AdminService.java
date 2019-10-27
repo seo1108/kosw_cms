@@ -188,6 +188,11 @@ public class AdminService {
 		return buildingList;
 	}
 	
+	public List<Cafe> cafeListOfUserSeq(String user_seq) {
+		List<Cafe> cafeList = mapper.cafeListOfUserSeq(user_seq);
+		return cafeList;
+	}
+	
 	public List<Building> historyOfUserSeq(String buildSeq) {
 		List<Building> buildingUserList = mapper.historyOfUserSeq(buildSeq);
 		return buildingUserList;
@@ -864,6 +869,26 @@ public class AdminService {
 		return new PagePair(userList, pageNavigation);
 	}
 	
+	public PagePair selectBbsToAllList(Integer page, Bbs bbs) {
+		int totalCount = mapper.selectBbsToAllTotalCount(bbs);
+		PageNavigation pageNavigation = new PageNavigation(page, totalCount);
+		bbs.setPage(pageNavigation);
+		List<Bbs> userList = mapper.selectBbsToAllList(bbs);
+		return new PagePair(userList, pageNavigation);
+	}
+	
+	public boolean bbsToAllAdd(Bbs bbs) {
+		try {
+			int count = mapper.bbsToAllAdd(bbs);
+			if (count == 1){
+				return true;
+			}
+		} catch (Exception e) {
+			logger.error("{}", e);
+		}
+		return false;
+	}
+	
 	public PagePair selectCafeBbsList(Integer page, Bbs bbs) {
 		int totalCount = mapper.selectCafeBbsTotalCount(bbs);
 		PageNavigation pageNavigation = new PageNavigation(page, totalCount);
@@ -976,6 +1001,27 @@ public class AdminService {
 		return mapper.selectFcmTokenOfCustomer(customerSeq);
 	}
 
+	public PagePair selectPushToAllList(Integer page, Push push) {
+		int totalCount = mapper.selectPushToAllTotalCount(push);
+		PageNavigation pageNavigation = new PageNavigation(page, totalCount);
+		push.setPage(pageNavigation);
+		List<Bbs> userList = mapper.selectPushToAllList(push);
+		return new PagePair(userList, pageNavigation);
+	}
+	
+	public boolean PushToAllAdd(Push push) {
+		try {
+			int count = mapper.PushToAllAdd(push);
+			if (count == 1){
+				return true;
+			}
+		} catch (Exception e) {
+			logger.error("{}", e);
+		}
+		return false;
+	}
+	
+	
 	public PagePair selectCafePushList(Integer page, Push push) {
 		int totalCount = mapper.selectCafePushTotalCount(push);
 		PageNavigation pageNavigation = new PageNavigation(page, totalCount);

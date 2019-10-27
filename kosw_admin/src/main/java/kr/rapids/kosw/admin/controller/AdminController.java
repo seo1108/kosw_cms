@@ -2003,13 +2003,14 @@ public class AdminController {
 	@RequestMapping(path="updateCafeLogo", method = RequestMethod.POST)
 	public ModelAndView updateCafeLogoProc(
 			RedirectAttributes redirectAttributes, 
-			@ModelAttribute Cafe cafe
+			@ModelAttribute Cafe cafe,
+			@RequestParam(name="cafeseq", required=false) String cafeseq
 			){
-		String cafeseq = cafe.getCafeseq();
+		cafe.setCafeseq(cafeseq);
 		MultipartFile file = cafe.getFile();
 		
 	
-		File directory = filePathUtils.getLogoFile();
+		File directory = filePathUtils.getCafeLogoFile();
 		if (directory == null){
 			return null;
 		}
@@ -2021,20 +2022,23 @@ public class AdminController {
 		
 		
 		// 중복 OVERWIRETE 방지
-		int postfix = 1;
-		while(destFile.exists()){
-			fileName = baseName +"_"+ String.valueOf(postfix) + "." + extension;
-			System.out.println(fileName);
-			destFile = new File(directory, fileName);
-			postfix += 1;
-		}
+//		int postfix = 1;
+//		while(destFile.exists()){
+//			fileName = Util.getUuid("cflg") + "." + extension;
+//			System.out.println(fileName);
+//			destFile = new File(directory, fileName);
+//			postfix += 1;
+//		}
+		
+		fileName = Util.getUuid("cflg") + "." + extension;
+		destFile = new File(directory, fileName);
 		
 		try {
 			file.transferTo(destFile); // OVERWRITE 되어 이름 같으면 기존것 삭제됨
 			
 			// FULL PATH (?)
-			//cafe.setFile(filename);
-			//boolean success = adminService.updateCafeLogo(logo);
+			cafe.setLogo("http://stairsking.co.kr/cafe/image/" + fileName);
+			boolean success = adminService.updateCafeLogo(cafe);
 			
 			redirectAttributes.addFlashAttribute("message", "등록되었습니다.");
 			
@@ -2791,7 +2795,7 @@ public class AdminController {
 		List sortList = new ArrayList<Sort>() ;
 		sortList.add(new Sort(0,"이름","user_name")) ;
 		sortList.add(new Sort(1,"등록일시","user_reg_time desc")) ;
-		sortList.add(new Sort(2,"이용건물수","buildcnt desc")) ;
+		//sortList.add(new Sort(2,"이용건물수","buildcnt desc")) ;
 		sortList.add(new Sort(2,"오른층수","s_act_amt desc")) ;
 		modelAndView.addObject("sortList", sortList) ;
 
@@ -3627,6 +3631,88 @@ public class AdminController {
 	 * @param beaconManufac
 	 * @return
 	 */
+	@RequestMapping(path="bbsToAllList", method = RequestMethod.GET)
+	public ModelAndView bbsToAllList(
+			@ModelAttribute Bbs bbs,
+			@RequestParam(name="p", defaultValue="1") String page
+	){
+		
+		ModelAndView modelAndView = new ModelAndView("bbsToAllList");
+		
+		PagePair pagePair = adminService.selectBbsToAllList(Integer.valueOf(page), bbs);
+		List<Bbs> bbsList = (List<Bbs>) pagePair.getList();
+		PageNavigation pageNavigation = pagePair.getPageNavigation();
+		
+		modelAndView.addObject("bbsList", bbsList);
+		modelAndView.addObject("pageNavigation", pageNavigation);
+		
+		return modelAndView;
+	}
+	
+	@RequestMapping(path="bbsToAllAdd", method = RequestMethod.POST)
+	public ModelAndView bbsToAllAddProc(
+			RedirectAttributes redirectAttributes,
+			@ModelAttribute Bbs bbs
+	){
+		Admin currentAdmin = currentAdmin();
+		
+		ModelAndView modelAndView = new ModelAndView("redirect:bbsToAllList");
+		
+		String inputValidateErrroMessage = bbs.inputValidateErrroMessage();
+		if (inputValidateErrroMessage != null){
+			redirectAttributes.addFlashAttribute("message", inputValidateErrroMessage);
+			return modelAndView;
+		}
+		
+		bbs.setAdminSeq(currentAdmin.getAdminSeq()); // SET ADMIN
+		
+		bbs.setPushFlag("N");
+//		
+//		if (!"Y".equals(bbs.getPushFlag())){		// SET PUSH STATUS
+//			bbs.setPushFlag("N");
+//		}
+		
+		boolean success = adminService.bbsToAllAdd(bbs);
+		if (!success){
+			redirectAttributes.addFlashAttribute("message", "서버 에러가 발생하였습니다.");
+			return modelAndView;
+			
+		//등록 되었으면 푸시 전송	
+		}else if (bbs.getPushFlag().equals("Y")) {
+			
+			Push push = new Push();
+			push.setCustSeq(bbs.getCustSeq());
+			push.setBuildSeq(bbs.getBuildSeq());
+			List<String> targets = adminService.pushTargets(push);
+			
+			
+			HashMap<String, String> msg = new RapidsMap<>();
+			// 전체 회사 대상 슈퍼관리자
+			if (bbs.getCustSeq()== null && currentAdmin.isSuperAdmin()){
+				msg.put("target", "main");
+			}else{
+				msg.put("target", "customer");
+			}
+			
+			adminService.pushSent(push);
+			if (targets != null && targets.size() > 0 ){
+				msg.put("push_type", PushType.NOTICE_EVENT.name());
+				msg.put("message", bbs.getTitle());
+				msg.put("bbs_seq", bbs.getBbsSeq());				
+				fcmService.sendFcmToGroup("계단왕", bbs.getTitle(), targets, msg);
+			}
+		}
+		
+		redirectAttributes.addFlashAttribute("message", "게시물 등록 되었습니다.");
+		return modelAndView;
+	}
+	
+	/**
+	 * 게시판 리스트
+	 * custSeq, stairSeq, buildSeq 로 각각 필터
+	 * @param beaconManufac
+	 * @return
+	 */
 	@RequestMapping(path="cafeNoticeList", method = RequestMethod.GET)
 	public ModelAndView cafeNoticeList(
 			@ModelAttribute Bbs bbs,
@@ -3908,6 +3994,104 @@ public class AdminController {
 		}
 		
 		redirectAttributes.addFlashAttribute("message", "삭제 되었습니다.");
+		return modelAndView;
+	}
+	
+	/**
+	 * 푸쉬 리스트
+	 * @param push
+	 * @param page
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	@RequestMapping(path="pushToAllList", method = RequestMethod.GET)
+	public ModelAndView pushToAllList(
+			@ModelAttribute Push push,
+			@ModelAttribute Cafe cafe,
+			@RequestParam(name="p", defaultValue="1") String page
+	){
+		
+		ModelAndView modelAndView = new ModelAndView("pushToAllList");
+		
+		Admin admin = currentAdmin(modelAndView);
+		push.setAdminSeq(admin.getAdminSeq());
+		
+		
+		PagePair pagePair = adminService.selectPushToAllList(Integer.valueOf(page), push);
+		List<Push> pushList = (List<Push>) pagePair.getList();
+		PageNavigation pageNavigation = pagePair.getPageNavigation();
+		
+		modelAndView.addObject("pushList", pushList);
+		modelAndView.addObject("pageNavigation", pageNavigation);
+		
+		return modelAndView;
+	}
+	
+	/**
+	 * 푸쉬 추가 처리
+	 * @param redirectAttributes
+	 * @param push
+	 * @return
+	 */
+	@RequestMapping(path="pushToAllAdd", method = RequestMethod.POST)
+	public ModelAndView pushToAllAddProc(
+			RedirectAttributes redirectAttributes,
+			@ModelAttribute Push push
+	){
+		
+		Admin currentAdmin = currentAdmin();
+		
+		ModelAndView modelAndView = new ModelAndView("redirect:pushToAllList");
+		
+		push.setAdminSeq(currentAdmin.getAdminSeq()); // SET ADMIN
+		
+		String inputValidateErrroMessage = push.inputValidateErrroMessage();
+		if (inputValidateErrroMessage != null){
+			redirectAttributes.addFlashAttribute("message", inputValidateErrroMessage);
+			return modelAndView;
+		}
+		
+		System.out.println(push.toString());
+		
+		String reserveTime = push.getReserveTime();
+		if (reserveTime != null && reserveTime.length() == 12){
+			SimpleDateFormat f = new SimpleDateFormat("yyyyMMddHHmm");
+			try {
+				f.parse(reserveTime);
+			} catch (ParseException e) {
+				push.setReserveTime(null);
+				e.printStackTrace();
+			}
+		}else{
+			push.setReserveTime(null);
+		}
+		
+		boolean success = adminService.cafePushAdd(push);
+		if (!success){
+			redirectAttributes.addFlashAttribute("message", "서버 에러가 발생하였습니다.");
+			return modelAndView;
+		}
+		
+		
+		
+		// 즉시 발송이면 푸쉬 발송
+		if (push.getReserveTime() == null){
+			List<String> targets = adminService.pushTargets(push);
+			
+			String pushTitle = push.getPushTitle();
+			String pushContent = push.getPushContent();
+			
+			HashMap<String, String> msg = new RapidsMap<>();
+			msg.put("push_type", PushType.GENERAL.name());
+			
+			fcmService.sendFcmToGroup(pushTitle, pushContent, targets, msg);
+			
+			adminService.pushSent(push); // 발송 여부 저장
+			
+		}
+		
+		
+		redirectAttributes.addFlashAttribute("message", "등록 되었습니다.");
 		return modelAndView;
 	}
 	
@@ -4946,6 +5130,68 @@ public class AdminController {
 	 * @param userSeq
 	 * @return
 	 */
+	/**
+	 * 특정 사용자 통계
+	 * http://localhost:8080/admin/statPerUser?userSeq=
+	 * @param userSeq
+	 * @return
+	 */
+	@RequestMapping(path="statPerUser", method = RequestMethod.GET)
+	public ModelAndView statPerUser(
+			@ModelAttribute Cafe cafe,
+			@ModelAttribute Ranking rank,
+			@RequestParam(name="uSeq", required=false) String userSeq
+			){
+		
+		ModelAndView modelAndView = new ModelAndView("statPerUser");
+		Admin admin = currentAdmin(modelAndView);
+		
+		String isSuperAdmin = "N";
+		
+		if (admin.isSuperAdmin()){
+			isSuperAdmin = "Y";
+		}
+		
+		String startDate = rank.getStartDate();
+		if (startDate == null || startDate.length() != 8){
+			startDate = DateUtils.getDateTextByAddMonths("yyyyMMdd", DateUtils.currentDate("yyyyMMdd"), -1);
+			rank.setStartDate(startDate);
+		}
+		String endDate = rank.getEndDate();
+		if (endDate == null || endDate.length() != 8){
+			endDate = DateUtils.currentDate("yyyyMMdd");
+			rank.setEndDate(endDate);
+		}
+		
+		cafe.setUser_seq(userSeq);
+		rank.setUserSeq(userSeq);
+			
+		
+		
+		// 건물 리스트 (전체 - NO FILTER)
+		//List<Building> buildingList = adminService.buildingListOfCustomer(customer);
+		//List<Building> buildingList = adminService.buildingListOfUserSeq(building.getUserSeq());
+		//modelAndView.addObject("buildingList", buildingList);
+		
+		// daily history
+		//List<Building> buildingUserList = adminService.historyOfUserSeq(building.getUserSeq());
+		//modelAndView.addObject("buildingUserList", buildingUserList);
+		
+		List<Cafe> cafeList = adminService.cafeListOfUserSeq(userSeq);
+		modelAndView.addObject("cafeList", cafeList);
+		
+		// 특정 대상 사용자 기록 조회
+		if (rank.getUserSeq() != null){
+			List<Ranking> userRecords = adminService.getRecordIndividual(rank);
+			modelAndView.addObject("userRecords", userRecords);
+			modelAndView.addObject("rank", rank);
+		}
+		
+		modelAndView.addObject("isSuperAdmin", isSuperAdmin);
+		
+		return modelAndView;
+	}
+	/*
 	@RequestMapping(path="statPerUser", method = RequestMethod.GET)
 	public ModelAndView statPerUser(
 			@ModelAttribute Building building,
@@ -5000,7 +5246,7 @@ public class AdminController {
 		modelAndView.addObject("isSuperAdmin", isSuperAdmin);
 		
 		return modelAndView;
-	}
+	}*/
 	
 	/**
 	 * 사용자 통계

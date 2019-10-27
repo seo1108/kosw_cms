@@ -25,6 +25,8 @@ public class Cafe extends Page implements Serializable, InputFormModel {
 	private Integer usercount = 0;
 	private String adminname;
 	private String adminemail;
+	private String user_seq;
+	private String regdate;
 	
 	private String startDate;  		// 조회 시작 일자 yyyyMMdd
 	private String endDate;			// 조회 종료 일자 yyyyMMdd
@@ -155,6 +157,22 @@ public class Cafe extends Page implements Serializable, InputFormModel {
 		return serialVersionUID;
 	}
 	
+	public String getUser_seq() {
+		return user_seq;
+	}
+
+	public void setUser_seq(String user_seq) {
+		this.user_seq = user_seq;
+	}
+
+	public String getRegdate() {
+		return regdate;
+	}
+
+	public void setRegdate(String regdate) {
+		this.regdate = regdate;
+	}
+
 	@Override
 	public String inputValidateErrroMessage() {
 		if (StringUtils.isEmpty(this.cafename)){

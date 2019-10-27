@@ -157,7 +157,7 @@
                     	
 	                <div style="padding:6px;">
 	                	<form name="updateCafeLogo" action="<c:url value="/updateCafeLogo" />" method="post" enctype="multipart/form-data" >
-	                		<input name="cafeseq" type="hidden" value="${cafeseq }">
+	                		<input name="cafeseq" type="hidden" value="${cafe.cafeseq }">
                             <div class="form-group">
                                 <label>로고 이미지 (가로x세로 비율 : 2:1 권장, 세로 제한 200px)</label>
                                 <input name="file" type="file" />

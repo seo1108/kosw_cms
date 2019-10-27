@@ -169,9 +169,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<update id="updateCafeLogo" parameterType="kr.rapids.kosw.admin.model.Cafe">
 		UPDATE t_cafe
 		SET
-		<if test="logoImageFile != null and logoImageFile !=''">
-			logo = #{logoImageFile},
-		</if>
+			logo = #{logo}
 		WHERE cafeseq = #{cafeseq}
 	</update>
 	
@@ -287,6 +285,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="expdate" column="expdate" />
 		<result property="usercount" column="usercount" />
 		<result property="adminname" column="adminname" />
+		<result property="user_seq" column="user_seq" />
+		<result property="regdate" column="regdate" />
 	</resultMap>
 	
 	<select id="customerAll" resultMap="customerMap">
@@ -654,7 +654,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		ORDER BY A.act_date DESC
 	</select>
 
-
+	<select id="cafeListOfUserSeq" parameterType="kr.rapids.kosw.admin.model.Cafe" resultMap="cafeMap">
+		SELECT C.*, 
+		(SELECT user_name FROM u_user WHERE C.adminseq = user_seq) adminname,
+		(SELECT regdate FROM t_cafe_user WHERE user_seq = #{user_seq} AND C.cafeseq = cafeseq) regdate
+			FROM t_cafe C
+		WHERE C.cafeseq in (SELECT distinct cafeseq FROM t_cafe_user WHERE user_seq = #{user_seq})
+	</select>
 	
 	<select id="customerListOfBuildSeq" parameterType="kr.rapids.kosw.admin.model.Customer" resultMap="customerMap">
 	    <!-- 
@@ -1171,6 +1177,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="emailAuthCode" column="email_auth_code" />
 		<result property="authFinishFlag" column="auth_finish_flag" />
 		<result property="buildCnt" column="buildCnt" />
+		<result property="cafeCnt" column="cafeCnt" />
 		<result property="sActAmt" column="s_act_amt" />
 		<result property="cafeseq" column="cafeseq" />
 		<result property="isAdmin" column="isAdmin" />
@@ -1289,7 +1296,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 				    U.user_reg_time AS user_reg_time,
 				    U.auth_finish_flag AS auth_finish_flag,
 				    U.approval_flag AS approval_flag,
-				    (select  count( distinct  build_seq)  from u_user_building_map A where A.user_seq = U.user_seq  and  A.approval_flag = 'Y') as buildCnt,
+				    <!-- (select  count( distinct  build_seq)  from u_user_building_map A where A.user_seq = U.user_seq  and  A.approval_flag = 'Y') as buildCnt, -->
+				    (select  count( distinct  cafeseq)  from t_cafe_user A where A.user_seq = U.user_seq  and  A.status = '1') as cafeCnt,
 					(SELECT sum(C.act_amt) 
 					FROM s_activity_user_daily C
 					where  C.user_seq  = U.User_seq ) as s_act_amt
@@ -1823,6 +1831,59 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		LIMIT #{startList}, #{pageViewCnt}
 	</select>
 	
+	<select id="selectBbsToAllTotalCount" parameterType="kr.rapids.kosw.admin.model.Bbs" resultType="java.lang.Integer">
+		SELECT COUNT(1)
+		FROM b_bbs
+		WHERE 1=1
+			AND cust_seq is null
+			AND build_seq is null
+			AND stair_seq is null
+	</select>
+	
+	
+	<select id="selectBbsToAllList" parameterType="kr.rapids.kosw.admin.model.Bbs" resultMap="bbsMap">
+		SELECT CAST(pnum AS SIGNED) AS rowNum ,
+			B.* FROM (
+				SELECT @ROWNUM:=@ROWNUM -1 AS pnum , A.* FROM (
+					SELECT B.*, A.admin_name
+					FROM b_bbs B
+					JOIN a_admin A
+						ON B.admin_seq = A.admin_seq
+					WHERE 1=1
+						AND B.cust_seq is null
+						AND B.build_seq is null
+						AND B.stair_seq is null
+					ORDER BY bbs_reg_time DESC
+					
+			) A , (SELECT @ROWNUM:=#{totalCount}+1) R 
+		) B 
+		LIMIT #{startList}, #{pageViewCnt}
+	</select>
+	
+	<insert id="bbsToAllAdd" parameterType="kr.rapids.kosw.admin.model.Bbs"
+		useGeneratedKeys="true" 
+     	keyColumn="bbs_seq" 
+     	statementType="PREPARED"
+     	keyProperty="bbsSeq">
+		INSERT INTO b_bbs (
+			admin_seq, 
+			bbs_type,
+			push_flag,
+			title,
+			content,
+			expire_date,
+			bbs_reg_time
+		) VALUES (
+			#{adminSeq},
+			#{bbsType},
+			#{pushFlag},
+			#{title},
+			#{content},
+			#{expireDate},
+			DATE_FORMAT(NOW(), "%Y%m%d%H%i%s")
+		)
+	</insert>
+	
 	<select id="selectCafeBbsTotalCount" parameterType="kr.rapids.kosw.admin.model.Bbs" resultType="java.lang.Integer">
 		SELECT COUNT(1)
 		FROM t_cafe_notice
@@ -2020,6 +2081,58 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		</if>
 		GROUP BY U.fcm_token
 	</select>
+	
+	<select id="selectPushToAllTotalCount" parameterType="kr.rapids.kosw.admin.model.Push" resultType="java.lang.Integer">
+		SELECT COUNT(1)
+		FROM b_push
+		WHERE 1=1
+			AND cust_seq is null
+			AND build_seq is null
+			AND stair_seq is null
+			AND cafeseq is null
+	</select>
+	
+	<select id="selectPushToAllList" parameterType="kr.rapids.kosw.admin.model.Push" resultMap="pushMap">
+		SELECT CAST(pnum AS SIGNED) AS rowNum ,
+			B.* FROM (
+				SELECT @ROWNUM:=@ROWNUM -1 AS pnum , A.* FROM (
+					SELECT B.*, A.admin_name
+					FROM b_push B
+					JOIN a_admin A
+						ON B.admin_seq = A.admin_seq
+					WHERE 1=1
+						AND B.cust_seq is null
+						AND B.build_seq is null
+						AND B.stair_seq is null
+						AND B.cafeseq is null
+					ORDER BY push_reg_time DESC
+					
+			) A , (SELECT @ROWNUM:=#{totalCount}+1) R 
+		) B 
+		LIMIT #{startList}, #{pageViewCnt}
+	</select>
+	
+	<insert id="PushToAllAdd" parameterType="kr.rapids.kosw.admin.model.Push"
+		useGeneratedKeys="true" 
+     	keyColumn="push_seq" 
+     	statementType="PREPARED"
+     	keyProperty="pushSeq">
+		INSERT INTO b_push (
+			admin_seq, 
+			push_type,
+			push_title,
+			push_content,
+			reserve_time
+			push_reg_time
+		) VALUES (
+			#{adminSeq},
+			#{pushType},
+			#{pushTitle},
+			#{pushContent},
+			#{reserveTime},
+			DATE_FORMAT(NOW(), "%Y%m%d%H%i%s")
+		)
+	</insert>
 	
 	<select id="selectCafePushTotalCount" parameterType="kr.rapids.kosw.admin.model.Push" resultType="java.lang.Integer">
 		SELECT COUNT(1)

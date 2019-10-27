@@ -356,10 +356,7 @@ public class Bbs extends Page implements Serializable, InputFormModel {
 		if (StringUtils.isEmpty(this.title)){
 			return "제목을 입력해주세요.";
 		}
-		if (StringUtils.isEmpty(this.content)){
-			return "내용을 입력해주세요.";
-		}
-		if (StringUtils.isEmpty(this.contents)){
+		if (StringUtils.isEmpty(this.content) && StringUtils.isEmpty(this.contents)){
 			return "내용을 입력해주세요.";
 		}
 		return null;

@@ -29,6 +29,7 @@ public class User extends Page implements Serializable, InputFormModel {
 	private String emailAuthCode;
 	private String authFinishFlag;
 	private int buildCnt ;
+	private int cafeCnt;
 	private int sActAmt ;
 	
 	private String cafeseq;
@@ -58,6 +59,18 @@ public class User extends Page implements Serializable, InputFormModel {
 
 	public void setBuildCnt(int buildCnt) {
 		this.buildCnt = buildCnt;
+	}
+
+
+
+	public int getCafeCnt() {
+		return cafeCnt;
+	}
+
+
+
+	public void setCafeCnt(int cafeCnt) {
+		this.cafeCnt = cafeCnt;
 	}
 
 

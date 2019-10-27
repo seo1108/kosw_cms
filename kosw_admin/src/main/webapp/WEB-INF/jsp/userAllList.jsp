@@ -59,8 +59,8 @@
 										<th>이메일</th>
 										<th>닉네임</th>
 										<th>등록일시</th>
-										<th>메일인증여부</th>
-										<th>이용건물수</th>
+										<!-- <th>메일인증여부</th> -->
+										<th>이용카페수</th>
 										<th>오른층수</th>
 									</tr>
 									<c:forEach var="a" items="${userList }">
@@ -73,15 +73,15 @@
 											<td>${a.userEmail }</td>
 											<td>${a.nickName }</td>
 											<td>${a.userRegTimeFormat }</td>
-											<td>
+											<%-- <td>
 												<c:if test="${a.authFinishFlag eq 'Y' }">
 													<p class="text-primary">인증완료</p>
 												</c:if>
 												<c:if test="${a.authFinishFlag ne 'Y' }">
 													<p class="text-danger">미인증</p>
 												</c:if>
-											</td>
-											<td>${a.buildCnt }</td>
+											</td> --%>
+											<td>${a.cafeCnt }</td>
 											<td>${a.sActAmt }</td>
 											<!-- 
 											<td>	

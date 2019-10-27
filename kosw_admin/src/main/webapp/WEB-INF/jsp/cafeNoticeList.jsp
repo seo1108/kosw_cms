@@ -31,11 +31,11 @@
     	
         
         $(function(){
-        	/* $(document.search).show();
+        	/* $(document.search).show(); */
         	setPage = function(page){
         		document.pageForm.p.value=page;
         		document.pageForm.submit();
-        	} */
+        	} 
         	
         	$("form.deleteForm").on("submit", function(){
     			var form = this;
