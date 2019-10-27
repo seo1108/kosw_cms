@@ -29,6 +29,16 @@ public interface DbMapper {
 
 
 	int adminAdd(Admin admin);
+	
+	int updateAdminFlag(Admin admin);
+	
+	int deleteAdminRole(Admin admin);
+	
+	int updateCafeAdmin(Cafe cafe);
+	
+	int updateInitCafeAdminFlag(Cafe cafe);
+	
+	int updateNewCafeAdminFlag(Cafe cafe);
 
 	int updateAdminBySeq(Admin admin);
 

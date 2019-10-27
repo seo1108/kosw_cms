@@ -55,6 +55,44 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		)
 	</insert>
 	
+	<update id="updateAdminFlag" parameterType="kr.rapids.kosw.admin.model.Admin">
+		UPDATE a_admin
+		SET active_flag = 'Y'
+		WHERE admin_seq = #{adminSeq}
+	</update>
+	
+	<update id="updatePrevAdminFlag" parameterType="kr.rapids.kosw.admin.model.Admin">
+		UPDATE a_admin
+		SET active_flag = 'N' 
+		WHERE admin_seq = #{prevAdminseq}
+	</update>
+	
+	<delete id="deleteAdminRole" parameterType="kr.rapids.kosw.admin.model.Admin">
+		DELETE FROM a_admin_auth 
+		WHERE admin_seq = #{adminSeq}
+	</delete>
+	
+	
+	<update id="updateCafeAdmin" parameterType="kr.rapids.kosw.admin.model.Cafe" >
+		UPDATE t_cafe SET  
+			adminseq = #{adminseq}
+		WHERE cafeseq = #{cafeseq}
+	</update>
+	
+	<update id="updateInitCafeAdminFlag" parameterType="kr.rapids.kosw.admin.model.Cafe" >
+		UPDATE t_cafe_user SET  
+			isAdmin = 'N'
+		WHERE cafeseq = #{cafeseq}
+	</update>
+	
+	<update id="updateNewCafeAdminFlag" parameterType="kr.rapids.kosw.admin.model.Cafe" >
+		UPDATE t_cafe_user SET  
+			isAdmin = 'Y'
+		WHERE cafeseq = #{cafeseq}
+			AND user_seq = #{adminseq}
+	</update>
+	
+	
 	<select id="adminEmailCheck" parameterType="kr.rapids.kosw.admin.model.Admin" resultMap="adminMap">
 		SELECT * 
 		FROM a_admin

@@ -65,6 +65,40 @@ public class AdminService {
 		}
 	}
 	
+	/**
+	 * 카페 관리자 업데이트
+	 * @param admin
+	 */
+	public boolean updateAdminFlag(Admin admin) {
+		try {
+			int count = mapper.updateAdminFlag(admin);
+			if (count != 1){
+				return false;
+			}
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+	
+	/**
+	 * 카페 관리자 업데이트
+	 * @param admin
+	 */
+	public boolean updateCafeAdmin(Cafe cafe) {
+		try {
+			int count = mapper.updateCafeAdmin(cafe);
+			mapper.updateInitCafeAdminFlag(cafe);
+			mapper.updateNewCafeAdminFlag(cafe);
+			if (count != 1){
+				return false;
+			}
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+	
 	
 	/**
 	 * 관리자 업데이트

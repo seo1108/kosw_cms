@@ -335,6 +335,7 @@
 											<th>오른층수</th>
 											<th>걸음수</th>
 											<th>관리자여부</th>
+											<th>관리자로 설정</th>
 										</tr>
 										<c:forEach var="a" items="${cafeUserList }">
 											<tr>
@@ -349,6 +350,18 @@
 													<c:otherwise></c:otherwise>
 													</c:choose>
 												</td>
+												<td>
+												<c:if test="${a.isAdmin ne 'Y' }">
+												<form class="registAdminForm" method="post" action="<c:url value="cafeAdminChange"/>" style="display:inline-block;">
+                                                	<input name="cafeseq" type="hidden" value="${cafe.cafeseq }"/>
+                                                	<input name="email" type="hidden" value="${a.userEmail }"/>
+                                                	<input name="username" type="hidden" value="${a.userName }"/>
+                                                	<button type="submit" class="btn btn-sm btn-danger btn-fill">
+	                                                  					  관리자 변경
+	                                                </button>
+                                                </form>
+                                                </c:if>
+                                                </td>
 											</tr>
 										</c:forEach>
 									</table>
@@ -356,6 +369,27 @@
 							</c:if>
 	                    </div>
                     </div>
+					
+					<script>
+                    	$(function(){
+                    		$("form.registAdminForm").on("submit", function(){
+                    			var form = this;
+                    			swal({
+                    				title : "정말로 변경하시겠습니까?<br><br>** 비밀번호는 변경된 관리자의 이메일 주소로 설정됩니다.",
+                    				type: 'warning',
+                    				showCancelButton: true,
+                                    confirmButtonClass: 'btn btn-danger btn-fill',
+                    				confirmButtonText: "변경",
+                                    cancelButtonClass: 'btn btn-default btn-fill',
+                    				cancelButtonText: "취소",
+                                    buttonsStyling: false
+                    			}).then(function(){
+                    				form.submit();
+                    			}).catch(swal.noop);
+                    			return false;
+                    		});
+                    	});
+                    </script>	                    
 	                    
 				</c:if>
 				

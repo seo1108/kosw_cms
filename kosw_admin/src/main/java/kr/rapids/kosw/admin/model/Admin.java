@@ -22,6 +22,7 @@ public class Admin implements Serializable, InputFormModel {
 	private String adminPhone;
 	private String activeFlag;
 	private String adminRegTime; // ttttMMddHHmmss
+	private String prevAdminseq;
 	
 	// JOIN
 	private boolean superAdmin;
@@ -113,11 +114,19 @@ public class Admin implements Serializable, InputFormModel {
 		this.adminRegTime = adminRegTime;
 	}
 
+	public String getPrevAdminseq() {
+		return prevAdminseq;
+	}
+
+	public void setPrevAdminseq(String prevAdminseq) {
+		this.prevAdminseq = prevAdminseq;
+	}
+
 	@Override
 	public String inputValidateErrroMessage() {
-		if (StringUtils.isEmpty(this.custSeq)){
+		/*if (StringUtils.isEmpty(this.custSeq)){
 			return "고객사를 선택해주세요.";
-		}
+		}*/
 		if (StringUtils.isEmpty(this.email)){
 			return "관리자 이메일을 입력해주세요.";
 		}

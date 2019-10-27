@@ -1397,6 +1397,82 @@ public class AdminController {
 		return modelAndView;
 	}
 	
+	@RequestMapping(path="cafeAdminChange", method = RequestMethod.POST)
+	public ModelAndView cafeAdminChangeProc(
+			RedirectAttributes redirectAttributes, 
+			@ModelAttribute(name="cafe") Cafe cafe,
+			@ModelAttribute(name="admin") Admin admin,
+			@RequestParam(name="cafeseq", required=false) String cafeseq,
+			@RequestParam(name="email", required=false) String email,
+			@RequestParam(name="username", required=false) String username
+	){
+		admin.setAdminSeq(currentAdmin().getAdminSeq());
+		admin.setEmail(email);
+		admin.setCustSeq("0");
+		admin.setAdminPhone("0");
+		admin.setPasswd(email);
+		admin.setAdminName(username);
+		admin.setActiveFlag("Y");
+		
+//		// 중복체크
+//		Admin exAdmin = adminService.adminEmailCheck(admin);
+//		if (exAdmin != null){
+//			redirectAttributes.addFlashAttribute("message", "이미 등록된 이메일 입니다. 다른 이메일을 사용해주세요.");
+//			return redirectCafeOne(cafeseq);
+//		}
+				
+		Admin exAdmin = adminService.adminEmailCheck(admin);
+		if (exAdmin != null){
+			boolean isAdminDeleteSuccess = adminService.updateAdminFlag(admin);
+			if (!isAdminDeleteSuccess){
+				redirectAttributes.addFlashAttribute("message", "서버 에러가 발생하였습니다. 관리자에게 문의해주세요.");
+				return redirectCafeOne(cafeseq);
+			}
+		} else {
+			// 관리자 추가
+			boolean successYn = adminService.adminAdd(admin);
+			if (!successYn){
+				redirectAttributes.addFlashAttribute("message", "서버 에러가 발생하였습니다. 관리자에게 문의해주세요.");
+				return redirectCafeOne(cafeseq);
+			}
+		}
+		
+		
+		User user = adminService.selectUserByEmail(email);
+		String userAdminSeq = user.getUserSeq();
+		if (null != user) {
+			cafe.setAdminseq(userAdminSeq);
+			cafe.setCafeseq(cafeseq);
+			
+			// 카페 어드민 업데이트
+			boolean isSuccess = adminService.updateCafeAdmin(cafe);
+			if (!isSuccess){
+				redirectAttributes.addFlashAttribute("message", "서버 에러가 발생하였습니다. 관리자에게 문의해주세요.");
+				return redirectCafeOne(cafeseq);
+			}
+		}
+		
+//		String inputValidateErrroMessage = admin.inputValidateErrroMessage();
+//		if (inputValidateErrroMessage != null){
+//			redirectAttributes.addFlashAttribute("message", inputValidateErrroMessage);
+//			return redirectCafeOne(cafeseq);
+//		}
+		
+		admin.setActiveFlag("Y"); // 활성화 YES
+//		String passwd = RandomString.randomString(TEMP_PASSWORD_LENGTH); // 임시 패스워드 지정
+//		admin.setPasswd(passwd);
+
+		
+		
+				
+		
+		
+		logger.info("NEW ADMIN : {}", admin.toString());
+		redirectAttributes.addFlashAttribute("message", String.format(" 관리자 %s 이(가) 변경되었습니다.", admin.getAdminName()));
+		return redirectCafeOne(cafeseq);
+
+	}
+	
 	/**
 	 * 고객사 수정
 	 * redirectAttributes 를 사용하기 위해서는 화면 전환이 필요하다.
