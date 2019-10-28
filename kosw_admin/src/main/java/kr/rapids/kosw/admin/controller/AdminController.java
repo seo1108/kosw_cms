@@ -3742,11 +3742,10 @@ public class AdminController {
 		
 		bbs.setAdminSeq(currentAdmin.getAdminSeq()); // SET ADMIN
 		
-		bbs.setPushFlag("N");
-//		
-//		if (!"Y".equals(bbs.getPushFlag())){		// SET PUSH STATUS
-//			bbs.setPushFlag("N");
-//		}
+		
+		if (!"Y".equals(bbs.getPushFlag())){		// SET PUSH STATUS
+			bbs.setPushFlag("N");
+		}
 		
 		boolean success = adminService.bbsToAllAdd(bbs);
 		if (!success){

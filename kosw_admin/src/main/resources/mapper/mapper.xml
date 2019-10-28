@@ -2104,6 +2104,23 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<![CDATA[
 		SELECT U.fcm_token 
 		FROM u_user U
+		JOIN t_cafe_user M
+		ON U.user_seq = M.user_seq
+		WHERE U.push_flag = 'Y'
+		AND U.fcm_token is not null
+		AND U.withdrawal_flag <> 'N'
+		]]>
+		AND M.status = '1'
+		<if test="cafeseq != null and cafeseq != ''">
+		AND M.cafeseq = #{cafeseq} 
+		</if>
+		GROUP BY U.fcm_token
+	</select>
+	
+	<!-- <select id="pushTargetTokens" parameterType="kr.rapids.kosw.admin.model.Push" resultType="java.lang.String">
+		<![CDATA[
+		SELECT U.fcm_token 
+		FROM u_user U
 		JOIN u_user_building_map M
 		ON U.user_seq = M.user_seq
 		WHERE U.push_flag = 'Y'
@@ -2118,7 +2135,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		AND M.cust_seq = #{custSeq}
 		</if>
 		GROUP BY U.fcm_token
-	</select>
+	</select> -->
 	
 	<select id="selectPushToAllTotalCount" parameterType="kr.rapids.kosw.admin.model.Push" resultType="java.lang.Integer">
 		SELECT COUNT(1)
