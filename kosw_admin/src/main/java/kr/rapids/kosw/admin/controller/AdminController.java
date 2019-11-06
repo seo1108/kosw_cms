@@ -2113,7 +2113,7 @@ public class AdminController {
 			file.transferTo(destFile); // OVERWRITE 되어 이름 같으면 기존것 삭제됨
 			
 			// FULL PATH (?)
-			cafe.setLogo("http://stairsking.co.kr/cafe/image/" + fileName);
+			cafe.setLogo("http://stairsking.co.kr/global/cafe/image/" + fileName);
 			boolean success = adminService.updateCafeLogo(cafe);
 			
 			redirectAttributes.addFlashAttribute("message", "등록되었습니다.");
