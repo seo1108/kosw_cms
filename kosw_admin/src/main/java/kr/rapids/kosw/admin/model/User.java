@@ -38,7 +38,7 @@ public class User extends Page implements Serializable, InputFormModel {
 	private String status;
 	private int walkcount;
 	private String catename;
-
+	
 	
 	public int getsActAmt() {
 		return sActAmt;

@@ -625,6 +625,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			,ifnull((select sum(act_amt) from s_activity_user_daily where user_seq = u.user_seq), 0) s_act_amt
             ,ifnull((select sum(walk_count) from u_user_walk where user_seq = u.user_seq), 0) walkcount
             ,ifnull((select name from t_category where cateseq = cu.cateseq), '') catename
+            ,cu.regdate
 		FROM u_user u, t_cafe_user cu 
 		WHERE u.user_seq = cu.user_seq
 			AND cafeseq = #{cafeseq}
@@ -1221,6 +1222,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="isAdmin" column="isAdmin" />
 		<result property="walkcount" column="walkcount" />
 		<result property="catename" column="catename" />
+		<result property="regdate" column="regdate" />
 	</resultMap>
 	
 	<select id="selectUserBySeq" parameterType="java.lang.String" resultMap="userMap">

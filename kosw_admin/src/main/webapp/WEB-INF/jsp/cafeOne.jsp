@@ -91,8 +91,19 @@
                                         <label>카페 공개</label><br>
                                         <label>공개시, 카페리스트에 카페명이 공개되고 누구나 게시글과 랭킹 등 카페 정보를 볼 수 있습니다.</label><br>
                                         <label>비공개시, 카페리스트에 카페명이 공개되지 않습니다. 초대받은 사람만 가입할 수 있습니다.</label><br>
+                                        <%-- 
                                         <input name="confirm" type="checkbox" <c:if test="${cafe.confirm eq 'Y'}">checked</c:if> value="Y" data-toggle="switch" data-on-color="info" data-off-color="info" data-on-text="ON" data-off-text="OFF"/>
 										<span class="toggle"></span>
+										 --%>
+										<div class="form-check form-check-radio">
+											  <input class="form-check-input" checked type="radio" name="confirm" id="confirm1" value="N" <c:if test="${cafe.confirm eq 'N'}">checked</c:if> >
+										         <span class="form-check-sign"></span>
+											 	<label for="confirm">공개</label>
+											 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;	
+											 <input class="form-check-input" type="radio" name="confirm" id="confirm1" value="Y" <c:if test="${cafe.confirm eq 'Y'}">checked</c:if> >
+										         <span class="form-check-sign"></span>
+											 	<label for="confirm">비공개</label>
+										</div>
                                     </div>
                                 </div>
                                 <div class="col-md-2">
@@ -332,6 +343,7 @@
 											<th>사용자명</th>
 											<th>닉네임</th>
 											<th>카테고리</th>
+											<th>가입일시</th>
 											<th>오른층수</th>
 											<th>걸음수</th>
 											<th>관리자여부</th>
@@ -342,6 +354,7 @@
 												<td>${a.userName }</td>
 												<td>${a.nickName }</td>
 												<td>${a.catename }</td>
+												<td>${a.regdate }</td>
 												<td><fmt:formatNumber value="${a.sActAmt }" pattern="#,###" /></td>
 												<td><fmt:formatNumber value="${a.walkcount }" pattern="#,###" /></td>
 												<td>
