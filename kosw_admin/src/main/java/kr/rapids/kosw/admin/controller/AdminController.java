@@ -4543,7 +4543,7 @@ public class AdminController {
 			String pushContent = bbs.getContents();
 			
 			HashMap<String, String> msg = new RapidsMap<>();
-			msg.put("push_type", PushType.NOTICE_EVENT.name());
+			msg.put("push_type", PushType.GENERAL.name());
 			
 			fcmService.sendFcmToGroup(pushTitle, pushContent, targets, msg);
 			
@@ -4658,7 +4658,7 @@ public class AdminController {
 			
 			adminService.pushSent(push);
 			if (targets != null && targets.size() > 0 ){
-				msg.put("push_type", PushType.NOTICE_EVENT.name());
+				msg.put("push_type", PushType.GENERAL.name());
 				msg.put("message", bbs.getTitle());
 				msg.put("bbs_seq", bbs.getBbsSeq());				
 				fcmService.sendFcmToGroup("계단왕", bbs.getTitle(), targets, msg);
@@ -4758,7 +4758,7 @@ public class AdminController {
 			
 			adminService.pushSent(push);
 			if (targets != null && targets.size() > 0 ){
-				msg.put("push_type", PushType.NOTICE_EVENT.name());
+				msg.put("push_type", PushType.GENERAL.name());
 				msg.put("message", bbs.getTitle());
 				msg.put("bbs_seq", bbs.getBbsSeq());				
 				fcmService.sendFcmToGroup("계단왕", bbs.getTitle(), targets, msg);
