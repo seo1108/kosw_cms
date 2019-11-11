@@ -2110,7 +2110,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		ON U.user_seq = M.user_seq
 		WHERE U.push_flag = 'Y'
 		AND U.fcm_token is not null
-		AND U.withdrawal_flag <> 'N'
+		AND U.withdrawal_flag = 'N'
 		]]>
 		AND M.status = '1'
 		<if test="cafeseq != null and cafeseq != ''">

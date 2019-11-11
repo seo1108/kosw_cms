@@ -3758,7 +3758,8 @@ public class AdminController {
 			Push push = new Push();
 			push.setCustSeq(bbs.getCustSeq());
 			push.setBuildSeq(bbs.getBuildSeq());
-			List<String> targets = adminService.pushTargets(push);
+			//List<String> targets = adminService.pushTargets(push);
+			List<String> targets = adminService.pushTargetTokens(push);
 			
 			
 			HashMap<String, String> msg = new RapidsMap<>();
@@ -3973,7 +3974,8 @@ public class AdminController {
 		
 		// 즉시 발송이면 푸쉬 발송
 		if (push.getReserveTime() == null){
-			List<String> targets = adminService.pushTargets(push);
+			//List<String> targets = adminService.pushTargets(push);
+			List<String> targets = adminService.pushTargetTokens(push);
 			
 			String pushTitle = push.getPushTitle();
 			String pushContent = push.getPushContent();
@@ -4031,7 +4033,7 @@ public class AdminController {
 		
 		// 즉시 발송이면 푸쉬 발송
 		if (push.getReserveTime() == null){
-			List<String> targets = adminService.pushTargets(push);
+			List<String> targets = adminService.pushTargetTokens(push);
 			
 			String pushTitle = push.getPushTitle();
 			String pushContent = push.getPushContent();
@@ -4151,7 +4153,8 @@ public class AdminController {
 		
 		// 즉시 발송이면 푸쉬 발송
 		if (push.getReserveTime() == null){
-			List<String> targets = adminService.pushTargets(push);
+			//List<String> targets = adminService.pushTargets(push);
+			List<String> targets = adminService.pushTargetTokens(push);
 			
 			String pushTitle = push.getPushTitle();
 			String pushContent = push.getPushContent();
@@ -4298,7 +4301,8 @@ public class AdminController {
 		
 		// 즉시 발송이면 푸쉬 발송
 		if (push.getReserveTime() == null){
-			List<String> targets = adminService.pushTargets(push);
+			//List<String> targets = adminService.pushTargets(push);
+			List<String> targets = adminService.pushTargetTokens(push);
 			
 			String pushTitle = push.getPushTitle();
 			String pushContent = push.getPushContent();
@@ -4380,7 +4384,8 @@ public class AdminController {
 		
 		// 즉시 발송이면 푸쉬 발송
 		if (push.getReserveTime() == null){
-			List<String> targets = adminService.pushTargets(push);
+			//List<String> targets = adminService.pushTargets(push);
+			List<String> targets = adminService.pushTargetTokens(push);
 			
 			String pushTitle = push.getPushTitle();
 			String pushContent = push.getPushContent();
@@ -4510,7 +4515,8 @@ public class AdminController {
 	@RequestMapping(path="cafeNoticeAdd", method = RequestMethod.POST)
 	public ModelAndView cafeNoticeAddProc(
 			RedirectAttributes redirectAttributes,
-			@ModelAttribute Bbs bbs
+			@ModelAttribute Bbs bbs,
+			@ModelAttribute Push push
 	){
 		
 		ModelAndView modelAndView = new ModelAndView("redirect:cafeNoticeList?cafeseq="+bbs.getCafeseq());
@@ -4527,6 +4533,21 @@ public class AdminController {
 		if (!success){
 			redirectAttributes.addFlashAttribute("message", "서버 에러가 발생하였습니다.");
 			return modelAndView;
+		}else{
+			Admin currentAdmin = currentAdmin();
+			push.setAdminSeq(currentAdmin.getAdminSeq());
+			push.setCafeseq(bbs.getCafeseq());
+			List<String> targets = adminService.pushTargetTokens(push);
+			
+			String pushTitle = bbs.getCafename() + "공지사항입니다.";
+			String pushContent = bbs.getContents();
+			
+			HashMap<String, String> msg = new RapidsMap<>();
+			msg.put("push_type", PushType.NOTICE_EVENT.name());
+			
+			fcmService.sendFcmToGroup(pushTitle, pushContent, targets, msg);
+			
+			adminService.pushSent(push); // 발송 여부 저장
 		}
 		
 		redirectAttributes.addFlashAttribute("message", "게시물이 등록 되었습니다.");
@@ -4623,7 +4644,8 @@ public class AdminController {
 			Push push = new Push();
 			push.setCustSeq(bbs.getCustSeq());
 			push.setBuildSeq(bbs.getBuildSeq());
-			List<String> targets = adminService.pushTargets(push);
+			//List<String> targets = adminService.pushTargets(push);
+			List<String> targets = adminService.pushTargetTokens(push);
 			
 			
 			HashMap<String, String> msg = new RapidsMap<>();
@@ -4722,7 +4744,8 @@ public class AdminController {
 			Push push = new Push();
 			push.setCustSeq(bbs.getCustSeq());
 			push.setBuildSeq(bbs.getBuildSeq());
-			List<String> targets = adminService.pushTargets(push);
+			//List<String> targets = adminService.pushTargets(push);
+			List<String> targets = adminService.pushTargetTokens(push);
 			
 			
 			HashMap<String, String> msg = new RapidsMap<>();
