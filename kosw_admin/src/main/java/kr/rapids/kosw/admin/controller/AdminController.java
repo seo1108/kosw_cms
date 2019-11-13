@@ -3837,6 +3837,7 @@ public class AdminController {
 			modelAndView.addObject("cafeSelected", true);
 			cafe.setCafeseq(cafeseq);
 			bbs.setCafeseq(cafeseq);
+			bbs.setCafename(cafe.getCafename());
 			//rank.setCafeseq(rank.getCafeseq());
 		}
 
@@ -4515,6 +4516,7 @@ public class AdminController {
 	@RequestMapping(path="cafeNoticeAdd", method = RequestMethod.POST)
 	public ModelAndView cafeNoticeAddProc(
 			RedirectAttributes redirectAttributes,
+			@ModelAttribute Cafe cafe,
 			@ModelAttribute Bbs bbs,
 			@ModelAttribute Push push
 	){
@@ -4529,6 +4531,8 @@ public class AdminController {
 			bbs.setUser_seq(user.getUserSeq());
 		}
 		
+		cafe = checkCafeAdmin(bbs.getCafeseq());
+		
 		boolean success = adminService.cafeBbsAdd(bbs);
 		if (!success){
 			redirectAttributes.addFlashAttribute("message", "서버 에러가 발생하였습니다.");
@@ -4539,8 +4543,12 @@ public class AdminController {
 			push.setCafeseq(bbs.getCafeseq());
 			List<String> targets = adminService.pushTargetTokens(push);
 			
-			String pushTitle = bbs.getCafename() + "공지사항입니다.";
+			String pushTitle = cafe.getCafename() + " 공지사항";
 			String pushContent = bbs.getContents();
+			
+			if (pushContent.length() > 27) {
+				pushContent = pushContent.substring(0, 27) + "...";
+			}
 			
 			HashMap<String, String> msg = new RapidsMap<>();
 			msg.put("push_type", PushType.GENERAL.name());
@@ -4571,6 +4579,26 @@ public class AdminController {
 		}
 		
 		redirectAttributes.addFlashAttribute("message", "게시물이 수정 되었습니다.");
+		return modelAndView;
+	}
+	
+	@RequestMapping(path="cafeNoticeDelete", method = RequestMethod.POST)
+	public ModelAndView cafeNoticeDeleteProc(
+			RedirectAttributes redirectAttributes,
+			@RequestParam(name="cafeseq", required=false) String cafeseq,
+			@ModelAttribute Bbs bbs
+	){
+		
+		ModelAndView modelAndView = new ModelAndView("redirect:cafeNoticeList?cafeseq="+cafeseq);
+
+		boolean success = adminService.cafeBbsDelete(bbs);
+		if (!success){
+			redirectAttributes.addFlashAttribute("message", "서버 에러가 발생하였습니다.");
+			return modelAndView;
+			
+		}
+		
+		redirectAttributes.addFlashAttribute("message", "게시물이 삭제 되었습니다.");
 		return modelAndView;
 	}
 	

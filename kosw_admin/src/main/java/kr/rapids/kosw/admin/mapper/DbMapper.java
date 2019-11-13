@@ -260,6 +260,8 @@ public interface DbMapper {
 	
 	int cafeBbsEdit(Bbs bbs);
 	
+	int cafeBbsDelete(Bbs bbs);
+	
 	int selectBbsToAllTotalCount(Bbs bbs);
 
 	List<Bbs> selectBbsToAllList(Bbs bbs);

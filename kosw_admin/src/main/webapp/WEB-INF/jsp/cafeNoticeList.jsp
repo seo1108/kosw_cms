@@ -25,6 +25,12 @@
         
         jQuery(document).ready(function() {
     		$('select[name="selectCafe"]').change(function(e) {
+    			var cafename = $('select[name="selectCafe"] option:selected').text();
+    			/* $('input[name="cafename"]').val(cafename);
+    			$('#addnoticecafename').val(cafename);
+    			
+    			alert('123456 ' + $('#addnoticecafename').val()); */
+    			
     			location.href="cafeNoticeList?cafeseq="+$(this).val();
     		});
         });
@@ -208,8 +214,10 @@
 	                                                    <i class="fa fa-edit"></i>
 	                                                </a>
 	                                                
-	                                                <form class="deleteForm" method="post" action="<c:url value="bbsDelete"/>" style="display:inline-block;">
-	                                                	<input name="bbsSeq" type="hidden" value="${a.bbsSeq }"/>
+	                                                <form class="deleteForm" method="post" action="<c:url value="cafeNoticeDelete"/>" style="display:inline-block;">
+	                                                	<input name="user_seq" type="hidden" value="${loginseq }"/>
+							                    		<input type="hidden" name="notiseq" value="${a.notiseq }">
+							                    		<input type="hidden" name="cafeseq" value="${cafeseq }">
 		                                                <button type="submit" rel="tooltip" title="삭제" class="btn btn-danger btn-simple btn-icon remove">
 		                                                    <i class="fa fa-times"></i>
 		                                                </button>

@@ -60,7 +60,7 @@
         		useCurrent : false,
         		format : 'YYYY-MM-DD',
         		dayViewHeaderFormat : "YYYY MM",
-        		minDate : moment(),
+        		minDate : moment().add(-1, 'day'),
         		maxDate : moment().add(5, 'year'),
         	    icons: {
         	        time: "fa fa-clock-o",

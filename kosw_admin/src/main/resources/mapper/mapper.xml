@@ -1978,6 +1978,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			notiseq = #{notiseq}
 	</insert>
 	
+	<insert id="cafeBbsDelete" parameterType="kr.rapids.kosw.admin.model.Bbs">
+		DELETE FROM t_cafe_notice 
+		WHERE
+			notiseq = #{notiseq}
+	</insert>
+	
 	<select id="selectCafeNoticeBySeq" parameterType="kr.rapids.kosw.admin.model.Bbs" resultMap="bbsMap">
 		SELECT * 
 		FROM t_cafe_notice

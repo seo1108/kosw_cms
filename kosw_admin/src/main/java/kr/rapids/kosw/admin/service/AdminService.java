@@ -955,6 +955,18 @@ public class AdminService {
 		return false;
 	}
 	
+	public boolean cafeBbsDelete(Bbs bbs) {
+		try {
+			int count = mapper.cafeBbsDelete(bbs);
+			if (count == 1){
+				return true;
+			}
+		} catch (Exception e) {
+			logger.error("{}", e);
+		}
+		return false;
+	}
+	
 	public Bbs selectCafeNoticeBySeq(Bbs bbs) {
 		return mapper.selectCafeNoticeBySeq(bbs);
 	}
