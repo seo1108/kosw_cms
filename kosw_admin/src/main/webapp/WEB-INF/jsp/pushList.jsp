@@ -68,30 +68,30 @@
         	    }
         	});
         	var pushOption = {
-           		rules : {
-           			pushTitle : {
-           				required : true,
-           				minlength : 2,
-           				maxlength : 15
-           			},
-           			pushContent : {
-           				required : true,
-           				minlength : 2,
-           				maxlength : 30
-           			}
-           		},
-           		messages : {
-           			pushTitle : {
-           				required : "제목을 입력해주세요.",
-           				minlength : "제목을 2자 이상으로 입력해주세요.",
-           				maxlength : "제목을 15자 이하로 입력해주세요."
-           			},
-           			pushContent : {
-           				required : "내용을 입력해주세요.",
-           				minlength : "내용을 2자 이상으로 입력해주세요.",
-           				maxlength : "내용을 30자 이하로 입력해주세요."
-           			}
-           		}
+        			rules : {
+               			pushTitle : {
+               				required : true,
+               				minlength : 2,
+               				maxlength : 100
+               			},
+               			pushContent : {
+               				required : true,
+               				minlength : 2,
+               				maxlength : 1000
+               			}
+               		},
+               		messages : {
+               			pushTitle : {
+               				required : "제목을 입력해주세요.",
+               				minlength : "제목을 2자 이상으로 입력해주세요.",
+               				maxlength : "제목을 100자 이하로 입력해주세요."
+               			},
+               			pushContent : {
+               				required : "내용을 입력해주세요.",
+               				minlength : "내용을 2자 이상으로 입력해주세요.",
+               				maxlength : "내용을 1000자 이하로 입력해주세요."
+               			}
+               		}
            	}
         	
         	$(document.pushAdd).validate(pushOption);
@@ -434,7 +434,7 @@
 	                    		<div class="form-group">
 	                    			<label class="col-sm-2 control-label">내용</label>
 	                    			<div class="col-sm-10">
-	                    				<textarea name="pushContent" type="text" class="form-control"></textarea>
+	                    				<textarea name="pushContent" type="text" class="form-control" rows="10"></textarea>
 	                    			</div>
 	                    		</div>
                     		</fieldset>
