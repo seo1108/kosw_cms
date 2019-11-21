@@ -3,6 +3,8 @@ package kr.rapids.kosw.admin.utils;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 public class Util {
 
 	public Util(){	}
@@ -37,4 +39,17 @@ public class Util {
 
     	return simpleDateFormat.format(new Date());
     }
+	
+	
+	
+	// 어드민 암호화
+	private static BCryptPasswordEncoder cryptor = new BCryptPasswordEncoder();
+	
+	public static String createBcryptPwd(String pwd){
+		return cryptor.encode(pwd);
+	}
+	
+	public static boolean isMatchPassword(String rawPwd, String encryptPwd){
+		return cryptor.matches(rawPwd, encryptPwd);
+	}
 }

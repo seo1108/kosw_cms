@@ -21,6 +21,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="custName" column="cust_name" />
 	</resultMap>
 	
+	<select id="adminInfoByEmail" parameterType="kr.rapids.kosw.admin.model.Admin" resultMap="adminMap">
+		SELECT *
+		FROM a_admin
+		WHERE email = #{email}
+	</select>
 	
 	<select id="adminLogin" parameterType="kr.rapids.kosw.admin.model.Admin" resultMap="adminMap">
 		SELECT A.*, C.cust_name FROM a_admin A

@@ -1410,10 +1410,16 @@ public class AdminController {
 		admin.setEmail(email);
 		admin.setCustSeq("0");
 		admin.setAdminPhone("0");
-		admin.setPasswd(email);
 		admin.setAdminName(username);
 		admin.setActiveFlag("Y");
 		
+		
+		User user = adminService.selectUserByEmail(email);
+		if (null != user.getUserPwd() && !"".equals(user.getUserPwd().trim())) {
+			admin.setPasswd(user.getUserPwd());
+		} else {
+			admin.setPasswd(email);
+		}
 //		// 중복체크
 //		Admin exAdmin = adminService.adminEmailCheck(admin);
 //		if (exAdmin != null){
@@ -1438,7 +1444,7 @@ public class AdminController {
 		}
 		
 		
-		User user = adminService.selectUserByEmail(email);
+		//User user = adminService.selectUserByEmail(email);
 		String userAdminSeq = user.getUserSeq();
 		if (null != user) {
 			cafe.setAdminseq(userAdminSeq);

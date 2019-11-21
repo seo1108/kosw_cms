@@ -423,7 +423,7 @@
 	                    		<div class="form-group">
 	                    			<label class="col-sm-2 control-label">내용</label>
 	                    			<div class="col-sm-10">
-	                    				<textarea name="content" type="text" class="form-control"></textarea>
+	                    				<textarea name="content" type="text" class="form-control" rows="10"></textarea>
 	                    			</div>
 	                    		</div>
                     		</fieldset>
@@ -533,7 +533,7 @@
 	                    		<div class="form-group">
 	                    			<label class="col-sm-2 control-label">내용</label>
 	                    			<div class="col-sm-10">
-	                    				<textarea name="content" type="text" class="form-control"></textarea>
+	                    				<textarea name="content" type="text" class="form-control" rows="10"></textarea>
 	                    			</div>
 	                    		</div>
                     		</fieldset>

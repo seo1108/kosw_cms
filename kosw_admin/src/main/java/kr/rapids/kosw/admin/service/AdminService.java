@@ -319,6 +319,12 @@ public class AdminService {
 			return customer;
 		}
 	}
+	
+	public Admin adminInfoByEmail(Admin admin) {
+		Admin loginAdmin = mapper.adminInfoByEmail(admin);
+		return loginAdmin; 
+	}
+
 
 	public Admin adminLogin(Admin admin) {
 		Admin loginAdmin = mapper.adminLogin(admin);

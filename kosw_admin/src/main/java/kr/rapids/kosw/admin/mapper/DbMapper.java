@@ -123,6 +123,8 @@ public interface DbMapper {
 	Customer addSuperCustomerCheck();
 
 	void addSuperCustomer(Customer customer);
+	
+	Admin adminInfoByEmail(Admin admin);
 
 	Admin adminLogin(Admin admin);
 

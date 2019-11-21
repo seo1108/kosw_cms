@@ -388,7 +388,7 @@
                     		$("form.registAdminForm").on("submit", function(){
                     			var form = this;
                     			swal({
-                    				title : "정말로 변경하시겠습니까?<br><br>** 비밀번호는 변경된 관리자의 이메일 주소로 설정됩니다.",
+                    				title : "정말로 변경하시겠습니까?<br><br>** 비밀번호는 변경된 사용자의 계단왕 앱 비밀번호로 설정됩니다.<br><br>** 단, 카톡 로그인 사용자의 경우,<br>변경된 사용자의 이메일로 비밀번호가 설정됨니다.",
                     				type: 'warning',
                     				showCancelButton: true,
                                     confirmButtonClass: 'btn btn-danger btn-fill',
