@@ -125,7 +125,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider{
 			else 
 			// 카카오톡 연동 사용자의 경우, 비밀번호와 이메일이 같기 때문에, 평문 로직
 			{
-				// 기존 사용자일 경우
+				// 신규 사용자지만, 카카톡이 연동되어 있는 경우
 				admin.setPasswd(password);
 				admin = adminService.adminLogin(admin);
 				
