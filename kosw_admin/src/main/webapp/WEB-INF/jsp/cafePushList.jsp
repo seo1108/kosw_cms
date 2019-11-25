@@ -79,24 +79,24 @@
            			pushTitle : {
            				required : true,
            				minlength : 2,
-           				maxlength : 100
+           				maxlength : 20
            			},
            			pushContent : {
            				required : true,
            				minlength : 2,
-           				maxlength : 1000
+           				maxlength : 100
            			}
            		},
            		messages : {
            			pushTitle : {
            				required : "제목을 입력해주세요.",
            				minlength : "제목을 2자 이상으로 입력해주세요.",
-           				maxlength : "제목을 100자 이하로 입력해주세요."
+           				maxlength : "제목을 20자 이하로 입력해주세요."
            			},
            			pushContent : {
            				required : "내용을 입력해주세요.",
            				minlength : "내용을 2자 이상으로 입력해주세요.",
-           				maxlength : "내용을 1000자 이하로 입력해주세요."
+           				maxlength : "내용을 100자 이하로 입력해주세요."
            			}
            		}
            	}
