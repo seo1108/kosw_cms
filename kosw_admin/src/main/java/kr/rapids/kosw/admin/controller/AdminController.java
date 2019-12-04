@@ -1376,7 +1376,11 @@ public class AdminController {
 		User user = adminService.selectUserByEmail(currentAdmin().getEmail());
 		
 		modelAndView.addObject("cafe", cafe);
-		modelAndView.addObject("loginseq", user.getUserSeq());
+		if (null != user) {
+			modelAndView.addObject("loginseq", user.getUserSeq());
+		} else {
+			modelAndView.addObject("loginseq", admin.getAdminSeq());
+		}
 		
 		// 카테고리 리스트
 		List<Category> cafeCategoryList = adminService.cafeCategoryList(cafe);
