@@ -19,6 +19,7 @@
 						<input name="search"  type="hidden" value="${param.search }">
 		            	<input name="sort" type="hidden" value="${param.sort }">
 		            	<input name="sortName" type="hidden" value="${param.sortName }">
+		            	<input name="reqType" type="hidden" value=""/>
                 	</div>
                 </form>
 
@@ -32,6 +33,12 @@
 	                	$(document.search).show();
 	                	$(document.sort).show();
                 	});
+                	
+                	function download() {
+            	    	event.preventDefault();
+            			$('form#ReqForm').attr('action', 'userAllList/download');
+            			$('form#ReqForm').submit();
+            		}      
                 </script>
 
 				
@@ -62,6 +69,7 @@
 										<!-- <th>메일인증여부</th> -->
 										<th>이용카페수</th>
 										<th>오른층수</th>
+										<th>걸음수</th>
 									</tr>
 									<c:forEach var="a" items="${userList }">
 										<tr>
@@ -83,6 +91,7 @@
 											</td> --%>
 											<td>${a.cafeCnt }</td>
 											<td>${a.sActAmt }</td>
+											<td>${a.walkcount }</td>
 											<!-- 
 											<td>	
 												<form name="userApprovalEdit" action="<c:url value="/userRegiEdit"/>" method="post">
@@ -180,9 +189,20 @@
                     </div>
                     <%@ include file="/WEB-INF/jsp/common/pagenation.jsp" %>
                 </div> <!-- CARD-1 -->
+                
+                <c:if test="${not empty userList }">
+					<button type="submit" class="btn btn-fill btn-success" onclick="download();">파일 DOWN</button>
+				</c:if>
             </div>
         </div>
     </div>
+    
+	<form id="ReqForm">
+    	<input name="search" type="hidden" value="${param.search }">
+		<input name="sort" type="hidden" value="${param.sort }">
+		<input name="sortName" type="hidden" value="${param.sortName }">
+		<input name="reqType" type="hidden" value="excel"/>
+	</form>	
 </div>
 
 <%@ include file="/WEB-INF/jsp/common/template_bot.jsp"  %>

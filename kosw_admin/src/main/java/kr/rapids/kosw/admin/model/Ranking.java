@@ -33,6 +33,8 @@ public class Ranking implements Serializable, InputFormModel {
 	private String cateseq;
 	private String catename;
 	
+	private Integer recordWalk;
+	
 	public String getActDate() {
 		return actDate;
 	}
@@ -179,6 +181,12 @@ public class Ranking implements Serializable, InputFormModel {
 	}
 	public void setCatename(String catename) {
 		this.catename = catename;
+	}
+	public Integer getRecordWalk() {
+		return recordWalk;
+	}
+	public void setRecordWalk(Integer recordWalk) {
+		this.recordWalk = recordWalk;
 	}
 	
 	

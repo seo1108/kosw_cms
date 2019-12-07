@@ -162,6 +162,12 @@
 		return true;
 	});
 	
+	function download() {
+		event.preventDefault();
+		$('form#ReqForm').attr('action', 'statCafeCategory/download');
+		$('form#ReqForm').submit();
+	}
+	
 </script>
 
 
@@ -320,6 +326,7 @@
 											<th>카페명</th>
 											<th>카테고리명</th>
 											<th>총 오른 층수</th>
+											<th>총 걸음수</th>
 										</tr>
 										<c:forEach var="r" items="${departRanks }">
 											<tr>
@@ -327,10 +334,15 @@
 												<td>${r.cafename }</td>
 												<td>${r.catename }</td>
 												<td>${r.recordAmount }</td>
+												<td>${r.recordWalk }</td>
 											</tr>
 										</c:forEach>
 									</table>
+									
+									<button type="submit" style="margin-bottom:20px;" class="btn btn-fill btn-success" onclick="download();">파일 DOWN</button>
+									
 								</div>
+								
 								
 								<div id="chartViewDepart" class="ct-chart "></div>
 								
@@ -344,6 +356,12 @@
             </div>
         </div>
     </div>
+    
+       <form id="ReqForm">
+    	<input name="startDate" type="hidden" value="${rank.startDate}"/>
+    	<input name="endDate" type="hidden" value="${rank.endDate}"/>
+    	<input name="cafeseq" type="hidden" value="${cafeseq}"/>
+	</form>	
 </div>
 
 <%@ include file="/WEB-INF/jsp/common/template_bot.jsp"  %>

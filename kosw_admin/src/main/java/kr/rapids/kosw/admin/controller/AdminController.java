@@ -975,6 +975,123 @@ public class AdminController {
 		return modelAndView;
 	}
 	
+	@RequestMapping(path="cafeList/download", method = RequestMethod.GET)
+	public void downloadCafeList(
+			@ModelAttribute Cafe cafe,
+			@RequestParam(name="reqType", defaultValue="") String reqType,
+			@RequestParam(name="search", defaultValue="") String search,
+			HttpServletRequest req,
+			HttpServletResponse res
+	){
+		
+		try {
+			String[] columns 
+			= { "번호", "카페명", "담당자명", "회원수", "공개여부", "카페오픈일" };
+			
+			ModelAndView modelAndView = new ModelAndView("cafeList");
+			
+			cafe.setReqType(reqType);
+			
+			PagePair selectCafeList = adminService.selectCafeList(1, cafe);
+			
+			
+			List<Cafe> cafeList = (List<Cafe>) selectCafeList.getList();
+			modelAndView.addObject("cafeList", cafeList);
+
+			
+			
+			Workbook workbook = new XSSFWorkbook();
+		    Sheet sheet = workbook.createSheet("카페 리스트");
+			
+		    Font filterFont = workbook.createFont();
+		    filterFont.setFontHeightInPoints((short) 12);
+		    filterFont.setColor(IndexedColors.RED.getIndex());
+		    
+		    Font filterNameFont = workbook.createFont();
+		    filterNameFont.setFontHeightInPoints((short) 11);
+		    filterNameFont.setColor(IndexedColors.BLACK.getIndex());
+		    
+		    CellStyle filterCellStyle = workbook.createCellStyle();
+		    filterCellStyle.setFont(filterFont);
+		    
+		    CellStyle filterNameCellStyle = workbook.createCellStyle();
+		    filterNameCellStyle.setFont(filterNameFont);
+		    
+		    Row filterRow = sheet.createRow(0);
+		    Cell filtercell = filterRow.createCell(0);
+		    filtercell.setCellValue("검색조건");
+		    filtercell.setCellStyle(filterNameCellStyle);
+		    
+		    filterRow = sheet.createRow(1);
+		    filtercell = filterRow.createCell(0);
+		    filtercell.setCellValue("검색어");
+		    filtercell.setCellStyle(filterCellStyle);
+		    filtercell = filterRow.createCell(1);
+		    filtercell.setCellValue(search);
+		    filtercell.setCellStyle(filterNameCellStyle);
+		    
+		    Font headerFont = workbook.createFont();
+		    headerFont.setFontHeightInPoints((short) 12);
+		    headerFont.setColor(IndexedColors.BLUE_GREY.getIndex());
+	
+		    CellStyle headerCellStyle = workbook.createCellStyle();
+		    headerCellStyle.setFont(headerFont);
+		    
+			// Create a Row
+		    Row headerRow = sheet.createRow(2);
+		    headerRow = sheet.createRow(3);
+		    
+		    res.setContentType("application/vnd.ms-excel");
+            ServletOutputStream outStream = res.getOutputStream();
+	
+		    for (int i = 0; i < columns.length; i++) {
+		      Cell cell = headerRow.createCell(i);
+		      cell.setCellValue(columns[i]);
+		      cell.setCellStyle(headerCellStyle);
+		    }
+		    
+		    // Create Other rows and cells with contacts data
+		    int rowNum = 4;
+		    
+		    for (int i = 0; i < cafeList.size(); i++) {
+				Row row = sheet.createRow(rowNum++);
+				// { "번호", "카페명", "담당자명", "회원수", "공개여부", "카페오픈일" };
+				row.createCell(0).setCellValue(Util.checkNull(cafeList.get(i).getCafeseq(), "-"));
+				row.createCell(1).setCellValue(Util.checkNull(cafeList.get(i).getCafename(), "-"));
+				row.createCell(2).setCellValue(Util.checkNull(cafeList.get(i).getAdminname(), "-"));
+				row.createCell(3).setCellValue(Util.checkNull(cafeList.get(i).getTotalCount(), "-"));
+				row.createCell(4).setCellValue(Util.checkNull(cafeList.get(i).getConfirm(), "-"));
+				row.createCell(5).setCellValue(Util.checkNull(cafeList.get(i).getRegdate(), "-"));
+			}
+			
+			// Resize all columns to fit the content size
+		    for (int i = 0; i < columns.length; i++) {
+		      sheet.autoSizeColumn(i);
+		    }
+		    
+		    String filename = "카페 리스트_" + DateFormatUtil.getCurrentTime() + ".xlsx";
+		    
+		    String header = req.getHeader("User-Agent");
+			if (header.contains("MSIE") || header.contains("Trident")) {
+				filename = URLEncoder.encode(filename,"UTF-8").replaceAll("\\+", "%20");
+			    res.setHeader("Content-Disposition", "attachment;filename=" + filename + ";");
+			} else {
+				filename = new String(filename.getBytes("UTF-8"), "ISO-8859-1");
+			    res.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+			}
+			
+		    workbook.write(outStream);
+		    outStream.close();
+			
+			
+			
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	
+	
 	/**
 	 * AUTH - SUPER
 	 * 내가 개설한 카페 리스트 페이지 
@@ -2868,6 +2985,7 @@ public class AdminController {
 	@RequestMapping(path="userAllList", method = RequestMethod.GET)
 	public ModelAndView userAllList(
 			User user,
+			@RequestParam(name="reqType", defaultValue="") String reqType,
 			@RequestParam(name="p", defaultValue="1") String page
 	){
 
@@ -2889,6 +3007,137 @@ public class AdminController {
 		modelAndView.addObject("pageNavigation", pageNavigation);
 		
 		return modelAndView;
+	}
+	
+	@RequestMapping(path="userAllList/download", method = RequestMethod.GET)
+	public void downloadUserAllList(
+			User user,
+			@RequestParam(name="reqType", defaultValue="") String reqType,
+			@RequestParam(name="sort", defaultValue="") String sort,
+			@RequestParam(name="sortName", defaultValue="") String sortName,
+			@RequestParam(name="search", defaultValue="") String search,
+			HttpServletRequest req,
+			HttpServletResponse res
+	){
+		
+		try {
+			String[] columns 
+			= { "번호", "이름", "이메일", "닉네임", "등록일시", "이용카페수", "오른층수", "걸음수" };
+			
+			ModelAndView modelAndView = new ModelAndView("userAllList");
+			
+			user.setReqType(reqType);
+			
+			PagePair pagePair = adminService.selectUserAllList(1, user);
+			List<User> userList = (List<User>) pagePair.getList();
+			modelAndView.addObject("userList", userList);
+
+			/*if ("0".equals(sort)) {
+				sortname = "이름";
+			} else if ("1".equals(sort)) {
+				sortname = "등록일시";
+			} else if ("2".equals(sort)) {
+				sortname = "오른층수";
+			} */
+			
+			Workbook workbook = new XSSFWorkbook();
+		    Sheet sheet = workbook.createSheet("고객사 리스트");
+			
+		    Font filterFont = workbook.createFont();
+		    filterFont.setFontHeightInPoints((short) 12);
+		    filterFont.setColor(IndexedColors.RED.getIndex());
+		    
+		    Font filterNameFont = workbook.createFont();
+		    filterNameFont.setFontHeightInPoints((short) 11);
+		    filterNameFont.setColor(IndexedColors.BLACK.getIndex());
+		    
+		    CellStyle filterCellStyle = workbook.createCellStyle();
+		    filterCellStyle.setFont(filterFont);
+		    
+		    CellStyle filterNameCellStyle = workbook.createCellStyle();
+		    filterNameCellStyle.setFont(filterNameFont);
+		    
+		    Row filterRow = sheet.createRow(0);
+		    Cell filtercell = filterRow.createCell(0);
+		    filtercell.setCellValue("검색조건");
+		    filtercell.setCellStyle(filterNameCellStyle);
+		    
+		    filterRow = sheet.createRow(1);
+		    filtercell = filterRow.createCell(0);
+		    filtercell.setCellValue("정렬순서");
+		    filtercell.setCellStyle(filterCellStyle);
+		    filtercell = filterRow.createCell(1);
+		    filtercell.setCellValue(sortName);
+		    filtercell.setCellStyle(filterNameCellStyle);
+		    
+		    filterRow = sheet.createRow(2);
+		    filtercell = filterRow.createCell(0);
+		    filtercell.setCellValue("검색어");
+		    filtercell.setCellStyle(filterCellStyle);
+		    filtercell = filterRow.createCell(1);
+		    filtercell.setCellValue(search);
+		    filtercell.setCellStyle(filterNameCellStyle);
+		    
+		    Font headerFont = workbook.createFont();
+		    headerFont.setFontHeightInPoints((short) 12);
+		    headerFont.setColor(IndexedColors.BLUE_GREY.getIndex());
+	
+		    CellStyle headerCellStyle = workbook.createCellStyle();
+		    headerCellStyle.setFont(headerFont);
+		    
+			// Create a Row
+		    Row headerRow = sheet.createRow(3);
+		    headerRow = sheet.createRow(4);
+		    
+		    res.setContentType("application/vnd.ms-excel");
+            ServletOutputStream outStream = res.getOutputStream();
+	
+		    for (int i = 0; i < columns.length; i++) {
+		      Cell cell = headerRow.createCell(i);
+		      cell.setCellValue(columns[i]);
+		      cell.setCellStyle(headerCellStyle);
+		    }
+		    
+		    // Create Other rows and cells with contacts data
+		    int rowNum = 6;
+		    
+		    for (int i = 0; i < userList.size(); i++) {
+				Row row = sheet.createRow(rowNum++);
+				// { "번호", "이름", "이메일", "닉네임", "등록일시", "이용카페수", "오른층수", "걸음수" };
+				row.createCell(0).setCellValue(Util.checkNull(userList.get(i).getUserSeq(), "-"));
+				row.createCell(1).setCellValue(Util.checkNull(userList.get(i).getUserName(), "-"));
+				row.createCell(2).setCellValue(Util.checkNull(userList.get(i).getUserEmail(), "-"));
+				row.createCell(3).setCellValue(Util.checkNull(userList.get(i).getNickName(), "-"));
+				row.createCell(4).setCellValue(Util.checkNull(userList.get(i).getUserRegTimeFormat(), "-"));
+				row.createCell(5).setCellValue(Util.checkNull(userList.get(i).getCafeCnt(), "-"));
+				row.createCell(6).setCellValue(Util.checkNull(userList.get(i).getsActAmt(), "-"));
+				row.createCell(7).setCellValue(Util.checkNull(userList.get(i).getWalkcount(), "-"));
+			}
+			
+			// Resize all columns to fit the content size
+		    for (int i = 0; i < columns.length; i++) {
+		      sheet.autoSizeColumn(i);
+		    }
+		    
+		    String filename = "사용자 리스트_" + DateFormatUtil.getCurrentTime() + ".xlsx";
+		    
+		    String header = req.getHeader("User-Agent");
+			if (header.contains("MSIE") || header.contains("Trident")) {
+				filename = URLEncoder.encode(filename,"UTF-8").replaceAll("\\+", "%20");
+			    res.setHeader("Content-Disposition", "attachment;filename=" + filename + ";");
+			} else {
+				filename = new String(filename.getBytes("UTF-8"), "ISO-8859-1");
+			    res.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+			}
+			
+		    workbook.write(outStream);
+		    outStream.close();
+			
+			
+			
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 	
 	/**
@@ -5182,7 +5431,7 @@ public class AdminController {
 		      sheet.autoSizeColumn(i);
 		    }
 		    
-		    String filename = "개인별 랭킹_" + DateFormatUtil.getCurrentTime() + ".xlsx";
+		    String filename = "카페 개별 랭킹_" + DateFormatUtil.getCurrentTime() + ".xlsx";
 		    
 		    String header = req.getHeader("User-Agent");
 			if (header.contains("MSIE") || header.contains("Trident")) {
@@ -5488,6 +5737,148 @@ public class AdminController {
 	}
 	
 	
+	@RequestMapping(path="statCafeUser/download", method = RequestMethod.GET)
+	public void downloadStatCafeUser(
+			@ModelAttribute(name="rank")  Ranking rank,
+			@ModelAttribute Cafe cafe,
+			@RequestParam(name="cafeseq", required=false) String cafeseq,
+			@RequestParam(name="cateseq", required=false) String cateseq,
+			@RequestParam(name="catename", required=false) String catename,
+			@RequestParam(name="type", defaultValue="") String type,
+			HttpServletRequest req,
+			HttpServletResponse res
+	){
+		
+		try {
+			String[] columns 
+			= { "랭킹", "이름", "카페명", "카페고리명", "총 오른 층수", "총 걸음수" };
+			
+			String deptname = "";
+			
+			ModelAndView modelAndView = new ModelAndView("statCafeUser");
+			Admin admin = currentAdmin(modelAndView);
+			if (!admin.isSuperAdmin()){
+				rank.setCustSeq(admin.getCustSeq());
+			}else if (rank.getCustSeq() == null){
+				rank.setCustSeq(admin.getCustSeq());
+			}
+			
+			rank.setCafeseq(cafeseq);
+			rank.setCatename(cateseq);
+			
+			String startDate = rank.getStartDate();
+			if (startDate == null || startDate.length() != 8){
+				startDate = DateUtils.getDateTextByAddMonths("yyyyMMdd", DateUtils.currentDate("yyyyMMdd"), -1);
+				rank.setStartDate(startDate);
+			}
+			String endDate = rank.getEndDate();
+			if (endDate == null || endDate.length() != 8){
+				endDate = DateUtils.currentDate("yyyyMMdd");
+				rank.setEndDate(endDate);
+			}
+
+			
+//			String inputValidateErrroMessage = rank.inputValidateErrroMessage();
+//			if (inputValidateErrroMessage != null){
+//				redirectAttributes.addFlashAttribute("message", inputValidateErrroMessage);
+//				return redirectCustomerOne(rank.getCustSeq());
+//			}
+//			
+			// 각 사용자 랭킹 리스트 (u_user_building_map 기준으로 회사 판별)
+			List<Ranking> ranks = adminService.getRankingCafeIndividual(rank);
+					
+			modelAndView.addObject("ranks", ranks);
+			
+			Workbook workbook = new XSSFWorkbook();
+		    Sheet sheet = workbook.createSheet("개별 통계 리스트");
+			
+		    Font filterFont = workbook.createFont();
+		    filterFont.setFontHeightInPoints((short) 12);
+		    filterFont.setColor(IndexedColors.RED.getIndex());
+		    
+		    Font filterNameFont = workbook.createFont();
+		    filterNameFont.setFontHeightInPoints((short) 11);
+		    filterNameFont.setColor(IndexedColors.BLACK.getIndex());
+		    
+		    CellStyle filterCellStyle = workbook.createCellStyle();
+		    filterCellStyle.setFont(filterFont);
+		    
+		    CellStyle filterNameCellStyle = workbook.createCellStyle();
+		    filterNameCellStyle.setFont(filterNameFont);
+		    
+		    Row filterRow = sheet.createRow(0);
+		    Cell filtercell = filterRow.createCell(0);
+		    filtercell.setCellValue("검색조건");
+		    filtercell.setCellStyle(filterNameCellStyle);
+		    
+		    filterRow = sheet.createRow(1);
+		    filtercell = filterRow.createCell(0);
+		    filtercell.setCellValue("조회날짜");
+		    filtercell.setCellStyle(filterCellStyle);
+		    filtercell = filterRow.createCell(1);
+		    filtercell.setCellValue(startDate + " - " + endDate);
+		    filtercell.setCellStyle(filterNameCellStyle);
+		    
+		    
+		    Font headerFont = workbook.createFont();
+		    headerFont.setFontHeightInPoints((short) 12);
+		    headerFont.setColor(IndexedColors.BLUE_GREY.getIndex());
+		    
+			// Create a Row
+		    Row headerRow = sheet.createRow(2);
+		    headerRow = sheet.createRow(3);
+		    
+		    res.setContentType("application/vnd.ms-excel");
+            ServletOutputStream outStream = res.getOutputStream();
+	
+            CellStyle headerCellStyle = workbook.createCellStyle();
+		    headerCellStyle.setFont(headerFont);
+		    
+		    for (int i = 0; i < columns.length; i++) {
+		      Cell cell = headerRow.createCell(i);
+		      cell.setCellValue(columns[i]);
+		      cell.setCellStyle(headerCellStyle);
+		    }
+		    
+		    // Create Other rows and cells with contacts data
+		    int rowNum = 5;
+		    
+		    for (int i = 0; i < ranks.size(); i++) {
+				Row row = sheet.createRow(rowNum++);
+				// { "랭킹", "이름", "카페명", "카페고리명", "총 오른 층수", "총 걸음수" };
+				row.createCell(0).setCellValue(Util.checkNull(ranks.get(i).getRanking(), "-"));
+				row.createCell(1).setCellValue(Util.checkNull(ranks.get(i).getUserName(), "-"));
+				row.createCell(2).setCellValue(Util.checkNull(ranks.get(i).getCafename(), "-"));
+				row.createCell(3).setCellValue(Util.checkNull(ranks.get(i).getCatename(), "-"));
+				row.createCell(4).setCellValue(Util.checkNull(ranks.get(i).getRecordAmount(), "-"));
+				row.createCell(5).setCellValue(Util.checkNull(ranks.get(i).getRecordWalk(), "-"));
+			}
+			
+			// Resize all columns to fit the content size
+		    for (int i = 0; i < columns.length; i++) {
+		      sheet.autoSizeColumn(i);
+		    }
+		    
+		    String filename = "개별 통계 리스트_" + DateFormatUtil.getCurrentTime() + ".xlsx";
+		    
+		    String header = req.getHeader("User-Agent");
+			if (header.contains("MSIE") || header.contains("Trident")) {
+				filename = URLEncoder.encode(filename,"UTF-8").replaceAll("\\+", "%20");
+			    res.setHeader("Content-Disposition", "attachment;filename=" + filename + ";");
+			} else {
+				filename = new String(filename.getBytes("UTF-8"), "ISO-8859-1");
+			    res.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+			}
+			
+		    workbook.write(outStream);
+		    outStream.close();
+			
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}	
+	
+	
 	
 	/**
 	 * 카페 카테고리별 통계 
@@ -5585,6 +5976,138 @@ public class AdminController {
 		
 		return modelAndView;
 	}
+	
+	@RequestMapping(path="statCafeCategory/download", method = RequestMethod.GET)
+	public void downloadStatCafeCategory(
+			@ModelAttribute(name="rank")  Ranking rank,
+			@ModelAttribute Cafe cafe,
+			@RequestParam(name="cafeseq", required=false) String cafeseq,
+			@RequestParam(name="cateseq", required=false) String cateseq,
+			@RequestParam(name="type", defaultValue="") String type,
+			HttpServletRequest req,
+			HttpServletResponse res
+	){
+		
+		try {
+			String[] columns 
+			= { "랭킹", "카페명", "카페고리명", "총 오른 층수", "총 걸음수" };
+			
+			String deptname = "";
+			
+			ModelAndView modelAndView = new ModelAndView("statCafeCategory");
+			
+			rank.setCafeseq(cafeseq);
+			
+			String startDate = rank.getStartDate();
+			if (startDate == null || startDate.length() != 8){
+				startDate = DateUtils.getDateTextByAddMonths("yyyyMMdd", DateUtils.currentDate("yyyyMMdd"), -1);
+				rank.setStartDate(startDate);
+			}
+			String endDate = rank.getEndDate();
+			if (endDate == null || endDate.length() != 8){
+				endDate = DateUtils.currentDate("yyyyMMdd");
+				rank.setEndDate(endDate);
+			}
+
+			
+//			String inputValidateErrroMessage = rank.inputValidateErrroMessage();
+//			if (inputValidateErrroMessage != null){
+//				redirectAttributes.addFlashAttribute("message", inputValidateErrroMessage);
+//				return redirectCustomerOne(rank.getCustSeq());
+//			}
+//			
+			// 카테고리별 통계
+			List<Ranking> categoryRanks = adminService.getCafeCategoryRanking(rank);
+			modelAndView.addObject("departRanks", categoryRanks);
+			
+			Workbook workbook = new XSSFWorkbook();
+		    Sheet sheet = workbook.createSheet("카테고리별 통계 리스트");
+			
+		    Font filterFont = workbook.createFont();
+		    filterFont.setFontHeightInPoints((short) 12);
+		    filterFont.setColor(IndexedColors.RED.getIndex());
+		    
+		    Font filterNameFont = workbook.createFont();
+		    filterNameFont.setFontHeightInPoints((short) 11);
+		    filterNameFont.setColor(IndexedColors.BLACK.getIndex());
+		    
+		    CellStyle filterCellStyle = workbook.createCellStyle();
+		    filterCellStyle.setFont(filterFont);
+		    
+		    CellStyle filterNameCellStyle = workbook.createCellStyle();
+		    filterNameCellStyle.setFont(filterNameFont);
+		    
+		    Row filterRow = sheet.createRow(0);
+		    Cell filtercell = filterRow.createCell(0);
+		    filtercell.setCellValue("검색조건");
+		    filtercell.setCellStyle(filterNameCellStyle);
+		    
+		    filterRow = sheet.createRow(1);
+		    filtercell = filterRow.createCell(0);
+		    filtercell.setCellValue("조회날짜");
+		    filtercell.setCellStyle(filterCellStyle);
+		    filtercell = filterRow.createCell(1);
+		    filtercell.setCellValue(startDate + " - " + endDate);
+		    filtercell.setCellStyle(filterNameCellStyle);
+		    
+		    
+		    Font headerFont = workbook.createFont();
+		    headerFont.setFontHeightInPoints((short) 12);
+		    headerFont.setColor(IndexedColors.BLUE_GREY.getIndex());
+		    
+			// Create a Row
+		    Row headerRow = sheet.createRow(2);
+		    headerRow = sheet.createRow(3);
+		    
+		    res.setContentType("application/vnd.ms-excel");
+            ServletOutputStream outStream = res.getOutputStream();
+	
+            CellStyle headerCellStyle = workbook.createCellStyle();
+		    headerCellStyle.setFont(headerFont);
+		    
+		    for (int i = 0; i < columns.length; i++) {
+		      Cell cell = headerRow.createCell(i);
+		      cell.setCellValue(columns[i]);
+		      cell.setCellStyle(headerCellStyle);
+		    }
+		    
+		    // Create Other rows and cells with contacts data
+		    int rowNum = 5;
+		    
+		    for (int i = 0; i < categoryRanks.size(); i++) {
+				Row row = sheet.createRow(rowNum++);
+				// { "랭킹", "카페명", "카페고리명", "총 오른 층수", "총 걸음수" };
+				row.createCell(0).setCellValue(Util.checkNull(categoryRanks.get(i).getRanking(), "-"));
+				row.createCell(1).setCellValue(Util.checkNull(categoryRanks.get(i).getCafename(), "-"));
+				row.createCell(2).setCellValue(Util.checkNull(categoryRanks.get(i).getCatename(), "-"));
+				row.createCell(3).setCellValue(Util.checkNull(categoryRanks.get(i).getRecordAmount(), "-"));
+				row.createCell(4).setCellValue(Util.checkNull(categoryRanks.get(i).getRecordWalk(), "-"));
+			}
+			
+			// Resize all columns to fit the content size
+		    for (int i = 0; i < columns.length; i++) {
+		      sheet.autoSizeColumn(i);
+		    }
+		    
+		    String filename = "카페고리별 통계 리스트_" + DateFormatUtil.getCurrentTime() + ".xlsx";
+		    
+		    String header = req.getHeader("User-Agent");
+			if (header.contains("MSIE") || header.contains("Trident")) {
+				filename = URLEncoder.encode(filename,"UTF-8").replaceAll("\\+", "%20");
+			    res.setHeader("Content-Disposition", "attachment;filename=" + filename + ";");
+			} else {
+				filename = new String(filename.getBytes("UTF-8"), "ISO-8859-1");
+			    res.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+			}
+			
+		    workbook.write(outStream);
+		    outStream.close();
+			
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}	
+	
 	
 	/**
 	 * AUTH - SUPER

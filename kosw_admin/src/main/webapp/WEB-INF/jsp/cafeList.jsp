@@ -17,7 +17,7 @@
 		<form name="pageForm">
 			<div class="input-group">
             	<input name="p" type="hidden" value="1">
-            	<input name="search" type="hidden" value="">
+            	<input name="search" type="hidden" value="${param.search }">
         	</div>
         </form>
 
@@ -91,7 +91,11 @@
 
         });
         
-	        
+        function download() {
+	    	event.preventDefault();
+			$('form#ReqForm').attr('action', 'cafeList/download');
+			$('form#ReqForm').submit();
+		}          
         </script>
 
 
@@ -153,16 +157,16 @@
 	                    <%@ include file="/WEB-INF/jsp/common/pagenation.jsp" %>
                     </div> <!-- CARD-1 -->
                     
-                     
+					<button type="submit" class="btn btn-fill btn-success" onclick="download();">파일 DOWN</button>
 				</c:if>
-				<!-- 
-				<div class="text-center">
-					<a href='<c:url value="customerAdd" />' class="btn btn-primary btn-fill" >신규 고객사 등록</a>
-				</div>
-				 -->
             </div>
         </div>
     </div>
+    
+    <form id="ReqForm">
+    	<input name="search" type="hidden" value="${param.search }">
+		<input name="reqType" type="hidden" value="excel"/>
+	</form>
 </div>
 
 <%@ include file="/WEB-INF/jsp/common/template_bot.jsp"  %>

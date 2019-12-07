@@ -1345,7 +1345,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 				    (select  count( distinct  cafeseq)  from t_cafe_user A where A.user_seq = U.user_seq  and  A.status = '1') as cafeCnt,
 					(SELECT sum(C.act_amt) 
 					FROM s_activity_user_daily C
-					where  C.user_seq  = U.User_seq ) as s_act_amt
+					where  C.user_seq  = U.User_seq ) as s_act_amt,
+					(SELECT sum(walk_count) FROM u_user_walk w WHERE w.user_seq = U.User_seq) as walkcount
 				FROM u_user U
 				WHERE 1=1
 				<if test="search != null and search !=''">
@@ -1363,7 +1364,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<if test="sort != null and sort !=''">
 			order by ${sort}
 		</if>
+		<if test="reqType != 'excel'">
 		LIMIT #{startList}, #{pageViewCnt}
+		</if>
 	</select>
 	
 	<select id="selectMapCount" parameterType="java.util.Map" resultType="java.lang.Integer">
@@ -2562,11 +2565,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		-- getRankingCafeIndividual
 		SELECT 
 			 ZZ.*,
+			 W.recordWalk,
 		     U.user_name,
 		     (SELECT cafename FROM t_cafe WHERE cafeseq = #{cafeseq}) AS cafename,
 		     ifnull((SELECT c.name FROM t_category c, t_cafe_user cu WHERE cu.cafeseq = #{cafeseq} AND U.user_seq = cu.user_seq AND cu.cateseq = c.cateseq), '') AS catename,
 		     IF (ZZ.user_seq = #{userSeq}, 'Y', 'N') AS is_me
-
 		FROM (
 			 	SELECT SUB.*,@vRank := @vRank +1 AS ranking  FROM (
 			 		SELECT 
@@ -2592,6 +2595,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 				
 				
 		) M ON U.user_seq = M.user_seq
+		LEFT OUTER JOIN (
+				SELECT ifnull(sum(walk_count), 0) as recordWalk, user_seq FROM u_user_walk
+                WHERE user_seq IN (SELECT user_seq FROM t_cafe_user WHERE cafeseq = #{cafeseq})
+					AND walk_date BETWEEN #{startDate} AND #{endDate}
+                GROUP BY user_seq 
+        ) W ON U.user_seq = W.user_seq
 		ORDER BY ranking
 	</select>
 	
@@ -2800,6 +2809,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		-- selectCafeCategoryRanking
 		SELECT 
 			ZZ.*,
+			W.recordWalk,
 		    (SELECT cafename FROM t_cafe WHERE cafeseq = #{cafeseq}) AS cafename,
 			 ifnull((SELECT name FROM t_category WHERE cateseq = ZZ.cateseq), '') AS catename
 		FROM
@@ -2820,6 +2830,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			,(SELECT @vRank := 0) AS R
 			
 		) ZZ
+		LEFT OUTER JOIN ( 
+				SELECT sum(walk_count) as recordWalk, cate.cateseq FROM u_user_walk w, t_cafe_user as cate
+                WHERE w.user_seq IN (SELECT user_seq FROM t_cafe_user WHERE cafeseq = #{cafeseq})
+					AND w.walk_date BETWEEN #{startDate} AND #{endDate}
+                    AND cate.cateseq in (SELECT cateseq FROM t_cafe_category WHERE cafeseq = #{cafeseq}) 
+					AND w.user_seq = cate.user_seq
+                GROUP BY cate.cateseq
+        ) W ON ZZ.cateseq = W.cateseq
 		ORDER BY ranking
 	</select>
 	

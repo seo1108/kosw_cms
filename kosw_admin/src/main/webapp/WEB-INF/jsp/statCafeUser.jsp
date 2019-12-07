@@ -235,7 +235,7 @@
 	
 	function individualRankDownload() {
 		event.preventDefault();
-		$('form#ReqForm').attr('action', 'statUser/download');
+		$('form#ReqForm').attr('action', 'statCafeUser/download');
 		$('form#ReqForm').submit();
 	}
 	
@@ -319,9 +319,7 @@
 												
 												<div class="col-sm-3 text-right">
 													<input type="submit" style="float:right;" class="btn btn-fill btn-primary" value="조회">
-													<%-- <c:if test="${not empty ranks }">
-													<button type="submit" style="float:left;margin-left:10px;" class="btn btn-fill btn-success" onclick="individualRankDownload();">파일 DOWN</button>
-													</c:if> --%>
+													
 												</div>
 											</div>
 										</div>
@@ -369,6 +367,7 @@
 											<th>카페명</th>
 											<th>카테고리명</th>
 											<th>총 오른 층수</th>
+											<th>총 걸음수</th>
 											<th>ACTION</th>
 										</tr>
 										<c:forEach var="r" items="${ranks }">
@@ -378,14 +377,17 @@
 												<td>${r.cafename }</td>
 												<td>${r.catename }</td>
 												<td>${r.recordAmount }</td>
+												<td>${r.recordWalk }</td>
 												<td class="tx-actions text-center">
-	                                                <button type="button" onclick="showDetail(${r.userSeq})" rel="tooltip" title="상세" class="btn b/*tn-primary btn-simple btn-icon">
+													<button type="button" onclick="showDetail(${r.userSeq})" rel="tooltip" title="상세" class="btn b/*tn-primary btn-simple btn-icon">
 	                                                    <i class="fa fa-area-chart"></i>
 	                                                </button>
 												</td>
 											</tr>
 										</c:forEach>
 									</table>
+									
+									<button type="submit" style="margin-bottom:20px;" class="btn btn-fill btn-success" onclick="individualRankDownload();">파일 DOWN</button>
 								</div>
 								
 								<div id="chartViews" class="ct-chart "></div>
@@ -436,11 +438,11 @@
     </div>
     
     <form id="ReqForm">
-		<input name="userSeq" type="hidden" value="${rank.userSeq }"/>
-		<input name="custSeq" type="hidden" value="${rank.custSeq }"/>
-		<input name="startDate" type="hidden" value="${rank.startDate }"/>
-		<input name="endDate" type="hidden" value="${rank.endDate }"/>
-		<input name="inpDeptSeq" type="hidden" value="${rank.deptSeq}"/>
+    	<input name="startDate" type="hidden" value="${rank.startDate}"/>
+    	<input name="endDate" type="hidden" value="${rank.endDate}"/>
+    	<input name="cafeseq" type="hidden" value="${cafeseq}"/>
+		<input name="cateseq" type="hidden" value="${rank.cateseq}"/>
+		<input name="catename" type="hidden" value="${rank.catename}"/>
 	</form>	
 						
 </div>

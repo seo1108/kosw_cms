@@ -26,6 +26,7 @@
 		<form name="pageForm">
 			<div class="input-group">
             	<input name="p" type="hidden" value="1">
+            	<input name="type" type="hidden" value="${type}">
             	<input name="search" type="hidden" value="">
         	</div>
         </form>
@@ -33,8 +34,9 @@
         <script>
         $(function(){
         	$(document.search).show();
-        	setPage = function(page){
+        	setPage = function(page, type){
         		document.pageForm.p.value=page;
+        		document.pageForm.type.value=type;
         		document.pageForm.submit();
         	}
         	
@@ -162,7 +164,11 @@
 							</div>
 	                    </div>
 	                  	                    
-	                    <%@ include file="/WEB-INF/jsp/common/pagenation.jsp" %>
+	                  	                    
+	                  	<jsp:include page="common/pagenationType.jsp">
+							<jsp:param value="${type}" name="type"/>
+						</jsp:include>
+	                    <%-- <%@ include file="/WEB-INF/jsp/common/pagenation.jsp" %> --%>
                     </div> <!-- CARD-1 -->
                     
                      

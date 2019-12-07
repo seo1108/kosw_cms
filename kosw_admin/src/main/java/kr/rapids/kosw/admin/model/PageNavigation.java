@@ -14,6 +14,7 @@ import org.apache.ibatis.type.Alias;
 public class PageNavigation {
 	
 	private String search = "";
+	
 	private int pageViewCnt = 10; 	//View에 보여질 리스트 수
 	private int pageCount = 10; 	//한번에 보여질 페이징 카운터 Max
 	
@@ -327,7 +328,8 @@ public class PageNavigation {
 	public void setSearch(String search) {
 		this.search = search;
 	}
-
+	
+	
 	public int getEndList() {
 		return endList;
 	}
