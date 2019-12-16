@@ -76,7 +76,7 @@
            			content : {
            				required : true,
            				minlength : 2,
-           				maxlength : 3000
+           				maxlength : 1000
            			},
            			expireDate : {
            				required : true
@@ -91,7 +91,7 @@
            			content : {
            				required : "내용을 입력해주세요.",
            				minlength : "내용을 2자 이상으로 입력해주세요.",
-           				maxlength : "내용을 3000자 이하로 입력해주세요."
+           				maxlength : "내용을 1000자 이하로 입력해주세요."
            			},
            			expireDate : {
            				required : "만료일자를 선택해주세요."

@@ -85,14 +85,14 @@
            			contents : {
            				required : true,
            				minlength : 2,
-           				maxlength : 200
+           				maxlength : 1000
            			}
            		},
            		messages : {
            			contents : {
            				required : "내용을 입력해주세요.",
            				minlength : "내용을 2자 이상으로 입력해주세요.",
-           				maxlength : "내용을 200자 미만으로 입력해주세요."
+           				maxlength : "내용을 1000자 미만으로 입력해주세요."
            			}
            		}
            	}
