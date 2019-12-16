@@ -2486,6 +2486,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		SELECT 
 			 ZZ.*,
 		     LEFT(U.user_name,8) AS user_name,
+		     U.nickname as nick_name,
 		     D.dept_name,
 		     (SELECT cust_name FROM c_customer WHERE cust_seq = #{custSeq}) AS cust_name,
 		     IF (ZZ.user_seq = #{userSeq}, 'Y', 'N') AS is_me,
@@ -2566,7 +2567,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		SELECT 
 			 ZZ.*,
 			 W.recordWalk,
-		     U.user_name,
+		     U.user_name, U.nickname as nick_name,
 		     (SELECT cafename FROM t_cafe WHERE cafeseq = #{cafeseq}) AS cafename,
 		     ifnull((SELECT c.name FROM t_category c, t_cafe_user cu WHERE cu.cafeseq = #{cafeseq} AND U.user_seq = cu.user_seq AND cu.cateseq = c.cateseq), '') AS catename,
 		     IF (ZZ.user_seq = #{userSeq}, 'Y', 'N') AS is_me

@@ -364,6 +364,7 @@
 										<tr>
 											<th>랭킹</th>
 											<th>이름</th>
+											<th>닉네임</th>
 											<th>카페명</th>
 											<th>카테고리명</th>
 											<th>총 오른 층수</th>
@@ -374,6 +375,7 @@
 											<tr>
 												<td>${r.ranking }</td>
 												<td>${r.userName }</td>
+												<td>${r.nickName }</td>
 												<td>${r.cafename }</td>
 												<td>${r.catename }</td>
 												<td>${r.recordAmount }</td>
