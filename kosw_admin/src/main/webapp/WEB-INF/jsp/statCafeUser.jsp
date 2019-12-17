@@ -373,7 +373,8 @@
 										</tr>
 										<c:forEach var="r" items="${ranks }">
 											<tr>
-												<td>${r.ranking }</td>
+												<%-- <td>${r.ranking }</td> --%>
+												<td>${r.order }</td>
 												<td>${r.userName }</td>
 												<td>${r.nickName }</td>
 												<td>${r.cafename }</td>

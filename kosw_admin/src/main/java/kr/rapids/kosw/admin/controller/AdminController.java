@@ -5704,6 +5704,12 @@ public class AdminController {
 					
 			// 각 사용자 랭킹 리스트 (u_user_building_map 기준으로 회사 판별)
 			List<Ranking> ranks = adminService.getRankingCafeIndividual(rank);
+			
+			Integer order = 1;
+			for (Ranking r:ranks) {
+				r.setOrder(order);
+				order++;
+			}
 					
 			modelAndView.addObject("ranks", ranks);
 			
@@ -5751,7 +5757,7 @@ public class AdminController {
 		
 		try {
 			String[] columns 
-			= { "랭킹", "이름", "카페명", "카페고리명", "총 오른 층수", "총 걸음수" };
+			= { "랭킹", "이름", "닉네임", "카페명", "카페고리명", "총 오른 층수", "총 걸음수" };
 			
 			String deptname = "";
 			
@@ -5786,7 +5792,12 @@ public class AdminController {
 //			
 			// 각 사용자 랭킹 리스트 (u_user_building_map 기준으로 회사 판별)
 			List<Ranking> ranks = adminService.getRankingCafeIndividual(rank);
-					
+			Integer order = 1;
+			for (Ranking r:ranks) {
+				r.setOrder(order);
+				order++;
+			}
+			
 			modelAndView.addObject("ranks", ranks);
 			
 			Workbook workbook = new XSSFWorkbook();
@@ -5846,12 +5857,13 @@ public class AdminController {
 		    for (int i = 0; i < ranks.size(); i++) {
 				Row row = sheet.createRow(rowNum++);
 				// { "랭킹", "이름", "카페명", "카페고리명", "총 오른 층수", "총 걸음수" };
-				row.createCell(0).setCellValue(Util.checkNull(ranks.get(i).getRanking(), "-"));
+				row.createCell(0).setCellValue(Util.checkNull(ranks.get(i).getOrder(), "-"));
 				row.createCell(1).setCellValue(Util.checkNull(ranks.get(i).getUserName(), "-"));
-				row.createCell(2).setCellValue(Util.checkNull(ranks.get(i).getCafename(), "-"));
-				row.createCell(3).setCellValue(Util.checkNull(ranks.get(i).getCatename(), "-"));
-				row.createCell(4).setCellValue(Util.checkNull(ranks.get(i).getRecordAmount(), "-"));
-				row.createCell(5).setCellValue(Util.checkNull(ranks.get(i).getRecordWalk(), "-"));
+				row.createCell(2).setCellValue(Util.checkNull(ranks.get(i).getNickName(), "-"));
+				row.createCell(3).setCellValue(Util.checkNull(ranks.get(i).getCafename(), "-"));
+				row.createCell(4).setCellValue(Util.checkNull(ranks.get(i).getCatename(), "-"));
+				row.createCell(5).setCellValue(Util.checkNull(ranks.get(i).getRecordAmount(), "-"));
+				row.createCell(6).setCellValue(Util.checkNull(ranks.get(i).getRecordWalk(), "-"));
 			}
 			
 			// Resize all columns to fit the content size

@@ -28,6 +28,7 @@
                     <input class ="form-control inputparamname"  name="sortName" type="hidden"  value="${param.sortName}">
                     <span class="input-group-addon"><i class="fa fa-search"></i></span>
                     <input name="cSeq" type="hidden" value="${customer.custSeq}">
+                    <input name="type" type="hidden" value="${param.type}">
                     <input name="search" type="text" value="${param.search }" class="form-control" placeholder="Search...">
                     <c:if test="${not empty  param.bSeq}">
                     <input name="bSeq" type="hidden" value="${param.bSeq}">

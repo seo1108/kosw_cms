@@ -32,6 +32,7 @@ public class Ranking implements Serializable, InputFormModel {
 	private String cafename;
 	private String cateseq;
 	private String catename;
+	private Integer order;
 	
 	private Integer recordWalk;
 	
@@ -181,6 +182,12 @@ public class Ranking implements Serializable, InputFormModel {
 	}
 	public void setCatename(String catename) {
 		this.catename = catename;
+	}
+	public Integer getOrder() {
+		return order;
+	}
+	public void setOrder(Integer order) {
+		this.order = order;
 	}
 	public Integer getRecordWalk() {
 		return recordWalk;
