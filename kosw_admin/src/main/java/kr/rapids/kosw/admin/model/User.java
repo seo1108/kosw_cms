@@ -31,7 +31,20 @@ public class User extends Page implements Serializable, InputFormModel {
 	private int buildCnt ;
 	private int cafeCnt;
 	private int sActAmt ;
+	private String loginType;
 	
+	public String getLoginType() {
+		return loginType;
+	}
+
+
+
+	public void setLoginType(String loginType) {
+		this.loginType = loginType;
+	}
+
+
+
 	private String cafeseq;
 	private String isAdmin;
 	private String regdate;

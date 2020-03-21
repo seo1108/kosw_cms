@@ -31,6 +31,7 @@ public class Cafe extends Page implements Serializable, InputFormModel {
 	private String startDate;  		// 조회 시작 일자 yyyyMMdd
 	private String endDate;			// 조회 종료 일자 yyyyMMdd
 	private String reqType;			// excel 다운로드시 사용
+	private String keyword;			// 카페 회원 검색
 	
 	private MultipartFile file;
 	
@@ -57,6 +58,8 @@ public class Cafe extends Page implements Serializable, InputFormModel {
 	public void setAdminname(String adminname) {
 		this.adminname = adminname;
 	}
+	
+	
 
 	public Integer getUsercount() {
 		return usercount;
@@ -171,6 +174,14 @@ public class Cafe extends Page implements Serializable, InputFormModel {
 
 	public void setRegdate(String regdate) {
 		this.regdate = regdate;
+	}
+
+	public String getKeyword() {
+		return keyword;
+	}
+
+	public void setKeyword(String keyword) {
+		this.keyword = keyword;
 	}
 
 	@Override

@@ -1518,6 +1518,144 @@ public class AdminController {
 		return modelAndView;
 	}
 	
+	@RequestMapping(path="cafeOneUserList", method = RequestMethod.GET)
+	public ModelAndView cafeOneUserList(
+			@RequestParam Map<String,Object> params
+			,RedirectAttributes redirectAttributes
+			){
+		
+		System.out.println("_______________" + params.get("cafeseq").toString());
+		Cafe cafe = checkCafeAdmin(params.get("cafeseq").toString());
+		if (null != params.get("keyword") && !"".equals(params.get("keyword").toString())) {
+			cafe.setKeyword(params.get("keyword").toString());
+		}
+		List<User> cafeUserList = adminService.cafeUserList(cafe);
+		
+		ModelAndView modelAndView = new ModelAndView("cafeOneUserList");
+		modelAndView.addObject("cafeUserList", cafeUserList);
+		return modelAndView;
+	}
+	
+	@RequestMapping(value="cafeOne/download", method = RequestMethod.GET)
+	@ResponseBody
+	public void downloadCafeOneUserList(
+			@ModelAttribute Cafe cafe,
+			@RequestParam Map<String,Object> params,
+			HttpServletRequest req,
+			HttpServletResponse res
+	){
+		
+		try {
+			System.out.println("_______________" + params.get("cafeseq").toString());
+			cafe.setCafeseq(params.get("cafeseq").toString());
+			if (null != params.get("keyword") && !"".equals(params.get("keyword").toString())) {
+				cafe.setKeyword(params.get("keyword").toString());
+			}
+			String[] columns 
+			= { "번호", "아이디(이메일)", "사용자명", "닉네임", "가입일시", "가입경로", "카테고리", "OS", "이용카페수", "오른층수", "걸음수", "관리자여부" };
+			
+			ModelAndView modelAndView = new ModelAndView("cafeOne");
+			
+			List<User> cafeUserList = adminService.cafeUserList(cafe);
+			modelAndView.addObject("cafeUserList", cafeUserList);
+
+			
+			Workbook workbook = new XSSFWorkbook();
+		    Sheet sheet = workbook.createSheet("카페 사용자 리스트");
+			
+		    Font filterFont = workbook.createFont();
+		    filterFont.setFontHeightInPoints((short) 12);
+		    filterFont.setColor(IndexedColors.RED.getIndex());
+		    
+		    Font filterNameFont = workbook.createFont();
+		    filterNameFont.setFontHeightInPoints((short) 11);
+		    filterNameFont.setColor(IndexedColors.BLACK.getIndex());
+		    
+		    CellStyle filterCellStyle = workbook.createCellStyle();
+		    filterCellStyle.setFont(filterFont);
+		    
+		    CellStyle filterNameCellStyle = workbook.createCellStyle();
+		    filterNameCellStyle.setFont(filterNameFont);
+		    
+		    Row filterRow = sheet.createRow(0);
+		    Cell filtercell = filterRow.createCell(0);
+		    filtercell.setCellValue("검색조건");
+		    filtercell.setCellStyle(filterNameCellStyle);
+		    
+		    filterRow = sheet.createRow(1);
+		    filtercell = filterRow.createCell(0);
+		    filtercell.setCellValue("검색어");
+		    filtercell.setCellStyle(filterCellStyle);
+		    filtercell = filterRow.createCell(1);
+		    filtercell.setCellValue(params.get("keyword").toString());
+		    filtercell.setCellStyle(filterNameCellStyle);
+		    
+		    Font headerFont = workbook.createFont();
+		    headerFont.setFontHeightInPoints((short) 12);
+		    headerFont.setColor(IndexedColors.BLUE_GREY.getIndex());
+	
+		    CellStyle headerCellStyle = workbook.createCellStyle();
+		    headerCellStyle.setFont(headerFont);
+		    
+			// Create a Row
+		    Row headerRow = sheet.createRow(2);
+		    headerRow = sheet.createRow(3);
+		    
+		    res.setContentType("application/vnd.ms-excel");
+            ServletOutputStream outStream = res.getOutputStream();
+	
+		    for (int i = 0; i < columns.length; i++) {
+		      Cell cell = headerRow.createCell(i);
+		      cell.setCellValue(columns[i]);
+		      cell.setCellStyle(headerCellStyle);
+		    }
+		    
+		    // Create Other rows and cells with contacts data
+		    int rowNum = 4;
+		    
+		    for (int i = 0; i < cafeUserList.size(); i++) {
+				Row row = sheet.createRow(rowNum++);
+				// { "번호", "카페명", "담당자명", "회원수", "공개여부", "카페오픈일" };
+				row.createCell(0).setCellValue(Util.checkNull(cafeUserList.get(i).getUserSeq(), "-"));
+				row.createCell(1).setCellValue(Util.checkNull(cafeUserList.get(i).getUserEmail(), "-"));
+				row.createCell(2).setCellValue(Util.checkNull(cafeUserList.get(i).getUserName(), "-"));
+				row.createCell(3).setCellValue(Util.checkNull(cafeUserList.get(i).getNickName(), "-"));
+				row.createCell(4).setCellValue(Util.checkNull(cafeUserList.get(i).getRegdate(), "-"));
+				row.createCell(5).setCellValue(Util.checkNull(cafeUserList.get(i).getLoginType(), "-"));
+				row.createCell(6).setCellValue(Util.checkNull(cafeUserList.get(i).getCatename(), "-"));
+				row.createCell(7).setCellValue(Util.checkNull(cafeUserList.get(i).getDeviceType(), "-"));
+				row.createCell(8).setCellValue(Util.checkNull(cafeUserList.get(i).getCafeCnt(), "-"));
+				row.createCell(9).setCellValue(Util.checkNull(cafeUserList.get(i).getsActAmt(), "-"));
+				row.createCell(10).setCellValue(Util.checkNull(cafeUserList.get(i).getWalkcount(), "-"));
+				row.createCell(11).setCellValue(Util.checkNull(cafeUserList.get(i).getIsAdmin(), "-"));
+			}
+			
+			// Resize all columns to fit the content size
+		    for (int i = 0; i < columns.length; i++) {
+		      sheet.autoSizeColumn(i);
+		    }
+		    
+		    String filename = "카페 회원 리스트_" + DateFormatUtil.getCurrentTime() + ".xlsx";
+		    
+		    String header = req.getHeader("User-Agent");
+			if (header.contains("MSIE") || header.contains("Trident")) {
+				filename = URLEncoder.encode(filename,"UTF-8").replaceAll("\\+", "%20");
+			    res.setHeader("Content-Disposition", "attachment;filename=" + filename + ";");
+			} else {
+				filename = new String(filename.getBytes("UTF-8"), "ISO-8859-1");
+			    res.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+			}
+			
+		    workbook.write(outStream);
+		    outStream.close();
+			
+			
+			
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+	
 	@RequestMapping(path="cafeAdminChange", method = RequestMethod.POST)
 	public ModelAndView cafeAdminChangeProc(
 			RedirectAttributes redirectAttributes, 

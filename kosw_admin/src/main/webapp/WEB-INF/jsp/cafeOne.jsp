@@ -332,35 +332,72 @@
 	                    <div class="header">
 	                        <p class="category">사용자 리스트</p>
 	                    </div>
-	                    <div class="content">
+	                    
+	                    
+		                    <div class="col-md-12" style="margin-top:20px;margin-bottom:40px;">
+		                    	<form id="ReqForm">
+		                             <table class="table">
+		                             	<tr>
+		                             		
+		                             		<td>아이디, 닉네임, 이름</td>
+		                             		<td>
+		                             		
+		                             			<input name="keyword" type="text" class="form-control" value="">
+		                             			<input name="cafeseq" type="hidden" class="form-control" value="${cafe.cafeseq }">
+		                             		
+		                             		</td>
+		                             		<td>
+		                             			<button class="btn btn-info btn-fill btn-wd" onclick="javascript:cafeSearch();">조회</button>
+		                             		</td>
+		                             		<td style="text-align:right;">
+		                             			<button type="submit" class="btn btn-success btn-fill btn-wd" onclick="download();">파일 DOWN</button>
+		                             		</td>
+		                             	</tr>
+		                             </table>
+	                             </form>
+	                         </div>
+	                    <div id="cafeUserList" class="content">
 	                    	<c:if test="${empty cafeUserList }">
 	                    		<h5 class="text-danger">등록된 사용자가 없습니다.</h5>
 	                    	</c:if>
 							<c:if test="${not empty cafeUserList }">
 								<div class="table-responsive">
-									<table class="table">
+									<table id="sortTable" class="tablesorter table">
+										<thead>
 										<tr>
+											<th>번호</th>
+											<th>아이디(이메일)</th>
 											<th>사용자명</th>
 											<th>닉네임</th>
-											<th>카테고리</th>
 											<th>가입일시</th>
+											<th>가입경로</th>
+											<th>카테고리</th>
+											<th>OS</th>
+											<th>이용카페수</th>
 											<th>오른층수</th>
 											<th>걸음수</th>
 											<th>관리자여부</th>
 											<th>관리자로 설정</th>
 										</tr>
+											</thead>
+											<tbody>
 										<c:forEach var="a" items="${cafeUserList }">
 											<tr>
+												<td>${a.userSeq }</td>
+												<td>${a.userEmail }</td>
 												<td>${a.userName }</td>
 												<td>${a.nickName }</td>
-												<td>${a.catename }</td>
 												<td>${a.regdate }</td>
+												<td>${a.deviceType }</td>
+												<td>${a.catename }</td>
+												<td>${a.loginType }</td>
+												<td>${a.cafeCnt }</td>
 												<td><fmt:formatNumber value="${a.sActAmt }" pattern="#,###" /></td>
 												<td><fmt:formatNumber value="${a.walkcount }" pattern="#,###" /></td>
 												<td>
 													<c:choose>
 													<c:when test="${a.isAdmin eq 'Y' }">관리자</c:when>
-													<c:otherwise></c:otherwise>
+													<c:otherwise><span style="color:white;">.</span></c:otherwise>
 													</c:choose>
 												</td>
 												<td>
@@ -374,17 +411,34 @@
 	                                                </button>
                                                 </form>
                                                 </c:if>
+                                                <c:if test="${a.isAdmin ne 'N' }">
+                                                	<span style="color:white;">.</span>
+                                                </c:if>
                                                 </td>
 											</tr>
 										</c:forEach>
+										</tbody>
 									</table>
 								</div>
 							</c:if>
 	                    </div>
+	                    
+	                    <%-- <form id="ReqForm">
+	                    	<input name="form_keyword" type="hidden" class="form-control" value="">
+	                        <input name="form_cafeseq" type="hidden" class="form-control" value="${cafe.cafeseq }">
+						</form> --%>
+	                             			
                     </div>
+                    
+                    
 					
+
 					<script>
-                    	$(function(){
+					$(function() {
+						  $("#sortTable").tablesorter();
+						});
+                    	
+						 $(function(){
                     		$("form.registAdminForm").on("submit", function(){
                     			var form = this;
                     			swal({
@@ -401,7 +455,23 @@
                     			}).catch(swal.noop);
                     			return false;
                     		});
-                    	});
+                    	}); 
+                    	
+                    	function cafeSearch() {
+                    		event.preventDefault();
+                    		var cafeseq = $('input[name=cafeseq]').val();
+                    		var keyword = $('input[name=keyword]').val();
+                    		
+                    		              		
+                    		$("#cafeUserList").html('');
+                    		$("#cafeUserList").load("cafeOneUserList?&cafeseq="+cafeseq+"&keyword="+keyword, function(data) {});
+                		}    
+                    	
+                    	function download() {
+                	    	event.preventDefault();
+                			$('form#ReqForm').attr('action', 'cafeOne/download');
+                			$('form#ReqForm').submit();
+                		}    
                     </script>	                    
 	                    
 				</c:if>

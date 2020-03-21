@@ -36,6 +36,11 @@ public class Ranking implements Serializable, InputFormModel {
 	
 	private Integer recordWalk;
 	
+	private String userEmail;
+	private String deviceType;
+	private String loginType;
+	
+	
 	public String getActDate() {
 		return actDate;
 	}
@@ -194,6 +199,24 @@ public class Ranking implements Serializable, InputFormModel {
 	}
 	public void setRecordWalk(Integer recordWalk) {
 		this.recordWalk = recordWalk;
+	}
+	public String getUserEmail() {
+		return userEmail;
+	}
+	public void setUserEmail(String userEmail) {
+		this.userEmail = userEmail;
+	}
+	public String getDeviceType() {
+		return deviceType;
+	}
+	public void setDeviceType(String deviceType) {
+		this.deviceType = deviceType;
+	}
+	public String getLoginType() {
+		return loginType;
+	}
+	public void setLoginType(String loginType) {
+		this.loginType = loginType;
 	}
 	
 	

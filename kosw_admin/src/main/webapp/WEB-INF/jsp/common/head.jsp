@@ -25,4 +25,5 @@
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet">
     <link href='https://fonts.googleapis.com/css?family=Roboto:400,700,300' rel='stylesheet' type='text/css'>
     <link href='<c:url value="/assets/css/pe-icon-7-stroke.css"/>' rel="stylesheet" />
+    <link href='<c:url value="/assets/css/theme.default.css"/>' rel="stylesheet" />
 </head>

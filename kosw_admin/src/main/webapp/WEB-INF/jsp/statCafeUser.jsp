@@ -21,9 +21,9 @@
 			location.href="statCafeUser?cafeseq="+$(this).val();
 		});
     });
-	
-	
+		
 	$(function(){
+		$("#sortTable").tablesorter();
 		
 		// 개인별 랭킹 기록
 		(function makeRankingChart(){
@@ -32,30 +32,33 @@
 			
 			// 차트 데이타 구성 (최대 10위 까지)
 			var chartDatas = [];
+			var chartWalkDatas = [];
 			<c:forEach var="r" items="${ranks }" end="9">
 				chartLabels.push("${r.userName }");
 				chartDatas.push(${r.recordAmount });
+				chartWalkDatas.push(${r.recordWalk });
 			</c:forEach>
 			
 			var dataViews = {
 		        labels: chartLabels,
 		        series: [
-		        	chartDatas
+		        	chartDatas,
+		        	chartWalkDatas
 		        ]
 		    };
 		
 		    var optionsViews = {
 		        seriesBarDistance: 10,
-		        classNames: {
+		        /* classNames: {
 		            bar: 'ct-bar ct-azure'
-		        },
+		        }, */
 		        axisX: {
 		            showGrid: false
 		        },
 		        horizontalBars : false,
 		        plugins: [
 			          Chartist.plugins.ctBarLabels()
-		        ]
+		        ] 
 		    };
 		
 		    var responsiveOptionsViews = [
@@ -87,6 +90,7 @@
 			<c:forEach var="r" items="${userRecords }">
 				chartLabels.push("${r.actDate }");
 				chartDatas.push(${r.recordAmount });
+				
 			</c:forEach>
 			
 			var dataViews = {
@@ -138,6 +142,7 @@
 			<c:forEach var="r" items="${departRanks }">
 				chartLabels.push("${r.deptName }");
 				chartDatas.push(${r.recordAmount });
+				
 			</c:forEach>
 			
 			var dataViews = {
@@ -360,25 +365,34 @@
 	                    	</c:if>
 	                    	<c:if test="${not empty ranks }">
 	                    		<div class="table-responsive">
-									<table class="table">
+									<table id="sortTable" class="tablesorter table">
+										<thead>
 										<tr>
 											<th>랭킹</th>
-											<th>이름</th>
+											<th>아이디(이메일)</th>
+											<th>사용자명</th>
 											<th>닉네임</th>
 											<th>카페명</th>
 											<th>카테고리명</th>
+											<th>가입경로</th>
+											<th>OS</th>
 											<th>총 오른 층수</th>
 											<th>총 걸음수</th>
 											<th>ACTION</th>
 										</tr>
+										</thead>
+										<tbody>
 										<c:forEach var="r" items="${ranks }">
 											<tr>
 												<%-- <td>${r.ranking }</td> --%>
 												<td>${r.order }</td>
+												<td>${r.userEmail }</td>
 												<td>${r.userName }</td>
 												<td>${r.nickName }</td>
 												<td>${r.cafename }</td>
 												<td>${r.catename }</td>
+												<td>${r.loginType }</td>
+												<td>${r.deviceType }</td>
 												<td>${r.recordAmount }</td>
 												<td>${r.recordWalk }</td>
 												<td class="tx-actions text-center">
@@ -388,9 +402,18 @@
 												</td>
 											</tr>
 										</c:forEach>
+										</tbody>
 									</table>
 									
-									<button type="submit" style="margin-bottom:20px;" class="btn btn-fill btn-success" onclick="individualRankDownload();">파일 DOWN</button>
+									<button type="submit" style="margin-top:20px;margin-bottom:20px;" class="btn btn-fill btn-success" onclick="individualRankDownload();">파일 DOWN</button>
+								</div>
+								
+								<div style="text-align:center;">
+									<div style="width:20px;height:20px;background:#23CCEF;float:left;margin-left:10px;"></div>
+									<span style="float:left;padding-left:10px;">계단수</span>
+									
+									<div style="width:20px;height:20px;background:#FB404B;float:left;margin-left:30px;"></div>
+									<span style="float:left;padding-left:10px;">걸음수</span>
 								</div>
 								
 								<div id="chartViews" class="ct-chart "></div>

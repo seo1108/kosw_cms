@@ -629,11 +629,34 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			u.user_seq, u.user_email, u.user_name, cu.isAdmin, cu.status, u.nickname
 			,ifnull((select sum(act_amt) from s_activity_user_daily where user_seq = u.user_seq), 0) s_act_amt
             ,ifnull((select sum(walk_count) from u_user_walk where user_seq = u.user_seq), 0) walkcount
-            ,ifnull((select name from t_category where cateseq = cu.cateseq), '') catename
-            ,cu.regdate
+            ,ifnull((select name from t_category where cateseq = cu.cateseq), '.') catename
+            ,DATE_FORMAT(cu.regdate,'%Y-%m-%d %H:%i') regdate
+            ,CASE
+				WHEN u.loginType = 'kakao'
+				THEN '카카오'
+				WHEN u.loginType = 'email'
+				THEN '계단왕'
+				ELSE '계단왕'
+			END AS loginType
+            ,CASE
+				WHEN u.device_type = 'A'
+                THEN 'AOS'
+                WHEN u.device_type = 'I'
+                THEN 'IOS'
+			END AS device_type
+            ,(SELECT count(*) FROM t_cafe_user WHERE user_seq = u.user_seq) as cafeCnt
 		FROM u_user u, t_cafe_user cu 
 		WHERE u.user_seq = cu.user_seq
 			AND cafeseq = #{cafeseq}
+		<if test="keyword != null and keyword != ''">
+			AND ( 
+				u.user_name LIKE concat('%',#{keyword},'%')
+				OR
+				u.nickname LIKE concat('%',#{keyword},'%')
+				OR
+				u.user_email LIKE concat('%',#{keyword},'%')
+			)
+		</if>	
 	</select>
 	
 	<resultMap id="buildingMap" type="kr.rapids.kosw.admin.model.Building">
@@ -1228,6 +1251,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="walkcount" column="walkcount" />
 		<result property="catename" column="catename" />
 		<result property="regdate" column="regdate" />
+		<result property="loginType" column="loginType" />
 	</resultMap>
 	
 	<select id="selectUserBySeq" parameterType="java.lang.String" resultMap="userMap">
@@ -2478,6 +2502,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="cafename" column="cafename" />
 		<result property="cateseq" column="cateseq" />
 		<result property="catename" column="catename" />
+		<result property="userEmail" column="user_email" />
+		<result property="deviceType" column="device_type" />
+		<result property="loginType" column="loginType" />
 	</resultMap>
 	
 	<!-- 소속 회사의 개인별 통계 -->
@@ -2566,8 +2593,21 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		-- getRankingCafeIndividual
 		SELECT 
 			 ZZ.*,
-			 W.recordWalk,
-		     U.user_name, U.nickname as nick_name,
+			 ifnull(W.recordWalk, 0) recordWalk,
+		     U.user_email, U.user_name, U.nickname as nick_name
+		     ,CASE
+				WHEN U.loginType = 'kakao'
+				THEN '카카오'
+				WHEN U.loginType = 'email'
+				THEN '계단왕'
+				ELSE '계단왕'
+			END AS loginType
+            ,CASE
+				WHEN U.device_type = 'A'
+                THEN 'AOS'
+                WHEN U.device_type = 'I'
+                THEN 'IOS'
+			END AS device_type,
 		     (SELECT cafename FROM t_cafe WHERE cafeseq = #{cafeseq}) AS cafename,
 		     ifnull((SELECT c.name FROM t_category c, t_cafe_user cu WHERE cu.cafeseq = #{cafeseq} AND U.user_seq = cu.user_seq AND cu.cateseq = c.cateseq), '') AS catename,
 		     IF (ZZ.user_seq = #{userSeq}, 'Y', 'N') AS is_me
@@ -2668,6 +2708,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			ORDER BY A.act_date
 		) ZZ
 		ON D.base_date = ZZ.act_date
+		<!-- LEFT OUTER JOIN (
+				SELECT ifnull(sum(walk_count), 0) as recordWalk, user_seq FROM u_user_walk
+                WHERE user_seq #{userSeq}
+					AND walk_date BETWEEN #{startDate} AND #{endDate}
+                GROUP BY user_seq 
+        ) W ON #{userSeq} = W.user_seq -->
 		WHERE D.base_date BETWEEN #{startDate} AND #{endDate}
 				
 	</select>

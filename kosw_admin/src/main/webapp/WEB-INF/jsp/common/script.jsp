@@ -40,6 +40,9 @@
 	<!-- Light Bootstrap Dashboard DEMO methods, don't include it in your project! -->
 	<script src='<c:url value="/assets/js/demo.js" />'></script>
 	
+	<script src='<c:url value="/assets/js/jquery.tablesorter.min.js" />'></script>
+	<script src='<c:url value="/assets/js/jquery.tablesorter.widgets.js" />'></script>
+	
 	<script>
 	(function($) {
 		/* JQUERY VALIDATOR CUSTOM */
