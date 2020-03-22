@@ -2695,6 +2695,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		SELECT 
 			RIGHT(D.base_date,2) AS act_date ,
 			IFNULL(ZZ.record_amount, 0) as record_amount,
+			ifnull(W.recordWalk, 0) recordWalk,
 		    (select user_name from u_user where user_seq = #{userSeq} ) as user_name
 		FROM t_date D
 		LEFT OUTER JOIN (
@@ -2708,12 +2709,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			ORDER BY A.act_date
 		) ZZ
 		ON D.base_date = ZZ.act_date
-		<!-- LEFT OUTER JOIN (
-				SELECT ifnull(sum(walk_count), 0) as recordWalk, user_seq FROM u_user_walk
-                WHERE user_seq #{userSeq}
+		LEFT OUTER JOIN (
+				SELECT ifnull(walk_count, 0) as recordWalk, user_seq, walk_date FROM u_user_walk
+                WHERE user_seq = #{userSeq}
 					AND walk_date BETWEEN #{startDate} AND #{endDate}
-                GROUP BY user_seq 
-        ) W ON #{userSeq} = W.user_seq -->
+                GROUP BY walk_date 
+                ORDER BY walk_date
+        ) W ON D.base_date = W.walk_date
 		WHERE D.base_date BETWEEN #{startDate} AND #{endDate}
 				
 	</select>
@@ -2856,7 +2858,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		-- selectCafeCategoryRanking
 		SELECT 
 			ZZ.*,
-			W.recordWalk,
+			ifnull(W.recordWalk, 0) recordWalk,
 		    (SELECT cafename FROM t_cafe WHERE cafeseq = #{cafeseq}) AS cafename,
 			 ifnull((SELECT name FROM t_category WHERE cateseq = ZZ.cateseq), '') AS catename
 		FROM

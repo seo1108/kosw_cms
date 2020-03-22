@@ -1536,6 +1536,29 @@ public class AdminController {
 		return modelAndView;
 	}
 	
+	@RequestMapping(path="cafeOneUserStat", method = RequestMethod.GET)
+	public ModelAndView cafeOneUserStat(
+			@ModelAttribute(name="rank")  Ranking rank,
+			@RequestParam Map<String,Object> params,
+			RedirectAttributes redirectAttributes
+			){
+		
+		rank.setUserSeq(params.get("userSeq").toString());
+		
+		String startDate = DateUtils.getDateTextByAddMonths("yyyyMMdd", DateUtils.currentDate("yyyyMMdd"), -1);
+		rank.setStartDate(startDate);
+		
+		String endDate = DateUtils.currentDate("yyyyMMdd");
+		rank.setEndDate(endDate);
+
+		List<Ranking> userRecords = adminService.getRecordIndividual(rank);
+		
+		ModelAndView modelAndView = new ModelAndView("cafeOneUserStat");
+		modelAndView.addObject("userRecords", userRecords);
+		
+		return modelAndView;
+	}
+	
 	@RequestMapping(value="cafeOne/download", method = RequestMethod.GET)
 	@ResponseBody
 	public void downloadCafeOneUserList(
@@ -5895,7 +5918,7 @@ public class AdminController {
 		
 		try {
 			String[] columns 
-			= { "랭킹", "이름", "닉네임", "카페명", "카페고리명", "총 오른 층수", "총 걸음수" };
+			= { "랭킹", "아이디(이메일)", "사용자명", "닉네임", "카페명", "카페고리명", "가입경로", "OS", "총 오른 층수", "총 걸음수" };
 			
 			String deptname = "";
 			
@@ -5996,12 +6019,15 @@ public class AdminController {
 				Row row = sheet.createRow(rowNum++);
 				// { "랭킹", "이름", "카페명", "카페고리명", "총 오른 층수", "총 걸음수" };
 				row.createCell(0).setCellValue(Util.checkNull(ranks.get(i).getOrder(), "-"));
-				row.createCell(1).setCellValue(Util.checkNull(ranks.get(i).getUserName(), "-"));
-				row.createCell(2).setCellValue(Util.checkNull(ranks.get(i).getNickName(), "-"));
-				row.createCell(3).setCellValue(Util.checkNull(ranks.get(i).getCafename(), "-"));
-				row.createCell(4).setCellValue(Util.checkNull(ranks.get(i).getCatename(), "-"));
-				row.createCell(5).setCellValue(Util.checkNull(ranks.get(i).getRecordAmount(), "-"));
-				row.createCell(6).setCellValue(Util.checkNull(ranks.get(i).getRecordWalk(), "-"));
+				row.createCell(1).setCellValue(Util.checkNull(ranks.get(i).getUserEmail(), "-"));
+				row.createCell(2).setCellValue(Util.checkNull(ranks.get(i).getUserName(), "-"));
+				row.createCell(3).setCellValue(Util.checkNull(ranks.get(i).getNickName(), "-"));
+				row.createCell(4).setCellValue(Util.checkNull(ranks.get(i).getCafename(), "-"));
+				row.createCell(5).setCellValue(Util.checkNull(ranks.get(i).getCatename(), "-"));
+				row.createCell(6).setCellValue(Util.checkNull(ranks.get(i).getLoginType(), "-"));
+				row.createCell(7).setCellValue(Util.checkNull(ranks.get(i).getDeviceType(), "-"));
+				row.createCell(8).setCellValue(Util.checkNull(ranks.get(i).getRecordAmount(), "-"));
+				row.createCell(9).setCellValue(Util.checkNull(ranks.get(i).getRecordWalk(), "-"));
 			}
 			
 			// Resize all columns to fit the content size

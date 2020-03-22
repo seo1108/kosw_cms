@@ -30,24 +30,27 @@
 			
 			// 차트 데이타 구성
 			var chartDatas = [];
+			var chartWalkDatas = [];
 			
 			<c:forEach var="r" items="${companyRanks }" end="9">
 				chartLabels.push("${r.custName }");
 				chartDatas.push(${r.recordAmount });
+				chartWalkDatas.push(${r.recordWalk });
 			</c:forEach>
 			
 			var dataViews = {
 		        labels: chartLabels,
 		        series: [
-		        	chartDatas
+		        	chartDatas,
+		        	chartWalkDatas
 		        ]
 		    };
 		
 		    var optionsViews = {
 		        seriesBarDistance: 10,
-		        classNames: {
+		        /* classNames: {
 		            bar: 'ct-bar ct-azure'
-		        },
+		        }, */
 		        axisX: {
 		            showGrid: false
 		        },
@@ -78,23 +81,26 @@
 			
 			// 차트 데이타 구성 (최대 10위 까지)
 			var chartDatas = [];
+			var chartWalkDatas = [];
 			<c:forEach var="r" items="${departRanks }" end="9">
 				chartLabels.push("${r.cafename }" + "-"+ "${r.catename }");
 				chartDatas.push(${r.recordAmount });
+				chartWalkDatas.push(${r.recordWalk });
 			</c:forEach>
 			
 			var dataViews = {
 		        labels: chartLabels,
 		        series: [
-		        	chartDatas
+		        	chartDatas,
+		        	chartWalkDatas
 		        ]
 		    };
 		
 		    var optionsViews = {
-		        seriesBarDistance: 10,
-		        classNames: {
+		        seriesBarDistance: 30,
+		        /* classNames: {
 		            bar: 'ct-bar ct-azure'
-		        },
+		        }, */
 		        axisX: {
 		            showGrid: false
 		        },
@@ -233,15 +239,15 @@
 										<label class="col-sm-1 control-label">날짜 선택</label>
 										<div class="col-sm-7">
 											<div class="row">
-												<div class="col-sm-2">
+												<div class="col-sm-4">
 													<input name="startDate" type="text" class="form-control datetimepicker" placeholder="조회 시작일자 선택해주세요" value="${rank.startDate }">
 												</div>
 												<label class="col-sm-1 control-label" style="text-align:center;"> ~ </label>
-												<div class="col-sm-2">
+												<div class="col-sm-4">
 													<input name="endDate" type="text" class="form-control datetimepicker" placeholder="조회 종료일자 선택해주세요" value="${rank.endDate }">
 												</div>
 												
-												<div class="col-sm-3 text-right">
+												<div style="text-align:right;">
 													<input type="submit" style="float:right;" class="btn btn-fill btn-primary" value="조회">
 												</div>
 											</div>

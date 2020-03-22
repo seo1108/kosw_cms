@@ -384,9 +384,9 @@
 										<c:forEach var="a" items="${cafeUserList }">
 											<tr>
 												<td>${a.userSeq }</td>
-												<td>${a.userEmail }</td>
-												<td>${a.userName }</td>
-												<td>${a.nickName }</td>
+												<td><a onclick="userStat('${a.userSeq }');" style="cursor:pointer;">${a.userEmail }</a> </td>
+												<td><a onclick="userStat('${a.userSeq }');" style="cursor:pointer;">${a.userName }</a></td>
+												<td><a onclick="userStat('${a.userSeq }');" style="cursor:pointer;">${a.nickName }</a></td>
 												<td>${a.regdate }</td>
 												<td>${a.deviceType }</td>
 												<td>${a.catename }</td>
@@ -421,6 +421,9 @@
 									</table>
 								</div>
 							</c:if>
+	                    </div>
+	                    
+	                    <div id="userStat">
 	                    </div>
 	                    
 	                    <%-- <form id="ReqForm">
@@ -464,13 +467,21 @@
                     		
                     		              		
                     		$("#cafeUserList").html('');
-                    		$("#cafeUserList").load("cafeOneUserList?&cafeseq="+cafeseq+"&keyword="+keyword, function(data) {});
+                    		$("#cafeUserList").load("cafeOneUserList?cafeseq="+cafeseq+"&keyword="+keyword, function(data) {});
                 		}    
                     	
                     	function download() {
                 	    	event.preventDefault();
                 			$('form#ReqForm').attr('action', 'cafeOne/download');
                 			$('form#ReqForm').submit();
+                		}    
+                    	
+                    	function userStat(userSeq) {
+                    		event.preventDefault();
+                    		              		
+                    		$("#userStat").html('');
+                    		$("#userStat").load("cafeOneUserStat?userSeq="+userSeq, function(data) {});
+                    		
                 		}    
                     </script>	                    
 	                    

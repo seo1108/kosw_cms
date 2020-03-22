@@ -48,7 +48,7 @@
 		    };
 		
 		    var optionsViews = {
-		        seriesBarDistance: 10,
+		        seriesBarDistance: 30,
 		        /* classNames: {
 		            bar: 'ct-bar ct-azure'
 		        }, */
@@ -86,25 +86,27 @@
 			
 			// 차트 데이타 구성
 			var chartDatas = [];
+			var chartWalkDatas = [];
 			
 			<c:forEach var="r" items="${userRecords }">
 				chartLabels.push("${r.actDate }");
 				chartDatas.push(${r.recordAmount });
-				
+				chartWalkDatas.push(${r.recordWalk });
 			</c:forEach>
 			
 			var dataViews = {
 		        labels: chartLabels,
 		        series: [
-		        	chartDatas
+		        	chartDatas,
+		        	chartWalkDatas
 		        ]
 		    };
 		
 		    var optionsViews = {
-		        seriesBarDistance: 10,
-		        classNames: {
+		        seriesBarDistance: 30,
+		        /* classNames: {
 		            bar: 'ct-bar ct-azure'
-		        },
+		        }, */
 		        axisX: {
 		            showGrid: false
 		        },
@@ -153,7 +155,7 @@
 		    };
 		
 		    var optionsViews = {
-		        seriesBarDistance: 10,
+		        seriesBarDistance: 30,
 		        classNames: {
 		            bar: 'ct-bar ct-azure'
 		        },
@@ -314,15 +316,15 @@
 										<label class="col-sm-1 control-label">날짜 선택</label>
 										<div class="col-sm-7">
 											<div class="row">
-												<div class="col-sm-2">
+												<div class="col-sm-4">
 													<input name="startDate" type="text" class="form-control datetimepicker" placeholder="조회 시작일자 선택해주세요" value="${rank.startDate }">
 												</div>
 												<label class="col-sm-1 control-label" style="text-align:center;"> ~ </label>
-												<div class="col-sm-2">
+												<div class="col-sm-4">
 													<input name="endDate" type="text" class="form-control datetimepicker" placeholder="조회 종료일자 선택해주세요" value="${rank.endDate }">
 												</div>
 												
-												<div class="col-sm-3 text-right">
+												<div style="text-align:right;">
 													<input type="submit" style="float:right;" class="btn btn-fill btn-primary" value="조회">
 													
 												</div>
@@ -434,6 +436,14 @@
 		                    </div>
 			                    
 		                    <div class="content">
+		                    	<div style="text-align:center;">
+									<div style="width:20px;height:20px;background:#23CCEF;float:left;margin-left:10px;"></div>
+									<span style="float:left;padding-left:10px;">계단수</span>
+									
+									<div style="width:20px;height:20px;background:#FB404B;float:left;margin-left:30px;"></div>
+									<span style="float:left;padding-left:10px;">걸음수</span>
+								</div>
+								
 		                    	<div id="chartViewsUser" class="ct-chart "></div>
 		                    </div>
 						</div> <!-- CARD-1 -->
