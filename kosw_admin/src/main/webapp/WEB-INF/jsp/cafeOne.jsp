@@ -187,7 +187,7 @@
 	
         <div class="row">
             <div class="col-md-12">
-            	<c:if test="${not empty categoryList }">
+            	
                     <div class="card">
 	                    <div class="header">
 	                        <p class="category">카테고리 리스트</p>
@@ -325,7 +325,7 @@
 	                    	$(document.categoryEdit).validate(validate_option);
 	                    });
                     </script>
-				</c:if>
+				
 				
 				<c:if test="${not empty cafeUserList }">
                     <div class="card">
@@ -333,6 +333,24 @@
 	                        <p class="category">사용자 리스트</p>
 	                    </div>
 	                    
+	                    <div style="float:right;margin-bottom:20px;">
+	                    	<table style="width:300px;" class="table">
+	                    		<tr>
+									<th>전체회원</th>
+									<th>${userStatus.totalUser }</th>
+								</tr>
+								
+								<tr>
+									<th style="color:blue;">정상</th>
+									<th style="color:blue;">${userStatus.normalUser }</th>
+								</tr>
+								
+								<tr>
+									<th style="color:red;">탈퇴</th>
+									<th style="color:red;">${userStatus.withedrawalUser }</th>
+								</tr>
+	                    	</table>
+	                    </div>
 	                    
 		                    <div class="col-md-12" style="margin-top:20px;margin-bottom:40px;">
 		                    	<form id="ReqForm">
@@ -344,6 +362,7 @@
 		                             		
 		                             			<input name="keyword" type="text" class="form-control" value="">
 		                             			<input name="cafeseq" type="hidden" class="form-control" value="${cafe.cafeseq }">
+		                             			<input name="cafename" type="hidden" class="form-control" value="${cafe.cafename }">
 		                             		
 		                             		</td>
 		                             		<td>
@@ -388,9 +407,9 @@
 												<td><a onclick="userStat('${a.userSeq }');" style="cursor:pointer;">${a.userName }</a></td>
 												<td><a onclick="userStat('${a.userSeq }');" style="cursor:pointer;">${a.nickName }</a></td>
 												<td>${a.regdate }</td>
-												<td>${a.deviceType }</td>
-												<td>${a.catename }</td>
 												<td>${a.loginType }</td>
+												<td>${a.catename }</td>
+												<td>${a.deviceType }</td>
 												<td>${a.cafeCnt }</td>
 												<td><fmt:formatNumber value="${a.sActAmt }" pattern="#,###" /></td>
 												<td><fmt:formatNumber value="${a.walkcount }" pattern="#,###" /></td>
@@ -438,8 +457,8 @@
 
 					<script>
 					$(function() {
-						  $("#sortTable").tablesorter();
-						});
+						  $("#sortTable").tablesorter({ headers: {11 : {sorter: false}, 12 : {sorter: false}} });
+					});
                     	
 						 $(function(){
                     		$("form.registAdminForm").on("submit", function(){

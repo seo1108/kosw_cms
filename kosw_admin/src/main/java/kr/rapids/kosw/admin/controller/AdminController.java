@@ -711,7 +711,7 @@ public class AdminController {
 	 * @return
 	 */
 	@PreAuthorize("hasRole('ROLE_SUPER')")
-	@RequestMapping(path="customerList", method = RequestMethod.GET)
+//	@RequestMapping(path="customerList", method = RequestMethod.GET)
 	public ModelAndView customerList(
 			@ModelAttribute Customer customer,
 			@RequestParam(name="p", defaultValue="1") String page,
@@ -1506,6 +1506,11 @@ public class AdminController {
 		List<User> cafeUserList = adminService.cafeUserList(cafe);
 		modelAndView.addObject("cafeUserList", cafeUserList);
 		
+		Map<String, Object> map = new HashMap<String, Object>();
+		map = adminService.selectCafeUsersStatus(cafe.getCafeseq());
+		modelAndView.addObject("userStatus", map) ;
+		
+		
 //		// 로고 정보
 //		Logo logo = adminService.getLogo(customer);
 //		modelAndView.addObject("logo", logo);
@@ -1658,7 +1663,7 @@ public class AdminController {
 		      sheet.autoSizeColumn(i);
 		    }
 		    
-		    String filename = "카페 회원 리스트_" + DateFormatUtil.getCurrentTime() + ".xlsx";
+		    String filename = params.get("cafename").toString()+"_회원 리스트_" + DateFormatUtil.getCurrentTime() + ".xlsx";
 		    
 		    String header = req.getHeader("User-Agent");
 			if (header.contains("MSIE") || header.contains("Trident")) {
@@ -3143,6 +3148,7 @@ public class AdminController {
 	 * http://localhost:8080/admin/userList?page=2&cSeq=1&search=
 	 * @return
 	 */
+	@SuppressWarnings("rawtypes")
 	@RequestMapping(path="userAllList", method = RequestMethod.GET)
 	public ModelAndView userAllList(
 			User user,
@@ -3152,17 +3158,46 @@ public class AdminController {
 
 		ModelAndView modelAndView = new ModelAndView("userAllList");
 		
+		Map<String, Object> map = new HashMap<String, Object>();
+		map = adminService.selectUsersStatus();
+		
+		
 		
 		PagePair pagePair = adminService.selectUserAllList(Integer.valueOf(page), user);
 		List<User> userList = (List<User>) pagePair.getList();
 		modelAndView.addObject("userList", userList);
 
 		List sortList = new ArrayList<Sort>() ;
-		sortList.add(new Sort(0,"이름","user_name")) ;
-		sortList.add(new Sort(1,"등록일시","user_reg_time desc")) ;
-		//sortList.add(new Sort(2,"이용건물수","buildcnt desc")) ;
-		sortList.add(new Sort(2,"오른층수","s_act_amt desc")) ;
+		sortList.add(new Sort(0,"아이디(이메일) (오름차순)","user_email")) ;
+		sortList.add(new Sort(1,"아이디(이메일) (내림차순)","user_email desc")) ;
+		
+		sortList.add(new Sort(2,"사용자명 (오름차순)","user_name")) ;
+		sortList.add(new Sort(3,"사용자명 (내림차순)","user_name desc")) ;
+		
+		sortList.add(new Sort(4,"닉네임 (오름차순)","nickname")) ;
+		sortList.add(new Sort(5,"닉네임 (내림차순)","nickname desc")) ;
+		
+		sortList.add(new Sort(6,"등록일시 (오름차순)","user_reg_time")) ;
+		sortList.add(new Sort(7,"등록일시 (내림차순)","user_reg_time desc")) ;
+		
+		sortList.add(new Sort(8,"가입경로 (오름차순)","loginType")) ;
+		sortList.add(new Sort(9,"가입경로 (내림차순)","loginType desc")) ;
+		
+		sortList.add(new Sort(10,"OS (오름차순)","deviceType")) ;
+		sortList.add(new Sort(11,"OS (내림차순)","deviceType desc")) ;
+		
+		sortList.add(new Sort(12,"이용카페수 (오름차순)","cafeCnt")) ;
+		sortList.add(new Sort(13,"이용카페수 (내림차순)","cafeCnt desc")) ;
+		
+		sortList.add(new Sort(14,"오른층수 (오름차순)","s_act_amt")) ;
+		sortList.add(new Sort(15,"오른층수 (내림차순)","s_act_amt desc")) ;
+		
+		sortList.add(new Sort(16,"걸음수 (오름차순)","walkcount")) ;
+		sortList.add(new Sort(17,"걸음수 (내림차순)","walkcount desc")) ;
+		
 		modelAndView.addObject("sortList", sortList) ;
+		
+		modelAndView.addObject("userStatus", map) ;
 
 		PageNavigation pageNavigation = pagePair.getPageNavigation();
 		modelAndView.addObject("pageNavigation", pageNavigation);
@@ -3183,7 +3218,7 @@ public class AdminController {
 		
 		try {
 			String[] columns 
-			= { "번호", "이름", "이메일", "닉네임", "등록일시", "이용카페수", "오른층수", "걸음수" };
+			= { "번호", "아이디(이메일)", "사용자명", "닉네임", "등록일시", "가입경로", "OS", "이용카페수", "오른층수", "걸음수" };
 			
 			ModelAndView modelAndView = new ModelAndView("userAllList");
 			
@@ -3266,13 +3301,15 @@ public class AdminController {
 				Row row = sheet.createRow(rowNum++);
 				// { "번호", "이름", "이메일", "닉네임", "등록일시", "이용카페수", "오른층수", "걸음수" };
 				row.createCell(0).setCellValue(Util.checkNull(userList.get(i).getUserSeq(), "-"));
-				row.createCell(1).setCellValue(Util.checkNull(userList.get(i).getUserName(), "-"));
-				row.createCell(2).setCellValue(Util.checkNull(userList.get(i).getUserEmail(), "-"));
+				row.createCell(1).setCellValue(Util.checkNull(userList.get(i).getUserEmail(), "-"));
+				row.createCell(2).setCellValue(Util.checkNull(userList.get(i).getUserName(), "-"));
 				row.createCell(3).setCellValue(Util.checkNull(userList.get(i).getNickName(), "-"));
 				row.createCell(4).setCellValue(Util.checkNull(userList.get(i).getUserRegTimeFormat(), "-"));
-				row.createCell(5).setCellValue(Util.checkNull(userList.get(i).getCafeCnt(), "-"));
-				row.createCell(6).setCellValue(Util.checkNull(userList.get(i).getsActAmt(), "-"));
-				row.createCell(7).setCellValue(Util.checkNull(userList.get(i).getWalkcount(), "-"));
+				row.createCell(5).setCellValue(Util.checkNull(userList.get(i).getLoginType(), "-"));
+				row.createCell(6).setCellValue(Util.checkNull(userList.get(i).getDeviceType(), "-"));
+				row.createCell(7).setCellValue(Util.checkNull(userList.get(i).getCafeCnt(), "-"));
+				row.createCell(8).setCellValue(Util.checkNull(userList.get(i).getsActAmt(), "-"));
+				row.createCell(9).setCellValue(Util.checkNull(userList.get(i).getWalkcount(), "-"));
 			}
 			
 			// Resize all columns to fit the content size
@@ -5806,6 +5843,7 @@ public class AdminController {
 			@ModelAttribute(name="rank")  Ranking rank,
 			@ModelAttribute Cafe cafe,
 			@RequestParam(name="cafeseq", required=false) String cafeseq,
+			@RequestParam(name="cafename", required=false) String cafename,
 			@RequestParam(name="type", defaultValue="") String type,
 			RedirectAttributes redirectAttributes
 			){
@@ -5855,6 +5893,7 @@ public class AdminController {
 			//rank.setCafeseq(rank.getCafeseq());
 		}
 		
+		modelAndView.addObject("cafename", cafename);
 		modelAndView.addObject("cafeseq", cafeseq);
 		modelAndView.addObject("cateseq", rank.getCateseq());
 		

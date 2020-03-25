@@ -24,7 +24,7 @@
 
             <form  id = "search" name="search" class="navbar-form navbar-left navbar-search-form" role="search" style="display:none;">
                 <div class="input-group">
-                    <input class ="form-control inputparam"  name="sort" type="hidden"  value="${param.sort}">
+                	<input class ="form-control inputparam"  name="sort" type="hidden"  value="${param.sort}">
                     <input class ="form-control inputparamname"  name="sortName" type="hidden"  value="${param.sortName}">
                     <span class="input-group-addon"><i class="fa fa-search"></i></span>
                     <input name="cSeq" type="hidden" value="${customer.custSeq}">
@@ -51,7 +51,7 @@
                     
 					  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
 					 <c:forEach var="a" items="${sortList }">
-					    <li class = "list-group-item"><p data-value="${a.sortField}">${a.sortName}</p></li>
+					    <li class = "list-group-item"><p data-value="${a.sortField}" style="font-size:12px;width:150px;cursor:pointer;">${a.sortName}</p></li>
 					 </c:forEach>
 					  </ul>
 					</div>
@@ -64,7 +64,7 @@
 				  $('.inputparam').val($(this).data('value'));
 				  $('.inputparamname').val($(this).text());
 				  $("#search").submit() ;
-				  $(param)
+				  //$(param)
 				});
             </script>
 

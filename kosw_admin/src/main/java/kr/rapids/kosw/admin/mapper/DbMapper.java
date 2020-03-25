@@ -85,6 +85,8 @@ public interface DbMapper {
 	List<Category> cafeCategoryList(Cafe cafe);
 	
 	List<User> cafeUserList(Cafe cafe);
+	
+	Map<String, Object> selectCafeUsersStatus(String cafeseq);
 
 	String getAdminName(String adminSeq);
 
@@ -165,6 +167,8 @@ public interface DbMapper {
 
 	int selectUserLTotalCount(User user);
 	int selectUserAllTotalCount(User user);
+	
+	Map<String, Object> selectUsersStatus();
 
 	List<User> selectUserList(User user);
 	List<User> selectUserAllList(User user);

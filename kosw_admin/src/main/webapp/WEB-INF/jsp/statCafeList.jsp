@@ -125,7 +125,7 @@
 										<th>카페명</th>
 										<th>담당자명</th>
 										<th>회원 수</th>
-										<th>가입시 승인여부</th>
+										<th>공개 여부</th>
 										<th>카페오픈일</th>
 										
 									</tr>
@@ -135,11 +135,11 @@
 											<td>
 												<c:choose>
 													<c:when test="${type eq 'category'}">
-														<a href="<c:url value="/statCafeCategory" />?cafeseq=${a.cafeseq }&type=category">
+														<a href="<c:url value="/statCafeCategory" />?cafeseq=${a.cafeseq }&cafename=${a.cafename }&type=category">
 														${a.cafename }</a>
 													</c:when>
 													<c:otherwise>
-														<a href="<c:url value="/statCafeUser" />?cafeseq=${a.cafeseq }&type=individual">
+														<a href="<c:url value="/statCafeUser" />?cafeseq=${a.cafeseq }&cafename=${a.cafename }&type=individual">
 														${a.cafename }</a>
 													</c:otherwise>
 												</c:choose>	

@@ -659,6 +659,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		</if>	
 	</select>
 	
+	<select id="selectCafeUsersStatus" parameterType="java.lang.String" resultType="hashmap">
+		SELECT
+			t1.cnt as totalUser,
+		    t2.cnt as normalUser,
+		    t3.cnt as withedrawalUser
+		FROM
+			(SELECT count(user_seq) cnt FROM u_user WHERE user_seq in (SELECT user_seq FROM t_cafe_user WHERE cafeseq = #{cafeseq})) t1,
+		    (SELECT count(user_seq) cnt FROM u_user WHERE user_seq in (SELECT user_seq FROM t_cafe_user WHERE cafeseq = #{cafeseq} AND status = '1')) t2,
+		    (SELECT count(user_seq) cnt FROM u_user WHERE user_seq in (SELECT user_seq FROM t_cafe_user WHERE cafeseq = #{cafeseq} AND status = '2')) t3
+	</select>
+	
 	<resultMap id="buildingMap" type="kr.rapids.kosw.admin.model.Building">
 		<id property="buildSeq" column="build_seq" />
 		<result property="custSeq" column="cust_seq" />
@@ -1311,6 +1322,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		) ZZ
 	</select>
 	
+	<select id="selectUsersStatus" resultType="hashmap">
+		SELECT
+			t1.cnt as totalUser,
+		    t2.cnt as normalUser,
+		    t3.cnt as withedrawalUser
+		FROM
+			(SELECT count(user_seq) cnt FROM u_user) t1,
+		    (SELECT count(user_seq) cnt FROM u_user WHERE withdrawal_flag = 'N') t2,
+		    (SELECT count(user_seq) cnt FROM u_user WHERE withdrawal_flag = 'Y') t3
+	</select>
+	
 	<select id="selectUserList" parameterType="kr.rapids.kosw.admin.model.User" resultMap="userMap">
 	
 		SELECT CAST(pnum AS SIGNED) AS rowNum ,
@@ -1370,7 +1392,20 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 					(SELECT sum(C.act_amt) 
 					FROM s_activity_user_daily C
 					where  C.user_seq  = U.User_seq ) as s_act_amt,
-					(SELECT sum(walk_count) FROM u_user_walk w WHERE w.user_seq = U.User_seq) as walkcount
+					(SELECT sum(walk_count) FROM u_user_walk w WHERE w.user_seq = U.User_seq) as walkcount,
+					CASE
+						WHEN U.loginType = 'kakao'
+						THEN '카카오'
+						WHEN U.loginType = 'email'
+						THEN '계단왕'
+						ELSE '계단왕'
+					END AS loginType
+		            ,CASE
+						WHEN U.device_type = 'A'
+		                THEN 'AOS'
+		                WHEN U.device_type = 'I'
+		                THEN 'IOS'
+					END AS device_type
 				FROM u_user U
 				WHERE 1=1
 				<if test="search != null and search !=''">
@@ -1382,12 +1417,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 						U.nickname LIKE  concat ('%', #{search} ,'%') 
 					)
 				</if>
-				order BY U.user_seq desc
+				<choose>
+					<when test="sort != null and sort != null">
+				     	order by ${sort}
+				    </when>
+				    <otherwise>
+				      	order by user_seq desc
+				    </otherwise>
+			    </choose>
 			) A , (SELECT @ROWNUM:=#{totalCount}+1) R 
 		) B 
-		<if test="sort != null and sort !=''">
-			order by ${sort}
-		</if>
 		<if test="reqType != 'excel'">
 		LIMIT #{startList}, #{pageViewCnt}
 		</if>

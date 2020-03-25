@@ -360,6 +360,7 @@ public class User extends Page implements Serializable, InputFormModel {
 
 
 
+
 	@Override
 	public String inputValidateErrroMessage() {
 		return null;

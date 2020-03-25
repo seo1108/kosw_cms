@@ -17,44 +17,46 @@
 		<div style="text-align:center;">
 		<div style="width:20px;height:20px;background:#23CCEF;float:left;margin-left:10px;"></div>
 		<span style="float:left;padding-left:10px;">계단수</span>
-	
-		<div style="width:20px;height:20px;background:#FB404B;float:left;margin-left:30px;"></div>
-		<span style="float:left;padding-left:10px;">걸음수</span>
 	</div>
 	
-	<div id="chartViewsUser" class="ct-chart "></div>
+	<div id="chartViewsUserStair" class="ct-chart "></div>
+	</div>
+	
+	<div class="content">
+		<div style="text-align:center;">
+			<div style="width:20px;height:20px;background:#FB404B;float:left;margin-left:10px;"></div>
+		<span style="float:left;padding-left:10px;">걸음수</span>
+	</div>
+	<div id="chartViewsUserWalk" class="ct-chart "></div>
 	</div>
 </div> <!-- CARD-1 -->
 
 							
 <script>
-(function makeUserChart(){
+(function makeUserStairChart(){
 	// 차트 x 축 라벨 구성
 	var chartLabels = [];
 	
 	// 차트 데이타 구성
 	var chartDatas = [];
-	var chartWalkDatas = [];
 	
 	<c:forEach var="r" items="${userRecords }">
 		chartLabels.push("${r.actDate }");
 		chartDatas.push(${r.recordAmount });
-		chartWalkDatas.push(${r.recordWalk });
 	</c:forEach>
 	
 	var dataViews = {
         labels: chartLabels,
         series: [
-        	chartDatas,
-        	chartWalkDatas
+        	chartDatas
         ]
     };
 
     var optionsViews = {
-        seriesBarDistance: 10,
-        /* classNames: {
+        seriesBarDistance: 20,
+        classNames: {
             bar: 'ct-bar ct-azure'
-        }, */
+        }, 
         axisX: {
             showGrid: false
         },
@@ -75,6 +77,53 @@
         }]
     ];
 
-    Chartist.Bar('#chartViewsUser', dataViews, optionsViews, responsiveOptionsViews);
+    Chartist.Bar('#chartViewsUserStair', dataViews, optionsViews, responsiveOptionsViews);
+})();
+
+(function makeUserWalkChart(){
+	// 차트 x 축 라벨 구성
+	var chartLabels1 = [];
+	
+	// 차트 데이타 구성
+	var chartWalkDatas = [];
+	
+	<c:forEach var="r" items="${userRecords }">
+	chartLabels1.push("${r.actDate }");
+		chartWalkDatas.push(${r.recordWalk });
+	</c:forEach>
+	
+	var dataViews = {
+        labels: chartLabels1,
+        series: [
+        	chartWalkDatas
+        ]
+    };
+
+    var optionsViews = {
+        seriesBarDistance: 20,
+         classNames: {
+            bar: 'ct-bar ct-red'
+        },
+        axisX: {
+            showGrid: false
+        },
+        horizontalBars : false,
+        plugins: [
+	          Chartist.plugins.ctBarLabels()
+        ]
+    };
+
+    var responsiveOptionsViews = [
+        ['screen and (max-width: 640px)', {
+            seriesBarDistance: 5,
+            axisX: {
+                labelInterpolationFnc: function (value) {
+                    return value[0];
+                }
+            }
+        }]
+    ];
+
+    Chartist.Bar('#chartViewsUserWalk', dataViews, optionsViews, responsiveOptionsViews);
 })();
 </script>

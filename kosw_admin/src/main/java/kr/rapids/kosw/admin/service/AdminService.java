@@ -201,6 +201,12 @@ public class AdminService {
 		List<User> cafeUserList = mapper.cafeUserList(cafe);
 		return cafeUserList;
 	}
+	
+	public Map<String, Object> selectCafeUsersStatus(String cafeseq) {
+		Map<String, Object> map = mapper.selectCafeUsersStatus(cafeseq);
+		return map;
+	}
+	
 
 	/**
 	 * 해당 고객의 건물 리스트
@@ -555,6 +561,10 @@ public class AdminService {
 		return new PagePair(userList, pageNavigation);
 	}
 	
+	public Map<String, Object> selectUsersStatus() {
+		Map<String, Object> map = mapper.selectUsersStatus();
+		return map;
+	}
 	
 
 

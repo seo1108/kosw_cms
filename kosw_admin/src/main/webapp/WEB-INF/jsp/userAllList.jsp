@@ -47,6 +47,24 @@
                         <p class="category">사용자 리스트</p>
                     </div>
                     
+                    <div style="float:right;margin-bottom:20px;">
+                    	<table style="width:300px;" class="table">
+                    		<tr>
+								<th>전체회원</th>
+								<th>${userStatus.totalUser }</th>
+							</tr>
+							
+							<tr>
+								<th style="color:blue;">정상</th>
+								<th style="color:blue;">${userStatus.normalUser }</th>
+							</tr>
+							
+							<tr>
+								<th style="color:red;">탈퇴</th>
+								<th style="color:red;">${userStatus.withedrawalUser }</th>
+							</tr>
+                    	</table>
+                    </div>
                     <div class="content">
                     	<c:if test="${empty userList }">
                     		<c:if test="${empty param.search}">
@@ -62,11 +80,13 @@
 								<table class="table">
 									<tr>
 										<th>번호</th>
-										<th>이름</th>
-										<th>이메일</th>
+										<th>아이디(이메일)</th>
+										<th>사용자명</th>
 										<th>닉네임</th>
 										<th>등록일시</th>
 										<!-- <th>메일인증여부</th> -->
+										<th>가입경로</th>
+										<th>OS</th>
 										<th>이용카페수</th>
 										<th>오른층수</th>
 										<th>걸음수</th>
@@ -74,13 +94,15 @@
 									<c:forEach var="a" items="${userList }">
 										<tr>
 											<td>${a.userSeq }</td>
+											<td>${a.userEmail }</td>
 											<td>
 												<%-- <a href="statUser?userSeq=${a.userSeq }">${a.userName }</a> --%>
 												<a href="statPerUser?uSeq=${a.userSeq }">${a.userName }</a>
 											</td>
-											<td>${a.userEmail }</td>
 											<td>${a.nickName }</td>
 											<td>${a.userRegTimeFormat }</td>
+											<td>${a.loginType }</td>
+											<td>${a.deviceType }</td>
 											<%-- <td>
 												<c:if test="${a.authFinishFlag eq 'Y' }">
 													<p class="text-primary">인증완료</p>

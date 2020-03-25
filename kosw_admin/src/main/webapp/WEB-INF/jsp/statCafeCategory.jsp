@@ -75,32 +75,29 @@
 		})();
 		
 		// 부서별 랭킹 기록
-		(function makeDepartChart(){
+		(function makeDepartStairChart(){
 			// 차트 x 축 라벨 구성
 			var chartLabels = [];
 			
 			// 차트 데이타 구성 (최대 10위 까지)
 			var chartDatas = [];
-			var chartWalkDatas = [];
 			<c:forEach var="r" items="${departRanks }" end="9">
 				chartLabels.push("${r.cafename }" + "-"+ "${r.catename }");
 				chartDatas.push(${r.recordAmount });
-				chartWalkDatas.push(${r.recordWalk });
 			</c:forEach>
 			
 			var dataViews = {
 		        labels: chartLabels,
 		        series: [
-		        	chartDatas,
-		        	chartWalkDatas
+		        	chartDatas
 		        ]
 		    };
 		
 		    var optionsViews = {
 		        seriesBarDistance: 30,
-		        /* classNames: {
+		        classNames: {
 		            bar: 'ct-bar ct-azure'
-		        }, */
+		        },
 		        axisX: {
 		            showGrid: false
 		        },
@@ -122,6 +119,52 @@
 		    ];
 		
 		    Chartist.Bar('#chartViewDepart', dataViews, optionsViews, responsiveOptionsViews);
+		})();
+		
+		(function makeDepartWalkChart(){
+			// 차트 x 축 라벨 구성
+			var chartLabels = [];
+			
+			// 차트 데이타 구성 (최대 10위 까지)
+			var chartWalkDatas = [];
+			<c:forEach var="r" items="${departRanks }" end="9">
+				chartLabels.push("${r.cafename }" + "-"+ "${r.catename }");
+				chartWalkDatas.push(${r.recordWalk });
+			</c:forEach>
+			
+			var dataViews = {
+		        labels: chartLabels,
+		        series: [
+		        	chartWalkDatas
+		        ]
+		    };
+		
+		    var optionsViews = {
+		        seriesBarDistance: 30,
+		        classNames: {
+		            bar: 'ct-bar ct-red'
+		        },
+		        axisX: {
+		            showGrid: false
+		        },
+		        horizontalBars : false,
+		        plugins: [
+			          Chartist.plugins.ctBarLabels()
+		        ]
+		    };
+		
+		    var responsiveOptionsViews = [
+		        ['screen and (max-width: 640px)', {
+		            seriesBarDistance: 5,
+		            axisX: {
+		                labelInterpolationFnc: function (value) {
+		                    return value[0];
+		                }
+		            }
+		        }]
+		    ];
+		
+		    Chartist.Bar('#chartViewWalkDepart', dataViews, optionsViews, responsiveOptionsViews);
 		})();
 		
 		
@@ -349,9 +392,23 @@
 									
 								</div>
 								
+								<div class="content">
+									<div style="text-align:center;">
+									<div style="width:20px;height:20px;background:#23CCEF;float:left;margin-left:10px;"></div>
+									<span style="float:left;padding-left:10px;">계단수</span>
+								</div>
 								
 								<div id="chartViewDepart" class="ct-chart "></div>
+								</div>
 								
+								<div class="content">
+									<div style="text-align:center;">
+									<div style="width:20px;height:20px;background:#FB404B;float:left;margin-left:10px;"></div>
+									<span style="float:left;padding-left:10px;">걸음수</span>
+								</div>
+								
+								<div id="chartViewWalkDepart" class="ct-chart "></div>
+								</div>
 	                    	</c:if>
 	                    	
 	                    </div>

@@ -36,9 +36,9 @@
 						<td><a onclick="userStat('${a.userSeq }');" style="cursor:pointer;">${a.userName }</a></td>
 						<td><a onclick="userStat('${a.userSeq }');" style="cursor:pointer;">${a.nickName }</a></td>
 						<td>${a.regdate }</td>
-						<td>${a.deviceType }</td>
-						<td>${a.catename }</td>
 						<td>${a.loginType }</td>
+						<td>${a.catename }</td>
+						<td>${a.deviceType }</td>
 						<td>${a.cafeCnt }</td>
 						<td><fmt:formatNumber value="${a.sActAmt }" pattern="#,###" /></td>
 						<td><fmt:formatNumber value="${a.walkcount }" pattern="#,###" /></td>
@@ -69,6 +69,6 @@
 							
 <script>
 	$(function() {
-	  	$("#sortTable").tablesorter();
+	  	$("#sortTable").tablesorter({ headers: {11 : {sorter: false}, 12 : {sorter: false}} });
 	});
 </script>

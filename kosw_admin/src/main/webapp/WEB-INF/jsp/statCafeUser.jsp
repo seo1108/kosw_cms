@@ -26,32 +26,29 @@
 		$("#sortTable").tablesorter();
 		
 		// 개인별 랭킹 기록
-		(function makeRankingChart(){
+		(function makeRankingStairChart(){
 			// 차트 x 축 라벨 구성
 			var chartLabels = [];
 			
 			// 차트 데이타 구성 (최대 10위 까지)
 			var chartDatas = [];
-			var chartWalkDatas = [];
 			<c:forEach var="r" items="${ranks }" end="9">
 				chartLabels.push("${r.userName }");
 				chartDatas.push(${r.recordAmount });
-				chartWalkDatas.push(${r.recordWalk });
 			</c:forEach>
 			
 			var dataViews = {
 		        labels: chartLabels,
 		        series: [
-		        	chartDatas,
-		        	chartWalkDatas
+		        	chartDatas
 		        ]
 		    };
 		
 		    var optionsViews = {
 		        seriesBarDistance: 30,
-		        /* classNames: {
+		        classNames: {
 		            bar: 'ct-bar ct-azure'
-		        }, */
+		        }, 
 		        axisX: {
 		            showGrid: false
 		        },
@@ -78,6 +75,55 @@
 		    
 		})();
 		
+		(function makeRankingWalkChart(){
+			// 차트 x 축 라벨 구성
+			var chartLabels = [];
+			
+			// 차트 데이타 구성 (최대 10위 까지)
+			var chartWalkDatas = [];
+			<c:forEach var="r" items="${ranks }" end="9">
+				chartLabels.push("${r.userName }");
+				chartWalkDatas.push(${r.recordWalk });
+			</c:forEach>
+			
+			var dataViews = {
+		        labels: chartLabels,
+		        series: [
+		        	chartWalkDatas
+		        ]
+		    };
+		
+		    var optionsViews = {
+		        seriesBarDistance: 30,
+		        classNames: {
+		            bar: 'ct-bar ct-red'
+		        },
+		        axisX: {
+		            showGrid: false
+		        },
+		        horizontalBars : false,
+		        plugins: [
+			          Chartist.plugins.ctBarLabels()
+		        ] 
+		    };
+		
+		    var responsiveOptionsViews = [
+		        ['screen and (max-width: 640px)', {
+		            seriesBarDistance: 5,
+		            axisX: {
+		                labelInterpolationFnc: function (value) {
+		                    return value[0];
+		                }
+		            }
+		        }]
+		    ];
+		
+		    Chartist.Bar('#chartWalkViews', dataViews, optionsViews, responsiveOptionsViews);
+		    
+
+		    
+		})();
+		
 		<c:if test="${not empty userRecords }">
 		// 사옹자 날짜별 기록
 		(function makeUserChart(){
@@ -86,27 +132,24 @@
 			
 			// 차트 데이타 구성
 			var chartDatas = [];
-			var chartWalkDatas = [];
 			
 			<c:forEach var="r" items="${userRecords }">
 				chartLabels.push("${r.actDate }");
 				chartDatas.push(${r.recordAmount });
-				chartWalkDatas.push(${r.recordWalk });
 			</c:forEach>
 			
 			var dataViews = {
 		        labels: chartLabels,
 		        series: [
-		        	chartDatas,
-		        	chartWalkDatas
+		        	chartDatas
 		        ]
 		    };
 		
 		    var optionsViews = {
 		        seriesBarDistance: 30,
-		        /* classNames: {
+		        classNames: {
 		            bar: 'ct-bar ct-azure'
-		        }, */
+		        },
 		        axisX: {
 		            showGrid: false
 		        },
@@ -128,6 +171,53 @@
 		    ];
 		
 		    Chartist.Bar('#chartViewsUser', dataViews, optionsViews, responsiveOptionsViews);
+		})();
+		
+		(function makeUserChart(){
+			// 차트 x 축 라벨 구성
+			var chartLabels = [];
+			
+			// 차트 데이타 구성
+			var chartWalkDatas = [];
+			
+			<c:forEach var="r" items="${userRecords }">
+				chartLabels.push("${r.actDate }");
+				chartWalkDatas.push(${r.recordWalk });
+			</c:forEach>
+			
+			var dataViews = {
+		        labels: chartLabels,
+		        series: [
+		        	chartWalkDatas
+		        ]
+		    };
+		
+		    var optionsViews = {
+		        seriesBarDistance: 30,
+		        classNames: {
+		            bar: 'ct-bar ct-red'
+		        },
+		        axisX: {
+		            showGrid: false
+		        },
+		        horizontalBars : false,
+		        plugins: [
+			          Chartist.plugins.ctBarLabels()
+		        ]
+		    };
+		
+		    var responsiveOptionsViews = [
+		        ['screen and (max-width: 640px)', {
+		            seriesBarDistance: 5,
+		            axisX: {
+		                labelInterpolationFnc: function (value) {
+		                    return value[0];
+		                }
+		            }
+		        }]
+		    ];
+		
+		    Chartist.Bar('#chartViewsWalkUser', dataViews, optionsViews, responsiveOptionsViews);
 		})();
 		</c:if>
 		
@@ -274,6 +364,8 @@
 							<input name="userSeq" type="hidden" value="${rank.userSeq }"/>
 							<!--  <input name="cateseq" type="hidden" value=""/> -->
 							<input name="cafeseq" type="hidden" value="${cafeseq }"/>
+							<input name="cafename" type="hidden" value="${cafename }"/>
+							<input name="type" type="hidden" value="${type }"/>
 							
 							<c:if test="${cafeSelected eq false}">
 								<fieldset>
@@ -410,15 +502,55 @@
 									<button type="submit" style="margin-top:20px;margin-bottom:20px;" class="btn btn-fill btn-success" onclick="individualRankDownload();">파일 DOWN</button>
 								</div>
 								
-								<div style="text-align:center;">
+								
+								<c:if test="${not empty userRecords }">
+						
+					               	<div class="card">
+						                    
+					                    <div class="header">
+					                        <h4 class="title">${userRecords[0].userName } 개인 기록 </h4>
+					                        <p class="category">${rank.startDate}  ~  ${rank.endDate}</p>
+					                    </div>
+						                    
+					                    <div class="content">
+					                    	<div style="text-align:center;">
+												<div style="width:20px;height:20px;background:#23CCEF;float:left;margin-left:10px;"></div>
+												<span style="float:left;padding-left:10px;">계단수</span>
+											</div>
+											
+					                    	<div id="chartViewsUser" class="ct-chart "></div>
+					                    </div>
+					                    
+					                    <div class="content">
+					                    	<div style="text-align:center;">
+												<div style="width:20px;height:20px;background:#FB404B;float:left;margin-left:10px;"></div>
+												<span style="float:left;padding-left:10px;">걸음수</span>
+											</div>
+											
+					                    	<div id="chartViewsWalkUser" class="ct-chart "></div>
+					                    </div>
+									</div> <!-- CARD-1 -->
+								</c:if>
+								
+								
+		                    	<div class="header">
+		                        	<h4 class="title">${cafename } 기록 </h4>
+		                        	<p class="category">${rank.startDate}  ~  ${rank.endDate}</p>
+		                    	</div>
+		                    
+								<div style="text-align:center;padding-top:10px;">
 									<div style="width:20px;height:20px;background:#23CCEF;float:left;margin-left:10px;"></div>
 									<span style="float:left;padding-left:10px;">계단수</span>
-									
-									<div style="width:20px;height:20px;background:#FB404B;float:left;margin-left:30px;"></div>
-									<span style="float:left;padding-left:10px;">걸음수</span>
 								</div>
 								
 								<div id="chartViews" class="ct-chart "></div>
+								
+								<div style="text-align:center;padding-bottom:10px;">
+									<div style="width:20px;height:20px;background:#FB404B;float:left;margin-left:10px;"></div>
+									<span style="float:left;padding-left:10px;">걸음수</span>
+								</div>
+								
+								<div id="chartWalkViews" class="ct-chart "></div>
 								
 	                    	</c:if>
 	                    	
@@ -426,28 +558,7 @@
 		                    
 					</div> <!-- CARD-1 -->
 					
-					<c:if test="${not empty userRecords }">
-						
-		               	<div class="card">
-			                    
-		                    <div class="header">
-		                        <h4 class="title">${userRecords[0].userName } 개인 기록 </h4>
-		                        <p class="category">${rank.startDate}  ~  ${rank.endDate}</p>
-		                    </div>
-			                    
-		                    <div class="content">
-		                    	<div style="text-align:center;">
-									<div style="width:20px;height:20px;background:#23CCEF;float:left;margin-left:10px;"></div>
-									<span style="float:left;padding-left:10px;">계단수</span>
-									
-									<div style="width:20px;height:20px;background:#FB404B;float:left;margin-left:30px;"></div>
-									<span style="float:left;padding-left:10px;">걸음수</span>
-								</div>
-								
-		                    	<div id="chartViewsUser" class="ct-chart "></div>
-		                    </div>
-						</div> <!-- CARD-1 -->
-					</c:if>
+					
 					
 					
 					<c:if test="${not empty departRanks }">
