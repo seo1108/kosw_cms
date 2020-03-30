@@ -33,6 +33,9 @@ public class User extends Page implements Serializable, InputFormModel {
 	private int sActAmt ;
 	private String loginType;
 	
+	private String startSearchDate;  		// 조회 시작 일자 yyyyMMdd
+	private String endSearchDate;			// 조회 종료 일자 yyyyMMdd
+	
 	public String getLoginType() {
 		return loginType;
 	}
@@ -358,6 +361,31 @@ public class User extends Page implements Serializable, InputFormModel {
 		this.reqType = reqType;
 	}
 
+
+
+
+
+	public String getStartSearchDate() {
+		return startSearchDate;
+	}
+
+
+
+	public void setStartSearchDate(String startSearchDate) {
+		this.startSearchDate = startSearchDate;
+	}
+
+
+
+	public String getEndSearchDate() {
+		return endSearchDate;
+	}
+
+
+
+	public void setEndSearchDate(String endSearchDate) {
+		this.endSearchDate = endSearchDate;
+	}
 
 
 

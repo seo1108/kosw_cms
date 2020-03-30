@@ -62,6 +62,53 @@
 		
 		    Chartist.Bar('#chartViewsUser', dataViews, optionsViews, responsiveOptionsViews);
 		})();
+		
+		(function makeUserWalkChart(){
+			// 차트 x 축 라벨 구성
+			var chartLabels = [];
+			
+			// 차트 데이타 구성
+			var chartWalkDatas = [];
+			
+			<c:forEach var="r" items="${userRecords }">
+				chartLabels.push("${r.actDate }");
+				chartWalkDatas.push(${r.recordWalk });
+			</c:forEach>
+			
+			var dataViews = {
+		        labels: chartLabels,
+		        series: [
+		        	chartWalkDatas
+		        ]
+		    };
+		
+		    var optionsViews = {
+		        seriesBarDistance: 10,
+		        classNames: {
+		            bar: 'ct-bar ct-red'
+		        },
+		        axisX: {
+		            showGrid: false
+		        },
+		        horizontalBars : false,
+		        plugins: [
+			          Chartist.plugins.ctBarLabels()
+		        ]
+		    };
+		
+		    var responsiveOptionsViews = [
+		        ['screen and (max-width: 640px)', {
+		            seriesBarDistance: 5,
+		            axisX: {
+		                labelInterpolationFnc: function (value) {
+		                    return value[0];
+		                }
+		            }
+		        }]
+		    ];
+		
+		    Chartist.Bar('#chartViewsWalkUser', dataViews, optionsViews, responsiveOptionsViews);
+		})();
 		</c:if>
 		
 		
@@ -213,7 +260,21 @@
 	                    </div>
 		                    
 	                    <div class="content">
-	                    	<div id="chartViewsUser" class="ct-chart "></div>
+	                    	<div style="text-align:center;">
+								<div style="width:20px;height:20px;background:#23CCEF;float:left;margin-left:10px;"></div>
+								<span style="float:left;padding-left:10px;">계단수</span>
+							</div>  
+		                    <div id="chartViewsUser" class="ct-chart "></div>
+		                </div>
+
+	                    
+	                    <div class="content">
+							<div style="text-align:center;">
+							<div style="width:20px;height:20px;background:#FB404B;float:left;margin-left:10px;"></div>
+							<span style="float:left;padding-left:10px;">걸음수</span>
+							</div>  
+	                    
+	                    	<div id="chartViewsWalkUser" class="ct-chart "></div>
 	                    </div>
 					</div> <!-- CARD-1 -->
 				</c:if>

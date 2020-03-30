@@ -3152,6 +3152,8 @@ public class AdminController {
 	@RequestMapping(path="userAllList", method = RequestMethod.GET)
 	public ModelAndView userAllList(
 			User user,
+			//@RequestParam(name="startDate", defaultValue="") String startDate,
+			//@RequestParam(name="endDate", defaultValue="") String endDate,
 			@RequestParam(name="reqType", defaultValue="") String reqType,
 			@RequestParam(name="p", defaultValue="1") String page
 	){
@@ -3161,7 +3163,20 @@ public class AdminController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map = adminService.selectUsersStatus();
 		
+		String startDate = user.getStartSearchDate();
+		if (startDate == null || startDate.length() != 8){
+			startDate = DateUtils.getDateTextByAddMonths("yyyyMMdd", DateUtils.currentDate("yyyyMMdd"), -1);
+			user.setStartSearchDate(startDate);
+		}
 		
+		String endDate = user.getEndSearchDate();
+		if (endDate == null || endDate.length() != 8){
+			endDate = DateUtils.currentDate("yyyyMMdd");
+			user.setEndSearchDate(endDate);
+		}
+		
+		modelAndView.addObject("startSearchDate", startDate);
+		modelAndView.addObject("endSearchDate", endDate);
 		
 		PagePair pagePair = adminService.selectUserAllList(Integer.valueOf(page), user);
 		List<User> userList = (List<User>) pagePair.getList();

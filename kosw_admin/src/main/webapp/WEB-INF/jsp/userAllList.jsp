@@ -12,16 +12,7 @@
             <div class="col-md-12">
             	
 				
-				<form name="pageForm">
-					<div class="input-group">
-                    	<input name="p" type="hidden" value="1">
-                    	<input name="cSeq" type="hidden" value="${customer.custSeq}">
-						<input name="search"  type="hidden" value="${param.search }">
-		            	<input name="sort" type="hidden" value="${param.sort }">
-		            	<input name="sortName" type="hidden" value="${param.sortName }">
-		            	<input name="reqType" type="hidden" value=""/>
-                	</div>
-                </form>
+				
 
                 <script>
                 	$(function(){
@@ -32,6 +23,28 @@
 	                	
 	                	$(document.search).show();
 	                	$(document.sort).show();
+	                	
+	                	// 달력
+	            	    $('.datetimepicker').datetimepicker({
+	                		locale : "ko",
+	                		defaultDate : false,
+	                		useCurrent : false,
+	                		format : 'YYYYMMDD',
+	                		dayViewHeaderFormat : "YYYY MM",
+	                		minDate : moment().add(-2, 'year'),
+	                		maxDate : moment().add(1,'day'),
+	                	    icons: {
+	                	        time: "fa fa-clock-o",
+	                	        date: "fa fa-calendar",
+	                	        up: "fa fa-chevron-up",
+	                	        down: "fa fa-chevron-down",
+	                	        previous: 'fa fa-chevron-left',
+	                	        next: 'fa fa-chevron-right',
+	                	        today: 'fa fa-screenshot',
+	                	        clear: 'fa fa-trash',
+	                	        close: 'fa fa-remove'
+	                	    }
+	                	});
                 	});
                 	
                 	function download() {
@@ -39,12 +52,45 @@
             			$('form#ReqForm').attr('action', 'userAllList/download');
             			$('form#ReqForm').submit();
             		}      
+                	
+                	
                 </script>
 
 				
                	<div class="card">
                		<div class="header">
                         <p class="category">사용자 리스트</p>
+                    </div>
+                    
+                    <div class="col-md-8" style="float:left;padding-top:30px;">
+                    	<form name="pageForm"  method="get">
+							<div class="input-group">
+		                    	<input name="p" type="hidden" value="1">
+		                    	<input name="cSeq" type="hidden" value="${customer.custSeq}">
+								<input name="search"  type="hidden" value="${param.search }">
+				            	<input name="sort" type="hidden" value="${param.sort }">
+				            	<input name="sortName" type="hidden" value="${param.sortName }">
+				            	<input name="reqType" type="hidden" value=""/>
+		                	</div>
+                
+                    	<label class="col-sm-2 control-label">날짜 선택${user.endDate } - ${user.startDate }</label>
+							<div class="col-sm-12">
+								<div class="row">
+									<div class="col-sm-5">
+										<input name="startUserDate" type="text" class="form-control datetimepicker" placeholder="조회 시작일자 선택해주세요" value="${startSearchDate }">
+									</div>
+									<label class="col-sm-1 control-label" style="text-align:center;"> ~ </label>
+									<div class="col-sm-5">
+										<input name="endUserDate" type="text" class="form-control datetimepicker" placeholder="조회 종료일자 선택해주세요" value="${endSearchDate }">
+									</div>
+									
+<!-- 									<div style="text-align:right;">
+										<input type="submit" style="float:right;" class="btn btn-fill btn-primary" value="조회">
+										
+									</div>
+ -->								</div>
+							</div>
+							</form>
                     </div>
                     
                     <div style="float:right;margin-bottom:20px;">

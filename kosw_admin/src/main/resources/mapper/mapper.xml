@@ -644,7 +644,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 WHEN u.device_type = 'I'
                 THEN 'IOS'
 			END AS device_type
-            ,(SELECT count(*) FROM t_cafe_user WHERE user_seq = u.user_seq) as cafeCnt
+            ,(SELECT count(*) FROM t_cafe_user WHERE user_seq = u.user_seq AND status = '1') as cafeCnt
 		FROM u_user u, t_cafe_user cu 
 		WHERE u.user_seq = cu.user_seq
 			AND cafeseq = #{cafeseq}
@@ -1318,6 +1318,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 					U.nickname LIKE  concat ('%', #{search} ,'%') 
 			)
 			</if>
+			<if test="startSearchDate != null and startSearchDate != ''">
+			AND DATE(U.user_reg_time) between #{startSearchDate} AND #{endSearchDate}
+			</if>
 			GROUP BY U.user_seq
 		) ZZ
 	</select>
@@ -1417,9 +1420,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 						U.nickname LIKE  concat ('%', #{search} ,'%') 
 					)
 				</if>
+				<if test="startSearchDate != null and startSearchDate != ''">
+					AND DATE(U.user_reg_time) between #{startSearchDate} AND #{endSearchDate}
+				</if>
 				<choose>
-					<when test="sort != null and sort != null">
+					<when test="sort != '' and sort != null">
 				     	order by ${sort}
+				    </when>
+				    <when test="sort == null">
+				    	order by user_seq desc
 				    </when>
 				    <otherwise>
 				      	order by user_seq desc

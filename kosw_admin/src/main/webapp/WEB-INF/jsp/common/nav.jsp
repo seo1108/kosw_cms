@@ -33,6 +33,10 @@
                     <c:if test="${not empty  param.bSeq}">
                     <input name="bSeq" type="hidden" value="${param.bSeq}">
                     </c:if>
+                    
+                    <input class ="form-control inputStartparam" name="startSearchDate" type="hidden"  value="${param.startSearchDate}">
+                    <input class ="form-control inputEndparam"  name="endSearchDate" type="hidden"  value="${param.endSearchDate}">
+                    
                 </div>
             </form>
             <c:if test="${not empty sortList }">
@@ -63,6 +67,11 @@
 				  $(this).parents(".dropdown").find('.btn').val($(this).data('value'));
 				  $('.inputparam').val($(this).data('value'));
 				  $('.inputparamname').val($(this).text());
+				  
+				 
+				  $('.inputStartparam').val($('input[name=startUserDate]').val());
+				  $('.inputEndparam').val($('input[name=endUserDate]').val());
+				  
 				  $("#search").submit() ;
 				  //$(param)
 				});

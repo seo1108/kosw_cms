@@ -26,6 +26,25 @@ public class Admin implements Serializable, InputFormModel {
 	
 	// JOIN
 	private boolean superAdmin;
+	
+	private String startDate;  		// 조회 시작 일자 yyyyMMdd
+	private String endDate;			// 조회 종료 일자 yyyyMMdd
+
+	public String getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(String startDate) {
+		this.startDate = startDate;
+	}
+
+	public String getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(String endDate) {
+		this.endDate = endDate;
+	}
 
 	public boolean isSuperAdmin() {
 		return superAdmin;
