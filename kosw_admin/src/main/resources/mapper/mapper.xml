@@ -630,8 +630,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			,ifnull((select sum(act_amt) from s_activity_user_daily where user_seq = u.user_seq), 0) s_act_amt
             ,ifnull((select sum(walk_count) from u_user_walk where user_seq = u.user_seq), 0) walkcount
             ,ifnull((select name from t_category where cateseq = cu.cateseq), '.') catename
-            ,DATE_FORMAT(cu.regdate,'%Y-%m-%d %H:%i') regdate
             ,CASE
+            	WHEN (SELECT status FROM t_cafe_user WHERE user_seq = u.user_seq AND cafeseq = #{cafeseq}) != '1'
+            	THEN DATE_FORMAT(cu.expdate,'%Y-%m-%d %H:%i') 
+            	ELSE DATE_FORMAT(cu.regdate,'%Y-%m-%d %H:%i') 
+            END AS regdate
+            ,CASE
+            	WHEN (SELECT status FROM t_cafe_user WHERE user_seq = u.user_seq AND cafeseq = #{cafeseq}) != '1'
+                THEN '탈퇴'
 				WHEN u.loginType = 'kakao'
 				THEN '카카오'
 				WHEN u.loginType = 'email'

@@ -71,6 +71,8 @@
 				            	<input name="sort" type="hidden" value="${param.sort }">
 				            	<input name="sortName" type="hidden" value="${param.sortName }">
 				            	<input name="reqType" type="hidden" value=""/>
+				            	<input name="startSearchDate" type="hidden" value="${param.startSearchDate }"/>
+				            	<input name="startEndDate" type="hidden" value="${param.startEndDate }"/>
 		                	</div>
                 
                     	<label class="col-sm-2 control-label">날짜 선택${user.endDate } - ${user.startDate }</label>
@@ -84,11 +86,11 @@
 										<input name="endUserDate" type="text" class="form-control datetimepicker" placeholder="조회 종료일자 선택해주세요" value="${endSearchDate }">
 									</div>
 									
-<!-- 									<div style="text-align:right;">
-										<input type="submit" style="float:right;" class="btn btn-fill btn-primary" value="조회">
+ 									<div style="text-align:right;">
+										<input type="button" style="float:right;" class="btn btn-fill btn-primary" onclick="searchUser();" value="조회">
 										
 									</div>
- -->								</div>
+ 								</div>
 							</div>
 							</form>
                     </div>
@@ -251,6 +253,17 @@
 										return false;
 									});
 								});
+								
+								function searchUser()
+								{
+									//$('.inputparam').val($(".dropdown-menu li p").data('value'));
+									//$('.inputparamname').val($(".dropdown-menu li p").text());
+									  
+									 
+									$('.inputStartparam').val($('input[name=startUserDate]').val());
+									$('.inputEndparam').val($('input[name=endUserDate]').val());
+									$("#search").submit() ;
+								}
 								
 							</script>
 						</c:if>

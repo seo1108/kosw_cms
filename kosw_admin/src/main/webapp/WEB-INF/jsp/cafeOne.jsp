@@ -406,8 +406,8 @@
 												<td><a onclick="userStat('${a.userSeq }');" style="cursor:pointer;">${a.userEmail }</a> </td>
 												<td><a onclick="userStat('${a.userSeq }');" style="cursor:pointer;">${a.userName }</a></td>
 												<td><a onclick="userStat('${a.userSeq }');" style="cursor:pointer;">${a.nickName }</a></td>
-												<td>${a.regdate }</td>
-												<td>${a.loginType }</td>
+												<td <c:if test="${a.status ne '1'}"> style="color:red;"</c:if>>${a.regdate }</td>
+												<td <c:if test="${a.status ne '1'}"> style="color:red;"</c:if>>${a.loginType }</td>
 												<td>${a.catename }</td>
 												<td>${a.deviceType }</td>
 												<td>${a.cafeCnt }</td>
@@ -420,7 +420,7 @@
 													</c:choose>
 												</td>
 												<td>
-												<c:if test="${a.isAdmin ne 'Y' }">
+												<c:if test="${a.isAdmin ne 'Y' && a.status eq '1'}">
 												<form class="registAdminForm" method="post" action="<c:url value="cafeAdminChange"/>" style="display:inline-block;">
                                                 	<input name="cafeseq" type="hidden" value="${cafe.cafeseq }"/>
                                                 	<input name="email" type="hidden" value="${a.userEmail }"/>
@@ -433,7 +433,7 @@
                                                 <c:if test="${a.isAdmin ne 'N' }">
                                                 	<span style="color:white;">.</span>
                                                 </c:if>
-                                                </td>
+                                                
 											</tr>
 										</c:forEach>
 										</tbody>
