@@ -2668,12 +2668,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		FROM (
 			 	SELECT SUB.*,@vRank := @vRank +1 AS ranking  FROM (
 			 		SELECT 
-						P.user_seq, 
-						IFNULL(SUM(act_amt), 0) AS record_amount
-					FROM s_activity_user_daily AS P
-					WHERE 
-							P.act_date BETWEEN #{startDate} AND #{endDate}
-					GROUP BY P.user_seq
+						UU.user_seq
+						,IFNULL(SUM(act_amt), 0) AS record_amount
+                    FROM u_user UU 
+                    LEFT OUTER JOIN (
+						SELECT user_seq, act_amt
+                        FROM s_activity_user_daily
+						WHERE act_date BETWEEN #{startDate} AND #{endDate}
+					) P 
+					ON UU.user_seq = P.user_seq    
+					WHERE UU.user_seq in (SELECT user_seq FROM t_cafe_user WHERE cafeseq = #{cafeseq})		
+					GROUP BY UU.user_seq
 					ORDER BY record_amount DESC
 			 	) SUB
 			 	,(SELECT @vRank := 0) AS R
