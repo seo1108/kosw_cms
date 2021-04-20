@@ -466,6 +466,7 @@
 											<th>아이디(이메일)</th>
 											<th>사용자명</th>
 											<th>닉네임</th>
+											<th>추가정보</th>
 											<th>카페명</th>
 											<th>카테고리명</th>
 											<th>가입경로</th>
@@ -483,6 +484,7 @@
 												<td>${r.userEmail }</td>
 												<td>${r.userName }</td>
 												<td>${r.nickName }</td>
+												<td>${r.additions }</td>
 												<td>${r.cafename }</td>
 												<td>${r.catename }</td>
 												<td>${r.loginType }</td>

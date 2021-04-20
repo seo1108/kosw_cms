@@ -5972,7 +5972,7 @@ public class AdminController {
 		
 		try {
 			String[] columns 
-			= { "랭킹", "아이디(이메일)", "사용자명", "닉네임", "카페명", "카페고리명", "가입경로", "OS", "총 오른 층수", "총 걸음수" };
+			= { "랭킹", "아이디(이메일)", "사용자명", "닉네임", "추가정보", "카페명", "카페고리명", "가입경로", "OS", "총 오른 층수", "총 걸음수" };
 			
 			String deptname = "";
 			
@@ -6076,12 +6076,14 @@ public class AdminController {
 				row.createCell(1).setCellValue(Util.checkNull(ranks.get(i).getUserEmail(), "-"));
 				row.createCell(2).setCellValue(Util.checkNull(ranks.get(i).getUserName(), "-"));
 				row.createCell(3).setCellValue(Util.checkNull(ranks.get(i).getNickName(), "-"));
-				row.createCell(4).setCellValue(Util.checkNull(ranks.get(i).getCafename(), "-"));
-				row.createCell(5).setCellValue(Util.checkNull(ranks.get(i).getCatename(), "-"));
-				row.createCell(6).setCellValue(Util.checkNull(ranks.get(i).getLoginType(), "-"));
-				row.createCell(7).setCellValue(Util.checkNull(ranks.get(i).getDeviceType(), "-"));
-				row.createCell(8).setCellValue(Util.checkNull(ranks.get(i).getRecordAmount(), "-"));
-				row.createCell(9).setCellValue(Util.checkNull(ranks.get(i).getRecordWalk(), "-"));
+				row.createCell(4).setCellValue(Util.checkNull(ranks.get(i).getAdditions(), "-"));
+				row.createCell(5).setCellValue(Util.checkNull(ranks.get(i).getCafename(), "-"));
+				row.createCell(6).setCellValue(Util.checkNull(ranks.get(i).getCatename(), "-"));
+				row.createCell(7).setCellValue(Util.checkNull(ranks.get(i).getLoginType(), "-"));
+				row.createCell(8).setCellValue(Util.checkNull(ranks.get(i).getDeviceType(), "-"));
+				row.createCell(9).setCellValue(Util.checkNull(ranks.get(i).getRecordAmount(), "-"));
+				row.createCell(10).setCellValue(Util.checkNull(ranks.get(i).getRecordWalk(), "-"));
+				
 			}
 			
 			// Resize all columns to fit the content size

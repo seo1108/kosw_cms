@@ -11,6 +11,7 @@ public class Ranking implements Serializable, InputFormModel {
 	private String userSeq;			// 사용자 ID
 	private String userName;		// 사용자 이름
 	private String nickName;		// 사용자 닉네임
+	private String additions;		// 추가 입력 정보
 	private String deptName;		// 부서 명
 	private String custName;		// 고객사 명
 	private Integer recordAmount;	// 층 오름 횟수
@@ -104,6 +105,12 @@ public class Ranking implements Serializable, InputFormModel {
 	}
 	public void setNickName(String nickName) {
 		this.nickName = nickName;
+	}
+	public String getAdditions() {
+		return additions;
+	}
+	public void setAdditions(String additions) {
+		this.additions = additions;
 	}
 	public String getDeptName() {
 		return deptName;

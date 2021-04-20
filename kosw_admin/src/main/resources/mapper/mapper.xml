@@ -2664,6 +2664,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			END AS device_type,
 		     (SELECT cafename FROM t_cafe WHERE cafeseq = #{cafeseq}) AS cafename,
 		     ifnull((SELECT c.name FROM t_category c, t_cafe_user cu WHERE cu.cafeseq = #{cafeseq} AND U.user_seq = cu.user_seq AND cu.cateseq = c.cateseq), '') AS catename,
+		     ifnull((SELECT additions FROM t_cafe_user WHERE cafeseq = #{cafeseq} AND user_seq = U.user_seq LIMIT 1), '-') as additions,
 		     IF (ZZ.user_seq = #{userSeq}, 'Y', 'N') AS is_me
 		FROM (
 			 	SELECT SUB.*,@vRank := @vRank +1 AS ranking  FROM (
