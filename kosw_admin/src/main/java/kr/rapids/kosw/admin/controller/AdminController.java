@@ -1580,7 +1580,7 @@ public class AdminController {
 				cafe.setKeyword(params.get("keyword").toString());
 			}
 			String[] columns 
-			= { "번호", "아이디(이메일)", "사용자명", "닉네임", "가입일시", "가입경로", "카테고리", "OS", "이용카페수", "오른층수", "걸음수", "관리자여부" };
+			= { "번호", "아이디(이메일)", "사용자명", "닉네임", "추가정보", "가입일시", "가입경로", "카테고리", "OS", "이용카페수", "오른층수", "걸음수", "관리자여부" };
 			
 			ModelAndView modelAndView = new ModelAndView("cafeOne");
 			
@@ -1648,14 +1648,15 @@ public class AdminController {
 				row.createCell(1).setCellValue(Util.checkNull(cafeUserList.get(i).getUserEmail(), "-"));
 				row.createCell(2).setCellValue(Util.checkNull(cafeUserList.get(i).getUserName(), "-"));
 				row.createCell(3).setCellValue(Util.checkNull(cafeUserList.get(i).getNickName(), "-"));
-				row.createCell(4).setCellValue(Util.checkNull(cafeUserList.get(i).getRegdate(), "-"));
-				row.createCell(5).setCellValue(Util.checkNull(cafeUserList.get(i).getLoginType(), "-"));
-				row.createCell(6).setCellValue(Util.checkNull(cafeUserList.get(i).getCatename(), "-"));
-				row.createCell(7).setCellValue(Util.checkNull(cafeUserList.get(i).getDeviceType(), "-"));
-				row.createCell(8).setCellValue(Util.checkNull(cafeUserList.get(i).getCafeCnt(), "-"));
-				row.createCell(9).setCellValue(Util.checkNull(cafeUserList.get(i).getsActAmt(), "-"));
-				row.createCell(10).setCellValue(Util.checkNull(cafeUserList.get(i).getWalkcount(), "-"));
-				row.createCell(11).setCellValue(Util.checkNull(cafeUserList.get(i).getIsAdmin(), "-"));
+				row.createCell(4).setCellValue(Util.checkNull(cafeUserList.get(i).getAdditions(), "-"));
+				row.createCell(5).setCellValue(Util.checkNull(cafeUserList.get(i).getRegdate(), "-"));
+				row.createCell(6).setCellValue(Util.checkNull(cafeUserList.get(i).getLoginType(), "-"));
+				row.createCell(7).setCellValue(Util.checkNull(cafeUserList.get(i).getCatename(), "-"));
+				row.createCell(8).setCellValue(Util.checkNull(cafeUserList.get(i).getDeviceType(), "-"));
+				row.createCell(9).setCellValue(Util.checkNull(cafeUserList.get(i).getCafeCnt(), "-"));
+				row.createCell(10).setCellValue(Util.checkNull(cafeUserList.get(i).getsActAmt(), "-"));
+				row.createCell(11).setCellValue(Util.checkNull(cafeUserList.get(i).getWalkcount(), "-"));
+				row.createCell(12).setCellValue(Util.checkNull(cafeUserList.get(i).getIsAdmin(), "-"));
 			}
 			
 			// Resize all columns to fit the content size

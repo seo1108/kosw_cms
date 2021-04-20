@@ -626,7 +626,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	
 	<select id="cafeUserList" parameterType="kr.rapids.kosw.admin.model.Cafe" resultMap="userMap">
 		SELECT
-			u.user_seq, u.user_email, u.user_name, cu.isAdmin, cu.status, u.nickname
+			u.user_seq, u.user_email, u.user_name, cu.isAdmin, cu.status, u.nickname, ifnull(cu.additions, '-') as additions 
 			,ifnull((select sum(act_amt) from s_activity_user_daily where user_seq = u.user_seq), 0) s_act_amt
             ,ifnull((select sum(walk_count) from u_user_walk where user_seq = u.user_seq), 0) walkcount
             ,ifnull((select name from t_category where cateseq = cu.cateseq), '.') catename
@@ -1253,6 +1253,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="userPwd" column="user_pwd" />
 		<result property="userName" column="user_name" />
 		<result property="nickName" column="nickname" />
+		<result property="additions" column="additions" />
 		<result property="userRegTime" column="user_reg_time" />
 		<result property="approvalFlag" column="approval_flag" />
 		<result property="approvalTime" column="approval_time" />

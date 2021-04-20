@@ -388,6 +388,7 @@
 											<th>아이디(이메일)</th>
 											<th>사용자명</th>
 											<th>닉네임</th>
+											<th>추가정보</th>
 											<th>가입일시</th>
 											<th>가입경로</th>
 											<th>카테고리</th>
@@ -406,6 +407,7 @@
 												<td><a onclick="userStat('${a.userSeq }');" style="cursor:pointer;">${a.userEmail }</a> </td>
 												<td><a onclick="userStat('${a.userSeq }');" style="cursor:pointer;">${a.userName }</a></td>
 												<td><a onclick="userStat('${a.userSeq }');" style="cursor:pointer;">${a.nickName }</a></td>
+												<td>${a.additions }</td>
 												<td <c:if test="${a.status ne '1'}"> style="color:red;"</c:if>>${a.regdate }</td>
 												<td <c:if test="${a.status ne '1'}"> style="color:red;"</c:if>>${a.loginType }</td>
 												<td>${a.catename }</td>

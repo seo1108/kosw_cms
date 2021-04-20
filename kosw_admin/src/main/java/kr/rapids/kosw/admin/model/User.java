@@ -54,6 +54,7 @@ public class User extends Page implements Serializable, InputFormModel {
 	private String status;
 	private int walkcount;
 	private String catename;
+	private String additions;
 	private String reqType;			// excel 다운로드시 사용
 	
 	public int getsActAmt() {
@@ -335,6 +336,18 @@ public class User extends Page implements Serializable, InputFormModel {
 
 	public void setWalkcount(int walkcount) {
 		this.walkcount = walkcount;
+	}
+
+
+
+	public String getAdditions() {
+		return additions;
+	}
+
+
+
+	public void setAdditions(String additions) {
+		this.additions = additions;
 	}
 
 
